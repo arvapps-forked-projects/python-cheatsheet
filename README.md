@@ -91,7 +91,7 @@ value  = <dict>.setdefault(key, default=None)   # Returns and writes default if 
 <dict>.update(<dict>)                           # Adds items. Replaces ones with matching keys.
 value = <dict>.pop(key)                         # Removes item or raises KeyError if missing.
 {k for k, v in <dict>.items() if v == value}    # Returns set of keys that point to the value.
-{k: v for k, v in <dict>.items() if k in keys}  # Returns a dictionary, filtered by keys.
+{k: v for k, v in <dict>.items() if k in keys}  # Filters the dictionary by keys.
 ```
 
 ### Counter
@@ -655,9 +655,9 @@ from dateutil.tz import tzlocal, gettz
 ### Arithmetics
 ```python
 <bool>   = <D/T/DTn> > <D/T/DTn>            # Ignores time jumps (fold attribute). Also ==.
-<bool>   = <DTa>     > <DTa>                # Ignores time jumps if they share tzinfo object.
+<bool>   = <DTa>     > <DTa>                # Ignores jumps if they share tz object. Broken ==.
 <TD>     = <D/DTn>   - <D/DTn>              # Ignores jumps. Convert to UTC for actual delta.
-<TD>     = <DTa>     - <DTa>                # Ignores time jumps if they share tzinfo object.
+<TD>     = <DTa>     - <DTa>                # Ignores jumps if they share tzinfo object.
 <D/DT>   = <D/DT>    ± <TD>                 # Returned datetime can fall into missing hour.
 <TD>     = <TD>      * <float>              # Also: <TD> = abs(<TD>) and <TD> = <TD> ±% <TD>.
 <float>  = <TD>      / <TD>                 # How many hours/weeks/years are in TD. Also //.
@@ -782,7 +782,7 @@ from functools import reduce
 ### Any, All
 ```python
 <bool> = any(<collection>)                          # Is `bool(<el>)` True for any el?
-<bool> = all(<collection>)                          # Is True for all or is it empty?
+<bool> = all(<collection>)                          # True for all? Also True if empty.
 ```
 
 ### Conditional Expression
@@ -1021,6 +1021,40 @@ class C(A, B): pass
 [<class 'C'>, <class 'A'>, <class 'B'>, <class 'object'>]
 ```
 
+### Type Annotations
+* **They add type hints to variables, arguments and functions (`'def f() -> <type>:'`).**
+* **Are ignored by CPython interpreter, but used by tools such as [mypy](https://pypi.org/project/mypy/), [Pydantic](https://pypi.org/project/pydantic/) and [Cython](https://pypi.org/project/Cython/).**
+```python
+from collections import abc
+
+<name>: <type> [| ...] [= <obj>]
+<name>: list/set[<type>] [= <obj>]
+<name>: abc.Iterable/abc.Sequence[<type>] [= <obj>]
+<name>: dict/tuple[<type>, ...] [= <obj>]
+```
+
+### Dataclass
+**Decorator that uses class variables to generate init(), repr() and eq() special methods.**
+```python
+from dataclasses import dataclass, field, make_dataclass
+
+@dataclass(order=False, frozen=False)
+class <class_name>:
+    <attr_name>: <type>
+    <attr_name>: <type> = <default_value>
+    <attr_name>: list/dict/set = field(default_factory=list/dict/set)
+```
+* **Objects can be made [sortable](#sortable) with `'order=True'` and immutable with `'frozen=True'`.**
+* **For object to be [hashable](#hashable), all attributes must be hashable and 'frozen' must be True.**
+* **Function field() is needed because `'<attr_name>: list = []'` would make a list that is shared among all instances. Its 'default_factory' argument can be any [callable](#callable).**
+* **For attributes of arbitrary type use `'typing.Any'`.**
+
+```python
+<class> = make_dataclass('<class_name>', <coll_of_attribute_names>)
+<class> = make_dataclass('<class_name>', <coll_of_tuples>)
+<tuple> = ('<attr_name>', <type> [, <default_value>])
+```
+
 ### Property
 **Pythonic way of implementing getters and setters.**
 ```python
@@ -1041,40 +1075,8 @@ class Person:
 'Guido van Rossum'
 ```
 
-### Dataclass
-**Decorator that automatically generates init(), repr() and eq() special methods.**
-```python
-from dataclasses import dataclass, field
-
-@dataclass(order=False, frozen=False)
-class <class_name>:
-    <attr_name>: <type>
-    <attr_name>: <type> = <default_value>
-    <attr_name>: list/dict/set = field(default_factory=list/dict/set)
-```
-* **Objects can be made [sortable](#sortable) with `'order=True'` and immutable with `'frozen=True'`.**
-* **For object to be [hashable](#hashable), all attributes must be hashable and 'frozen' must be True.**
-* **Function field() is needed because `'<attr_name>: list = []'` would make a list that is shared among all instances. Its 'default_factory' argument can be any [callable](#callable).**
-* **For attributes of arbitrary type use `'typing.Any'`.**
-
-#### Inline:
-```python
-from dataclasses import make_dataclass
-<class> = make_dataclass('<class_name>', <coll_of_attribute_names>)
-<class> = make_dataclass('<class_name>', <coll_of_tuples>)
-<tuple> = ('<attr_name>', <type> [, <default_value>])
-```
-
-#### Rest of type annotations (CPython interpreter ignores them all):
-```python
-import collections.abc as abc, typing as tp
-<var_name>: list/set/abc.Iterable/abc.Sequence/tp.Optional[<type>] [= <obj>]
-<var_name>: dict/tuple/tp.Union[<type>, ...] [= <obj>]
-def func(<arg_name>: <type> [= <obj>]) -> <type>: ...
-```
-
 ### Slots
-**Mechanism that restricts objects to attributes listed in 'slots' and significantly reduces their memory footprint.**
+**Mechanism that restricts objects to attributes listed in 'slots', reduces their memory footprint.**
 
 ```python
 class MyClassWithSlots:
@@ -1086,8 +1088,7 @@ class MyClassWithSlots:
 ### Copy
 ```python
 from copy import copy, deepcopy
-<object> = copy(<object>)
-<object> = deepcopy(<object>)
+<object> = copy/deepcopy(<object>)
 ```
 
 
@@ -1951,26 +1952,26 @@ Bytes
 **Bytes object is an immutable sequence of single bytes. Mutable version is called bytearray.**
 
 ```python
-<bytes> = b'<str>'                          # Only accepts ASCII characters and \x00-\xff.
-<int>   = <bytes>[<index>]                  # Returns an int in range from 0 to 255.
-<bytes> = <bytes>[<slice>]                  # Returns bytes even if it has only one element.
-<bytes> = <bytes>.join(<coll_of_bytes>)     # Joins elements using bytes as a separator.
+<bytes> = b'<str>'                       # Only accepts ASCII characters and \x00-\xff.
+<int>   = <bytes>[<index>]               # Returns an int in range from 0 to 255.
+<bytes> = <bytes>[<slice>]               # Returns bytes even if it has only one element.
+<bytes> = <bytes>.join(<coll_of_bytes>)  # Joins elements using bytes as a separator.
 ```
 
 ### Encode
 ```python
-<bytes> = bytes(<coll_of_ints>)             # Ints must be in range from 0 to 255.
-<bytes> = bytes(<str>, 'utf-8')             # Or: <str>.encode('utf-8')
-<bytes> = <int>.to_bytes(n_bytes, …)        # `byteorder='big/little', signed=False`.
-<bytes> = bytes.fromhex('<hex>')            # Hex pairs can be separated by whitespaces.
+<bytes> = bytes(<coll_of_ints>)          # Ints must be in range from 0 to 255.
+<bytes> = bytes(<str>, 'utf-8')          # Or: <str>.encode('utf-8')
+<bytes> = <int>.to_bytes(n_bytes, …)     # `byteorder='big/little', signed=False`.
+<bytes> = bytes.fromhex('<hex>')         # Hex pairs can be separated by whitespaces.
 ```
 
 ### Decode
 ```python
-<list>  = list(<bytes>)                     # Returns ints in range from 0 to 255.
-<str>   = str(<bytes>, 'utf-8')             # Or: <bytes>.decode('utf-8')
-<int>   = int.from_bytes(<bytes>, …)        # `byteorder='big/little', signed=False`.
-'<hex>' = <bytes>.hex()                     # Returns hex pairs. Accepts `sep=<str>`.
+<list>  = list(<bytes>)                  # Returns ints in range from 0 to 255.
+<str>   = str(<bytes>, 'utf-8')          # Or: <bytes>.decode('utf-8')
+<int>   = int.from_bytes(<bytes>, …)     # `byteorder='big/little', signed=False`.
+'<hex>' = <bytes>.hex()                  # Returns hex pairs. Accepts `sep=<str>`.
 ```
 
 ### Read Bytes from File
@@ -2009,12 +2010,12 @@ b'\x00\x01\x00\x02\x00\x00\x00\x03'
 ### Format
 #### For standard type sizes and manual alignment (padding) start format string with:
 * **`'='` - System's byte order (usually little-endian).**
-* **`'<'` - Little-endian.**
+* **`'<'` - Little-endian (i.e. least significant byte first).**
 * **`'>'` - Big-endian (also `'!'`).**
 
 #### Besides numbers, pack() and unpack() also support bytes objects as part of the sequence:
 * **`'c'` - A bytes object with a single element. For pad byte use `'x'`.**
-* **`'<n>s'` - A bytes object with n elements.**
+* **`'<n>s'` - A bytes object with n elements (not effected by byte order).**
 
 #### Integer types. Use a capital letter for unsigned type. Minimum and standard sizes are in brackets:
 * **`'b'` - char (1/1)**
@@ -2255,7 +2256,8 @@ logging.basicConfig(
 <Handler>.setFormatter(<Formatter>)                  # Adds Formatter to the Handler.
 <Handler>.setLevel(<int/str>)                        # Processes all messages by default.
 <Logger>.addHandler(<Handler>)                       # Adds Handler to the Logger.
-<Logger>.setLevel(<int/str>)                         # What is sent to its/ancestor's handlers.
+<Logger>.setLevel(<int/str>)                         # What is sent to its/ancestors' handlers.
+<Logger>.propagate = <bool>                          # Cuts off ancestors' handlers if false.
 ```
 * **Parent logger can be specified by naming the child logger `'<parent>.<name>'`.**
 * **If logger doesn't have a set level it inherits it from the first ancestor that does.**
@@ -2266,10 +2268,10 @@ logging.basicConfig(
 ```python
 >>> logger = logging.getLogger('my_module')
 >>> handler = logging.FileHandler('test.log', encoding='utf-8')
->>> formatter = logging.Formatter('%(asctime)s %(levelname)s:%(name)s:%(message)s')
->>> handler.setFormatter(formatter)
+>>> handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s:%(name)s:%(message)s'))
 >>> logger.addHandler(handler)
->>> logging.basicConfig(level='DEBUG')
+>>> logger.setLevel('DEBUG')
+>>> logging.basicConfig()
 >>> logging.root.handlers[0].setLevel('WARNING')
 >>> logger.critical('Running out of disk space.')
 CRITICAL:my_module:Running out of disk space.
@@ -2290,7 +2292,7 @@ Introspection
 <list> = dir(<object>)                     # Names of object's attributes (including methods).
 <dict> = vars(<object>)                    # Dict of writable attributes. Also <obj>.__dict__.
 <bool> = hasattr(<object>, '<attr_name>')  # Checks if getattr() raises an AttributeError.
-value  = getattr(<object>, '<attr_name>')  # Raises AttributeError if attribute is missing.
+value  = getattr(<object>, '<attr_name>')  # Default value can be passed as the third argument.
 setattr(<object>, '<attr_name>', value)    # Only works on objects with '__dict__' attribute.
 delattr(<object>, '<attr_name>')           # Same. Also `del <object>.<attr_name>`.
 ```
@@ -2309,22 +2311,36 @@ Coroutines
 * **Coroutines have a lot in common with threads, but unlike threads, they only give up control when they call another coroutine and they don’t use as much memory.**
 * **Coroutine definition starts with `'async'` and its call with `'await'`.**
 * **`'asyncio.run(<coroutine>)'` is the main entry point for asynchronous programs.**
-* **Functions wait(), gather() and as_completed() start multiple coroutines at the same time.**
-* **Asyncio module also provides its own [Queue](#queue), [Event](#semaphore-event-barrier), [Lock](#lock) and [Semaphore](#semaphore-event-barrier) classes.**
+
+```python
+import asyncio as aio
+```
+
+```python
+<coro> = <async_func>(<args>)             # Creates a coroutine.
+<obj>  = await <coroutine>                # Starts the coroutine and returns result.
+<task> = aio.create_task(<coroutine>)     # Schedules coroutine for execution.
+<obj>  = await <task>                     # Returns result. Also <task>.cancel().
+```
+
+```python
+<coro> = aio.gather(<coro/task>, ...)     # Schedules coroutines. Returns results when awaited.
+<coro> = aio.wait(<tasks>, …)             # `aio.ALL/FIRST_COMPLETED`. Returns (done, pending).
+<iter> = aio.as_completed(<coros/tasks>)  # Iter of coros. All return next result when awaited.
+```
 
 #### Runs a terminal game where you control an asterisk that must avoid numbers:
-
 ```python
 import asyncio, collections, curses, curses.textpad, enum, random, time
 
-P = collections.namedtuple('P', 'x y')         # Position
-D = enum.Enum('D', 'n e s w')                  # Direction
-W, H = 15, 7                                   # Width, Height
+P = collections.namedtuple('P', 'x y')    # Position
+D = enum.Enum('D', 'n e s w')             # Direction
+W, H = 15, 7                              # Width, Height
 
 def main(screen):
-    curses.curs_set(0)                         # Makes cursor invisible.
-    screen.nodelay(True)                       # Makes getch() non-blocking.
-    asyncio.run(main_coroutine(screen))        # Starts running asyncio code.
+    curses.curs_set(0)                    # Makes cursor invisible.
+    screen.nodelay(True)                  # Makes getch() non-blocking.
+    asyncio.run(main_coroutine(screen))   # Starts running asyncio code.
 
 async def main_coroutine(screen):
     moves = asyncio.Queue()
@@ -2343,18 +2359,15 @@ async def random_controller(id_, moves):
 async def human_controller(screen, moves):
     while True:
         key_mappings = {258: D.s, 259: D.n, 260: D.w, 261: D.e}
-        ch = screen.getch()
-        if d := key_mappings.get(ch):
+        if d := key_mappings.get(screen.getch()):
             moves.put_nowait(('*', d))
         await asyncio.sleep(0.005)
 
 async def model(moves, state):
     while state['*'] not in (state[id_] for id_ in range(10)):
         id_, d = await moves.get()
-        x, y   = state[id_]
         deltas = {D.n: P(0, -1), D.e: P(1, 0), D.s: P(0, 1), D.w: P(-1, 0)}
-        dx, dy = deltas[d]
-        state[id_] = P((x + dx) % W, (y + dy) % H)
+        state[id_] = P((state[id_].x + deltas[d].x) % W, (state[id_].y + deltas[d].y) % H)
 
 async def view(state, screen):
     offset = P(curses.COLS//2 - W//2, curses.LINES//2 - H//2)
@@ -2362,18 +2375,13 @@ async def view(state, screen):
         screen.erase()
         curses.textpad.rectangle(screen, offset.y-1, offset.x-1, offset.y+H, offset.x+W)
         for id_, p in state.items():
-            screen.addstr(
-                offset.y + (p.y - state['*'].y + H//2) % H,
-                offset.x + (p.x - state['*'].x + W//2) % W,
-                str(id_)
-            )
+            screen.addstr(offset.y + (p.y - state['*'].y + H//2) % H,
+                          offset.x + (p.x - state['*'].x + W//2) % W, str(id_))
         screen.refresh()
         await asyncio.sleep(0.005)
 
 if __name__ == '__main__':
-    start_time = time.perf_counter()
     curses.wrapper(main)
-    print(f'You survived {time.perf_counter() - start_time:.2f} seconds.')
 ```
 <br>
 
@@ -2408,7 +2416,7 @@ plt.clf()                                             # Clears the figure.
 
 Table
 -----
-#### Prints a CSV file as an ASCII table:
+#### Prints a CSV spreadsheet to the console:
 ```python
 # $ pip3 install tabulate
 import csv, tabulate
@@ -2512,12 +2520,12 @@ from selenium import webdriver
 <El>.click/clear()                                     # Also <El>.send_keys(<str>).
 ```
 
-#### XPath — also available in browser's console via `'$x(<xpath>)'`:
+#### XPath — also available in browser's console via `'$x(<xpath>)'` and by lxml library:
 ```python
 <xpath>     = //<element>[/ or // <element>]           # Child: /, Descendant: //, Parent: /..
 <xpath>     = //<element>/following::<element>         # Next sibling. Also preceding/parent/…
 <element>   = <tag><conditions><index>                 # `<tag> = */a/…`, `<index> = [1/2/…]`.
-<condition> = [<sub_cond> [and/or <sub_cond>]]         # `and` is same as chaining conditions.
+<condition> = [<sub_cond> [and/or <sub_cond>]]         # For negation use `not(<sub_cond>)`.
 <sub_cond>  = @<attr>="<val>"                          # `.="<val>"` matches complete text.
 <sub_cond>  = contains(@<attr>, "<val>")               # Is <val> a substring of attr's value?
 <sub_cond>  = [//]<element>                            # Has matching child? Descendant if //.
@@ -2670,7 +2678,7 @@ import numpy as np
 <array> = np.tile/repeat(<array>, <int/list> [, axis])  # Tiles array or repeats its elements.
 ```
 * **Shape is a tuple of dimension sizes. A 100x50 RGB image has shape (50, 100, 3).**
-* **Axis is an index of the dimension that gets aggregated. Leftmost dimension has index 0. Summing the RGB image along axis 2 will return a greyscale image with shape (50, 100).**
+* **Axis is an index of a dimension. Leftmost dimension has index 0. Summing the RGB image along axis 2 will return a greyscale image with shape (50, 100).**
 
 ### Indexing
 ```perl
@@ -2852,21 +2860,21 @@ import wave
 ```
 
 ```python
-<Wave>   = wave.open('<path>', 'rb')   # Opens the WAV file.
-<int>    = <Wave>.getframerate()       # Returns number of frames per second.
-<int>    = <Wave>.getnchannels()       # Returns number of samples per frame.
-<int>    = <Wave>.getsampwidth()       # Returns number of bytes per sample.
-<params> = <Wave>.getparams()          # Returns collection of listed params.
-<bytes>  = <Wave>.readframes(nframes)  # Returns next n frames. All if -1.
+<Wave>  = wave.open('<path>', 'rb')   # Opens the WAV file.
+<int>   = <Wave>.getframerate()       # Returns number of frames per second.
+<int>   = <Wave>.getnchannels()       # Returns number of samples per frame.
+<int>   = <Wave>.getsampwidth()       # Returns number of bytes per sample.
+<tuple> = <Wave>.getparams()          # Returns namedtuple of all parameters.
+<bytes> = <Wave>.readframes(nframes)  # Returns next n frames. All if -1.
 ```
 
 ```python
-<Wave> = wave.open('<path>', 'wb')     # Opens WAV file for writing.
-<Wave>.setframerate(<int>)             # Pass 44100 for CD, 48000 for video.
-<Wave>.setnchannels(<int>)             # Pass 1 for mono, 2 for stereo.
-<Wave>.setsampwidth(<int>)             # Pass 2 for CD, 3 for hi-res sound.
-<Wave>.setparams(<params>)             # Sets all parameters.
-<Wave>.writeframes(<bytes>)            # Appends frames to the file.
+<Wave> = wave.open('<path>', 'wb')    # Creates/truncates a file for writing.
+<Wave>.setframerate(<int>)            # Pass 44100 for CD, 48000 for video.
+<Wave>.setnchannels(<int>)            # Pass 1 for mono, 2 for stereo.
+<Wave>.setsampwidth(<int>)            # Pass 2 for CD, 3 for hi-res sound.
+<Wave>.setparams(<tuple>)             # Sets all parameters.
+<Wave>.writeframes(<bytes>)           # Appends frames to the file.
 ```
 * **Bytes object contains a sequence of frames, each consisting of one or more samples.**
 * **In a stereo signal, the first sample of a frame belongs to the left channel.**
@@ -3001,7 +3009,7 @@ while not pg.event.get(pg.QUIT):
 
 ```python
 <bool> = <Rect>.collidepoint((x, y))            # Checks if rectangle contains the point.
-<bool> = <Rect>.colliderect(<Rect>)             # Checks if two rectangles overlap.
+<bool> = <Rect>.colliderect(<Rect>)             # Checks if the two rectangles overlap.
 <int>  = <Rect>.collidelist(<list_of_Rect>)     # Returns index of first colliding Rect or -1.
 <list> = <Rect>.collidelistall(<list_of_Rect>)  # Returns indexes of all colliding rectangles.
 ```
@@ -3019,7 +3027,7 @@ while not pg.event.get(pg.QUIT):
 ```python
 <Surf>.fill(color)                              # Tuple, Color('#rrggbb[aa]') or Color(<name>).
 <Surf>.set_at((x, y), color)                    # Updates pixel. Also <Surf>.get_at((x, y)).
-<Surf>.blit(<Surf>, (x, y))                     # Draws passed surface to the surface.
+<Surf>.blit(<Surf>, (x, y))                     # Draws passed surface at specified location.
 ```
 
 ```python
@@ -3045,7 +3053,7 @@ rect(<Surf>, color, <Rect>, width=0)            # Also polygon(<Surf>, color, po
 ### Sound
 ```python
 <Sound> = pg.mixer.Sound(<path/file/bytes>)     # WAV file or bytes/array of signed shorts.
-<Sound>.play/stop()                             # Also <Sound>.set_volume(<float>).
+<Sound>.play/stop()                             # Also set_volume(<float>), fadeout(msec).
 ```
 
 ### Basic Mario Brothers Example
@@ -3340,7 +3348,7 @@ plt.show()                                     # Displays the plot. Also plt.sav
 
 ```python
 <DF> = pd.read_json/html('<str/path/url>')     # Run `$ pip3 install beautifulsoup4 lxml`.
-<DF> = pd.read_csv('<path/url>')               # Also `names=<list>, parse_dates=False`.
+<DF> = pd.read_csv('<path/url>')               # `header/index_col/dtype/parse_dates=<obj>`.
 <DF> = pd.read_pickle/excel('<path/url>')      # Use `sheet_name=None` to get all Excel sheets.
 <DF> = pd.read_sql('<table/query>', <conn.>)   # SQLite3/SQLAlchemy connection (see #SQLite).
 ```
@@ -3367,7 +3375,7 @@ c  7  8  6
 <GB> = <DF>.groupby(column_key/s)              # Splits DF into groups based on passed column.
 <DF> = <GB>.apply(<func>)                      # Maps each group. Func can return DF, Sr or el.
 <GB> = <GB>[column_key]                        # Single column GB. All operations return a Sr.
-<Sr> = <GB>.size()                             # A Sr of group sizes. Keys are group "names".
+<Sr> = <GB>.size()                             # A Sr of group sizes. Same keys as get_group().
 ```
 
 #### GroupBy — Aggregate, Transform, Map:
