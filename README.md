@@ -351,36 +351,35 @@ Regex
 
 ```python
 import re
-<str>   = re.sub(<regex>, new, text, count=0)  # Substitutes all occurrences with 'new'.
-<list>  = re.findall(<regex>, text)            # Returns all occurrences as strings.
-<list>  = re.split(<regex>, text, maxsplit=0)  # Add brackets around regex to include matches.
-<Match> = re.search(<regex>, text)             # First occurrence of the pattern or None.
-<Match> = re.match(<regex>, text)              # Searches only at the beginning of the text.
-<iter>  = re.finditer(<regex>, text)           # Returns all occurrences as Match objects.
+<str>   = re.sub(r'<regex>', new, text, count=0)  # Substitutes all occurrences with 'new'.
+<list>  = re.findall(r'<regex>', text)            # Returns all occurrences as strings.
+<list>  = re.split(r'<regex>', text, maxsplit=0)  # Add brackets around regex to keep matches.
+<Match> = re.search(r'<regex>', text)             # First occurrence of the pattern or None.
+<Match> = re.match(r'<regex>', text)              # Searches only at the beginning of the text.
+<iter>  = re.finditer(r'<regex>', text)           # Returns all occurrences as Match objects.
 ```
 
-* **Argument 'new' can be a function that accepts a Match object and returns a string.**
+* **Raw string literals do not interpret escape sequences, thus enabling us to use regex-specific escape sequences that cause SyntaxWarning in normal string literals (since 3.12).**
+* **Argument 'new' of re.sub() can be a function that accepts a Match object and returns a str.**
 * **Argument `'flags=re.IGNORECASE'` can be used with all functions.**
 * **Argument `'flags=re.MULTILINE'` makes `'^'` and `'$'` match the start/end of each line.**
 * **Argument `'flags=re.DOTALL'` makes `'.'` also accept the `'\n'`.**
-* **Use `r'\1'` or `'\\1'` for backreference (`'\1'` returns a character with octal code 1).**
-* **Add `'?'` after `'*'` and `'+'` to make them non-greedy.**
 * **`'re.compile(<regex>)'` returns a Pattern object with methods sub(), findall(), …**
 
 ### Match Object
 ```python
-<str>   = <Match>.group()                      # Returns the whole match. Also group(0).
-<str>   = <Match>.group(1)                     # Returns part inside the first brackets.
-<tuple> = <Match>.groups()                     # Returns all bracketed parts.
-<int>   = <Match>.start()                      # Returns start index of the match.
-<int>   = <Match>.end()                        # Returns exclusive end index of the match.
+<str>   = <Match>.group()                         # Returns the whole match. Also group(0).
+<str>   = <Match>.group(1)                        # Returns part inside the first brackets.
+<tuple> = <Match>.groups()                        # Returns all bracketed parts.
+<int>   = <Match>.start()                         # Returns start index of the match.
+<int>   = <Match>.end()                           # Returns exclusive end index of the match.
 ```
 
 ### Special Sequences
 ```python
-'\d' == '[0-9]'                                # Also [०-९…]. Matches a decimal character.
-'\w' == '[a-zA-Z0-9_]'                         # Also [ª²³…]. Matches an alphanumeric or _.
-'\s' == '[ \t\n\r\f\v]'                        # Also [\x1c-\x1f…]. Matches a whitespace.
+'\d' == '[0-9]'                                   # Also [०-९…]. Matches a decimal character.
+'\w' == '[a-zA-Z0-9_]'                            # Also [ª²³…]. Matches an alphanumeric or _.
+'\s' == '[ \t\n\r\f\v]'                           # Also [\x1c-\x1f…]. Matches a whitespace.
 ```
 
 * **By default, decimal characters, alphanumerics and whitespaces from all alphabets are matched unless `'flags=re.ASCII'` argument is used.**
@@ -1023,14 +1022,13 @@ class C(A, B): pass
 
 ### Type Annotations
 * **They add type hints to variables, arguments and functions (`'def f() -> <type>:'`).**
-* **Are ignored by CPython interpreter, but used by tools such as [mypy](https://pypi.org/project/mypy/), [Pydantic](https://pypi.org/project/pydantic/) and [Cython](https://pypi.org/project/Cython/).**
+* **Hints are used by type checkers like [mypy](https://pypi.org/project/mypy/), data validation libraries such as [Pydantic](https://pypi.org/project/pydantic/) and lately also by [Cython](https://pypi.org/project/Cython/) compiler. However, they are not enforced by CPython interpreter.**
 ```python
 from collections import abc
 
-<name>: <type> [| ...] [= <obj>]
-<name>: list/set[<type>] [= <obj>]
-<name>: abc.Iterable/abc.Sequence[<type>] [= <obj>]
-<name>: dict/tuple[<type>, ...] [= <obj>]
+<name>: <type> [| ...] [= <obj>]                              # `|` since 3.10.
+<name>: list/set/abc.Iterable/abc.Sequence[<type>] [= <obj>]  # Since 3.9.
+<name>: dict/tuple[<type>, ...] [= <obj>]                     # Since 3.9.
 ```
 
 ### Dataclass
@@ -1320,7 +1318,8 @@ class MyAbcSequence(abc.Sequence):
 | count()    |            |            |            |     Yes      |
 +------------+------------+------------+------------+--------------+
 ```
-* **Other ABCs that generate missing methods are: MutableSequence, Set, MutableSet, Mapping and MutableMapping.**
+* **Method iter() is required for `'isinstance(<obj>, abc.Iterable)'` to return True, however any object with getitem() will work just fine with any code expecting an iterable.**
+* **Abstract base classes that generate missing methods when extended are: Sequence, MutableSequence, Set, MutableSet, Mapping and MutableMapping.**
 * **Names of their required methods are stored in `'<abc>.__abstractmethods__'`.**
 
 
@@ -1341,25 +1340,23 @@ class <enum_name>(Enum):
 * **Methods receive the member they were called on as the 'self' argument.**
 
 ```python
-<member> = <enum>.<member_name>           # Returns a member.
-<member> = <enum>['<member_name>']        # Returns a member. Raises KeyError.
-<member> = <enum>(<value>)                # Returns a member. Raises ValueError.
-<str>    = <member>.name                  # Returns member's name.
-<obj>    = <member>.value                 # Returns member's value.
+<member> = <enum>.<member_name>         # Returns a member.
+<member> = <enum>['<member_name>']      # Returns a member. Raises KeyError.
+<member> = <enum>(<value>)              # Returns a member. Raises ValueError.
+<str>    = <member>.name                # Returns member's name.
+<obj>    = <member>.value               # Returns member's value.
 ```
 
 ```python
-<list>   = list(<enum>)                   # Returns enum's members.
-<list>   = [a.name for a in <enum>]       # Returns enum's member names.
-<list>   = [a.value for a in <enum>]      # Returns enum's member values.
-<member> = random.choice(list(<enum>))    # Returns a random member.
+<list>   = list(<enum>)                 # Returns enum's members.
+<list>   = [a.name for a in <enum>]     # Returns enum's member names.
+<list>   = [a.value for a in <enum>]    # Returns enum's member values.
 ```
 
 ```python
-def get_next_member(member):
-    members = list(type(member))
-    index = members.index(member) + 1
-    return members[index % len(members)]
+<enum>   = type(<member>)               # Returns member's enum.
+<iter>   = itertools.cycle(<enum>)      # Retruns endless iterator of members.
+<member> = random.choice(list(<enum>))  # Returns a random member.
 ```
 
 ### Inline
@@ -1412,9 +1409,10 @@ except (<exception>, [...]): ...
 except (<exception>, [...]) as <name>: ...
 ```
 * **Also catches subclasses of the exception.**
-* **Use `'traceback.print_exc()'` to print the error message to stderr.**
+* **Use `'traceback.print_exc()'` to print the full error message to stderr.**
 * **Use `'print(<name>)'` to print just the cause of the exception (its arguments).**
 * **Use `'logging.exception(<message>)'` to log the passed message, followed by the full error message of the caught exception.**
+* **Use `'sys.exc_info()'` to get exception type, object and traceback of caught exception.**
 
 ### Raising Exceptions
 ```python
@@ -2622,13 +2620,13 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
 ```
 
 ### Call and Flame Graphs
-```text
-$ apt/brew install graphviz && pip3 install gprof2dot snakeviz
-$ tail --lines=4 test.py > test.py
-$ python3 -m cProfile -o test.prof test.py
-$ gprof2dot --format=pstats test.prof | dot -T png -o test.png
-$ xdg-open/open test.png
-$ snakeviz test.prof
+```bash
+$ apt/brew install graphviz && pip3 install gprof2dot snakeviz  # Or download installer.
+$ tail --lines=4 test.py > test.py                              # Removes first line.
+$ python3 -m cProfile -o test.prof test.py                      # Runs built-in profiler.
+$ gprof2dot --format=pstats test.prof | dot -T png -o test.png  # Generates call graph.
+$ xdg-open/open test.png                                        # Displays call graph.
+$ snakeviz test.prof                                            # Displays flame graph.
 ```
 
 ### Sampling and Memory Profilers
