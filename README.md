@@ -360,7 +360,7 @@ import re
 ```
 
 * **Raw string literals do not interpret escape sequences, thus enabling us to use regex-specific escape sequences that cause SyntaxWarning in normal string literals (since 3.12).**
-* **Argument 'new' of re.sub() can be a function that accepts a Match object and returns a str.**
+* **Argument 'new' of re.sub() can be a function that accepts Match object and returns a str.**
 * **Argument `'flags=re.IGNORECASE'` can be used with all functions.**
 * **Argument `'flags=re.MULTILINE'` makes `'^'` and `'$'` match the start/end of each line.**
 * **Argument `'flags=re.DOTALL'` makes `'.'` also accept the `'\n'`.**
@@ -816,6 +816,8 @@ player = Player(point, direction)                   # Returns its instance.
 
 Imports
 -------
+**Mechanism that makes code in one file available to another file.**
+
 ```python
 import <module>            # Imports a built-in or '<module>.py'.
 import <package>           # Imports a built-in or '<package>/__init__.py'.
@@ -824,13 +826,13 @@ import <package>.<module>  # Imports a built-in or '<package>/<module>.py'.
 * **Package is a collection of modules, but it can also define its own objects.**
 * **On a filesystem this corresponds to a directory of Python files with an optional init script.**
 * **Running `'import <package>'` does not automatically provide access to the package's modules unless they are explicitly imported in its init script.**
+* **Location of the file that is passed to python command serves as a root of all local imports.**
+* **For relative imports use `'from .[…][<pkg/module>[.…]] import <obj>'`.**
 
 
 Closure
 -------
-**We have/get a closure in Python when:**
-* **A nested function references a value of its enclosing function and then**
-* **the enclosing function returns the nested function.**
+**We have/get a closure in Python when a nested function references a value of its enclosing function and then the enclosing function returns the nested function.**
 
 ```python
 def get_multiplier(a):
@@ -844,9 +846,7 @@ def get_multiplier(a):
 >>> multiply_by_3(10)
 30
 ```
-
-* **If multiple nested functions within enclosing function reference the same value, that value gets shared.**
-* **To dynamically access function's first free variable use `'<function>.__closure__[0].cell_contents'`.**
+* **Any value that is referenced from within multiple nested functions gets shared.**
 
 ### Partial
 ```python
@@ -952,15 +952,17 @@ def add(x, y):
 
 Class
 -----
+**A template for creating user-defined objects.**
+
 ```python
-class <name>:
+class MyClass:
     def __init__(self, a):
         self.a = a
+    def __str__(self):
+        return str(self.a)
     def __repr__(self):
         class_name = self.__class__.__name__
         return f'{class_name}({self.a!r})'
-    def __str__(self):
-        return str(self.a)
 
     @classmethod
     def get_class_name(cls):
@@ -969,6 +971,12 @@ class <name>:
 * **Return value of repr() should be unambiguous and of str() readable.**
 * **If only repr() is defined, it will also be used for str().**
 * **Methods decorated with `'@staticmethod'` do not receive 'self' nor 'cls' as their first arg.**
+
+```python
+>>> obj = MyClass(1)
+>>> obj.a, str(obj), repr(obj)
+(1, '1', 'MyClass(1)')
+```
 
 #### Expressions that call the str() method:
 ```python
@@ -988,13 +996,6 @@ Z = dataclasses.make_dataclass('Z', ['a']); print/str/repr(Z(<el>))
 >>> <el>
 ```
 
-### Constructor Overloading
-```python
-class <name>:
-    def __init__(self, a=None):
-        self.a = a
-```
-
 ### Inheritance
 ```python
 class Person:
@@ -1007,7 +1008,7 @@ class Employee(Person):
         self.staff_num = staff_num
 ```
 
-### Multiple Inheritance
+#### Multiple inheritance:
 ```python
 class A: pass
 class B: pass
@@ -1199,7 +1200,7 @@ class Counter:
 ```
 
 ### Context Manager
-* **With statements only work with objects that have enter() and exit() special methods.**
+* **With statements only work on objects that have enter() and exit() special methods.**
 * **Enter() should lock the resources and optionally return an object.**
 * **Exit() should release the resources.**
 * **Any exception that happens inside the with block is passed to the exit() method.**
@@ -1291,7 +1292,7 @@ class MySequence:
 ### ABC Sequence
 * **It's a richer interface than the basic sequence.**
 * **Extending it generates iter(), contains(), reversed(), index() and count().**
-* **Unlike `'abc.Iterable'` and `'abc.Collection'`, it is not a duck type. That is why `'issubclass(MySequence, abc.Sequence)'` would return False even if MySequence had all the methods defined. It however recognizes list, tuple, range, str, bytes, bytearray, array, memoryview and deque, because they are registered as its virtual subclasses.**
+* **Unlike `'abc.Iterable'` and `'abc.Collection'`, it is not a duck type. That is why `'issubclass(MySequence, abc.Sequence)'` would return False even if MySequence had all the methods defined. It however recognizes list, tuple, range, str, bytes, bytearray, array, memoryview and deque, since they are registered as Sequence's virtual subclasses.**
 ```python
 from collections import abc
 
@@ -1318,7 +1319,7 @@ class MyAbcSequence(abc.Sequence):
 | count()    |            |            |            |     Yes      |
 +------------+------------+------------+------------+--------------+
 ```
-* **Method iter() is required for `'isinstance(<obj>, abc.Iterable)'` to return True, however any object with getitem() will work just fine with any code expecting an iterable.**
+* **Method iter() is required for `'isinstance(<obj>, abc.Iterable)'` to return True, however any object with getitem() will work with any code expecting an iterable.**
 * **Abstract base classes that generate missing methods when extended are: Sequence, MutableSequence, Set, MutableSet, Mapping and MutableMapping.**
 * **Names of their required methods are stored in `'<abc>.__abstractmethods__'`.**
 
@@ -1398,7 +1399,8 @@ finally:
 ```
 * **Code inside the `'else'` block will only be executed if `'try'` block had no exceptions.**
 * **Code inside the `'finally'` block will always be executed (unless a signal is received).**
-* **All variables that are initialized in executed blocks are also visible in all subsequent blocks, as well as outside the try/except clause (only function block delimits scope).**
+* **All variables that are initialized in executed blocks are also visible in all subsequent blocks
+, as well as outside the try statement (only function block delimits scope).**
 * **To catch signals use `'signal.signal(signal_number, <func>)'`.**
 
 ### Catching Exceptions
@@ -1411,7 +1413,7 @@ except (<exception>, [...]) as <name>: ...
 * **Also catches subclasses of the exception.**
 * **Use `'traceback.print_exc()'` to print the full error message to stderr.**
 * **Use `'print(<name>)'` to print just the cause of the exception (its arguments).**
-* **Use `'logging.exception(<message>)'` to log the passed message, followed by the full error message of the caught exception.**
+* **Use `'logging.exception(<message>)'` to log the passed message, followed by the full error message of the caught exception. For details see [logging](#logging).**
 * **Use `'sys.exc_info()'` to get exception type, object and traceback of caught exception.**
 
 ### Raising Exceptions
@@ -1452,7 +1454,7 @@ BaseException
       +-- LookupError             # Base class for errors when a collection can't find an item.
       |    +-- IndexError         # Raised when a sequence index is out of range.
       |    +-- KeyError           # Raised when a dictionary key or set element is missing.
-      +-- MemoryError             # Out of memory. Could be too late to start deleting vars.
+      +-- MemoryError             # Out of memory. May be too late to start deleting objects.
       +-- NameError               # Raised when nonexistent name (variable/func/class) is used.
       |    +-- UnboundLocalError  # Raised when local name is used before it's being defined.
       +-- OSError                 # Errors such as FileExistsError/TimeoutError (see #Open).
@@ -1515,7 +1517,7 @@ print(<el_1>, ..., sep=' ', end='\n', file=sys.stdout, flush=False)
 from pprint import pprint
 pprint(<collection>, width=80, depth=None, compact=False, sort_dicts=True)
 ```
-* **Each item is printed on its own line if collection takes up more than 'width' characters.**
+* **Each item is printed on its own line if collection exceeds 'width' characters.**
 * **Nested collections that are 'depth' levels deep get printed as '...'.**
 
 
@@ -1525,7 +1527,7 @@ Input
 <str> = input(prompt=None)
 ```
 * **Reads a line from the user input or pipe if present (trailing newline gets stripped).**
-* **Prompt string is printed to the standard output before reading input.**
+* **Prompt string is printed to the standard output before input is read.**
 * **Raises EOFError when user hits EOF (ctrl-d/ctrl-z⏎) or input stream gets exhausted.**
 
 
@@ -1545,7 +1547,7 @@ p.add_argument('-<short_name>', '--<name>', action='store_true')  # Flag (defaul
 p.add_argument('-<short_name>', '--<name>', type=<type>)          # Option (defaults to None).
 p.add_argument('<name>', type=<type>, nargs=1)                    # Mandatory first argument.
 p.add_argument('<name>', type=<type>, nargs='+')                  # Mandatory remaining args.
-p.add_argument('<name>', type=<type>, nargs='*')                  # Optional arguments.
+p.add_argument('<name>', type=<type>, nargs='?/*')                # Optional argument/s.
 <args> = p.parse_args()                                           # Exits on parsing error.
 <obj>  = <args>.<name>                                            # Returns `<type>(<arg>)`.
 ```
@@ -1601,7 +1603,7 @@ Open
 <file>.write(<str/bytes>)           # Writes a string or bytes object.
 <file>.writelines(<collection>)     # Writes a coll. of strings or bytes objects.
 <file>.flush()                      # Flushes write buffer. Runs every 4096/8192 B.
-<file>.close()                      # Closes the file after flushing.
+<file>.close()                      # Closes the file after flushing write buffer.
 ```
 * **Methods do not add or strip trailing newlines, not even writelines().**
 
@@ -1835,12 +1837,12 @@ import csv
 ### Parameters
 * **`'dialect'` - Master parameter that sets the default values. String or a 'csv.Dialect' object.**
 * **`'delimiter'` - A one-character string used to separate fields.**
-* **`'quotechar'` - Character for quoting fields that contain special characters.**
-* **`'doublequote'` - Whether quotechars inside fields are/get doubled or escaped.**
-* **`'skipinitialspace'` - Is space character at the start of the field stripped by the reader.**
 * **`'lineterminator'` - How writer terminates rows. Reader is hardcoded to '\n', '\r', '\r\n'.**
+* **`'quotechar'` - Character for quoting fields that contain special characters.**
+* **`'escapechar'` - Character for escaping quotechars.**
+* **`'doublequote'` - Whether quotechars inside fields are/get doubled or escaped.**
 * **`'quoting'` - 0: As necessary, 1: All, 2: All but numbers which are read as floats, 3: None.**
-* **`'escapechar'` - Character for escaping quotechars if 'doublequote' is False.**
+* **`'skipinitialspace'` - Is space character at the start of the field stripped by the reader.**
 
 ### Dialects
 ```text
@@ -1848,12 +1850,12 @@ import csv
 |                  |     excel    |   excel-tab  |     unix     |
 +------------------+--------------+--------------+--------------+
 | delimiter        |       ','    |      '\t'    |       ','    |
-| quotechar        |       '"'    |       '"'    |       '"'    |
-| doublequote      |      True    |      True    |      True    |
-| skipinitialspace |     False    |     False    |     False    |
 | lineterminator   |    '\r\n'    |    '\r\n'    |      '\n'    |
-| quoting          |         0    |         0    |         1    |
+| quotechar        |       '"'    |       '"'    |       '"'    |
 | escapechar       |      None    |      None    |      None    |
+| doublequote      |      True    |      True    |      True    |
+| quoting          |         0    |         0    |         1    |
+| skipinitialspace |     False    |     False    |     False    |
 +------------------+--------------+--------------+--------------+
 ```
 
@@ -1995,7 +1997,7 @@ Struct
 ```python
 from struct import pack, unpack
 <bytes> = pack('<format>', <el_1> [, ...])  # Packages arguments or raises struct.error.
-<tuple> = unpack('<format>', <bytes>)       # Use iter_unpack() for iterator of tuples.
+<tuple> = unpack('<format>', <bytes>)       # Use iter_unpack() to get iterator of tuples.
 ```
 
 ```python
@@ -2055,7 +2057,7 @@ Memory View
 <real>  = <mview>[<index>]                     # Returns an int or a float.
 <mview> = <mview>[<slice>]                     # Mview with rearranged elements.
 <mview> = <mview>.cast('<typecode>')           # Casts memoryview to the new format.
-<mview>.release()                              # Releases the object's memory buffer.
+<mview>.release()                              # Releases memory buffer of target object.
 ```
 
 ```python
@@ -2160,7 +2162,7 @@ Operator
 ```python
 import operator as op
 <bool> = op.not_(<obj>)                                         # or, and, not (or/and missing)
-<bool> = op.eq/ne/lt/le/gt/ge/contains/is_(<obj>, <obj>)        # ==, !=, <, <=, >, >=, in, is
+<bool> = op.eq/ne/lt/le/gt/ge/is_/contains(<obj>, <obj>)        # ==, !=, <, <=, >, >=, is, in
 <obj>  = op.or_/xor/and_(<int/set>, <int/set>)                  # |, ^, &
 <int>  = op.lshift/rshift(<int>, <int>)                         # <<, >>
 <obj>  = op.add/sub/mul/truediv/floordiv/mod(<obj>, <obj>)      # +, -, *, /, //, %
@@ -2255,7 +2257,7 @@ logging.basicConfig(
 <Handler>.setLevel(<int/str>)                        # Processes all messages by default.
 <Logger>.addHandler(<Handler>)                       # Adds Handler to the Logger.
 <Logger>.setLevel(<int/str>)                         # What is sent to its/ancestors' handlers.
-<Logger>.propagate = <bool>                          # Cuts off ancestors' handlers if false.
+<Logger>.propagate = <bool>                          # Cuts off ancestors' handlers if False.
 ```
 * **Parent logger can be specified by naming the child logger `'<parent>.<name>'`.**
 * **If logger doesn't have a set level it inherits it from the first ancestor that does.**
@@ -2291,16 +2293,16 @@ Introspection
 <dict> = vars(<object>)                    # Dict of writable attributes. Also <obj>.__dict__.
 <bool> = hasattr(<object>, '<attr_name>')  # Checks if getattr() raises an AttributeError.
 value  = getattr(<object>, '<attr_name>')  # Default value can be passed as the third argument.
-setattr(<object>, '<attr_name>', value)    # Only works on objects with '__dict__' attribute.
+setattr(<object>, '<attr_name>', value)    # Only works on objects with __dict__ attribute.
 delattr(<object>, '<attr_name>')           # Same. Also `del <object>.<attr_name>`.
 ```
 
 ```python
-<Sig>  = inspect.signature(<function>)     # Function's Signature object.
-<dict> = <Sig>.parameters                  # Dict of Parameter objects.
-<memb> = <Param>.kind                      # Member of ParameterKind enum.
-<obj>  = <Param>.default                   # Default value or Parameter.empty.
-<type> = <Param>.annotation                # Type or Parameter.empty.
+<Sig>  = inspect.signature(<function>)     # Returns function's Signature object.
+<dict> = <Sig>.parameters                  # Dict of Parameter objects. Also <Sig>.return_type.
+<memb> = <Param>.kind                      # Member of ParameterKind enum (KEYWORD_ONLY, ...).
+<obj>  = <Param>.default                   # Returns param's default value or Parameter.empty.
+<type> = <Param>.annotation                # Returns param's type hint or Parameter.empty.
 ```
 
 
@@ -2315,9 +2317,9 @@ import asyncio as aio
 ```
 
 ```python
-<coro> = <async_func>(<args>)             # Creates a coroutine.
+<coro> = <async_function>(<args>)         # Creates a coroutine by calling async def function.
 <obj>  = await <coroutine>                # Starts the coroutine and returns result.
-<task> = aio.create_task(<coroutine>)     # Schedules coroutine for execution.
+<task> = aio.create_task(<coroutine>)     # Schedules the coroutine for execution.
 <obj>  = await <task>                     # Returns result. Also <task>.cancel().
 ```
 
@@ -2539,8 +2541,8 @@ import flask
 ```
 
 ```python
-app = flask.Flask(__name__)
-app.run(host=None, port=None, debug=None)
+app = flask.Flask(__name__)                # Put above function definitions.
+app.run(host=None, port=None, debug=None)  # Run after function definitions.
 ```
 * **Starts the app at `'http://localhost:5000'`. Use `'host="0.0.0.0"'` to run externally.**
 * **Install a WSGI server like [Waitress](https://flask.palletsprojects.com/en/latest/deploying/waitress/) and a HTTP server such as [Nginx](https://flask.palletsprojects.com/en/latest/deploying/nginx/) for better security.**
@@ -2562,7 +2564,7 @@ def serve_html(sport):
 * **Use `'render_template(filename, <kwargs>)'` to render file located in templates dir.**
 * **To return an error code use `'abort(<int>)'` and to redirect use `'redirect(<url>)'`.**
 * **`'request.args[<str>]'` returns parameter from the query string (URL part after '?').**
-* **Use `'session[key] = value'` to store session data like username, etc.**
+* **`'session[<str>] = <obj>'` stores session data. Needs `'app.secret_key = <str>'`.**
 
 ### REST Request
 ```python
@@ -2622,7 +2624,7 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
 ### Call and Flame Graphs
 ```bash
 $ apt/brew install graphviz && pip3 install gprof2dot snakeviz  # Or download installer.
-$ tail --lines=4 test.py > test.py                              # Removes first line.
+$ tail --lines=+2 test.py > test.py                             # Removes first line.
 $ python3 -m cProfile -o test.prof test.py                      # Runs built-in profiler.
 $ gprof2dot --format=pstats test.prof | dot -T png -o test.png  # Generates call graph.
 $ xdg-open/open test.png                                        # Displays call graph.
@@ -2631,14 +2633,14 @@ $ snakeviz test.prof                                            # Displays flame
 
 ### Sampling and Memory Profilers
 ```text
-+--------------+----------+------------+-------------------------------+------+
-| pip3 install |   Type   |   Target   |          How to run           | Live |
-+--------------+----------+------------+-------------------------------+------+
-| pyinstrument | Sampling |    CPU     | pyinstrument test.py          | No   |
-| py-spy       | Sampling |    CPU     | py-spy top -- python3 test.py | Yes  |
-| scalene      | Sampling | CPU+Memory | scalene test.py               | No   |
-| memray       | Tracing  |   Memory   | memray run --live test.py     | Yes  |
-+--------------+----------+------------+-------------------------------+------+
++--------------+------------+-------------------------------+-------+------+
+| pip3 install |   Target   |          How to run           | Lines | Live |
++--------------+------------+-------------------------------+-------+------+
+| pyinstrument |    CPU     | pyinstrument test.py          |  No   | No   |
+| py-spy       |    CPU     | py-spy top -- python3 test.py |  No   | Yes  |
+| scalene      | CPU+Memory | scalene test.py               |  Yes  | No   |
+| memray       |   Memory   | memray run --live test.py     |  Yes  | Yes  |
++--------------+------------+-------------------------------+-------+------+
 ```
 
 
@@ -2666,7 +2668,7 @@ import numpy as np
 
 ```python
 <array> = np.copy/abs/sqrt/log/int64(<array>)           # Returns new array of the same shape.
-<array> = <array>.sum/max/mean/argmax/all(axis)         # Passed dimension gets aggregated.
+<array> = <array>.sum/max/mean/argmax/all(axis)         # Aggregates specified dimension.
 <array> = np.apply_along_axis(<func>, axis, <array>)    # Func can return a scalar or array.
 ```
 
@@ -2680,25 +2682,25 @@ import numpy as np
 
 ### Indexing
 ```perl
-<el>       = <2d_array>[row_index, column_index]        # <3d_a>[table_i, row_i, column_i]
-<1d_view>  = <2d_array>[row_index]                      # <3d_a>[table_i, row_i]
-<1d_view>  = <2d_array>[:, column_index]                # <3d_a>[table_i, :, column_i]
-<2d_view>  = <2d_array>[rows_slice, columns_slice]      # <3d_a>[table_i, rows_s, columns_s]
+<el>       = <2d>[row_index, col_index]                 # Or: <3d>[<int>, <int>, <int>]
+<1d_view>  = <2d>[row_index]                            # Or: <3d>[<int>, <int>, <slice>]
+<1d_view>  = <2d>[:, col_index]                         # Or: <3d>[<int>, <slice>, <int>]
+<2d_view>  = <2d>[from:to_row_i, from:to_col_i]         # Or: <3d>[<int>, <slice>, <slice>]
 ```
 
 ```perl
-<2d_array> = <2d_array>[row_indexes]                    # <3d_a>[table_i/is, row_is]
-<2d_array> = <2d_array>[:, column_indexes]              # <3d_a>[table_i/is, :, column_is]
-<1d_array> = <2d_array>[row_indexes, column_indexes]    # <3d_a>[table_i/is, row_is, column_is]
-<1d_array> = <2d_array>[row_indexes, column_index]      # <3d_a>[table_i/is, row_is, column_i]
+<1d_array> = <2d>[row_indices, col_indices]             # Or: <3d>[<int/1d>, <1d>, <1d>]
+<2d_array> = <2d>[row_indices]                          # Or: <3d>[<int/1d>, <1d>, <slice>]
+<2d_array> = <2d>[:, col_indices]                       # Or: <3d>[<int/1d>, <slice>, <1d>]
+<2d_array> = <2d>[np.ix_(row_indices, col_indices)]     # Or: <3d>[<int/1d/2d>, <2d>, <2d>]
 ```
 
 ```perl
-<2d_bools> = <2d_array> > <el/1d/2d_array>              # 1d_array must have size of a row.
-<1d/2d_a>  = <2d_array>[<2d/1d_bools>]                  # 1d_bools must have size of a column.
+<2d_bools> = <2d> > <el/1d/2d>                          # 1d object must have size of a row.
+<1/2d_arr> = <2d>[<2d/1d_bools>]                        # 1d_bools must have size of a column.
 ```
-* **Indexes should not be tuples because Python converts `'obj[i, j]'`  to `'obj[(i, j)]'`!**
-* **`':'` returns a slice of all dimension's indexes. Omitted dimensions default to `':'`.**
+* **`':'` returns a slice of all dimension's indices. Omitted dimensions default to `':'`.**
+* **Indices should not be tuples because Python converts `'obj[i, j]'`  to `'obj[(i, j)]'`!**
 * **Any value that is broadcastable to the indexed shape can be assigned to the selection.**
 
 ### Broadcasting
@@ -3156,14 +3158,14 @@ Name: a, dtype: int64
 ```
 
 ```python
-<el> = <Sr>.loc[key]                           # Or: <Sr>.iloc[index]
-<Sr> = <Sr>.loc[keys]                          # Or: <Sr>.iloc[indexes]
-<Sr> = <Sr>.loc[from_key : to_key_inclusive]   # Or: <Sr>.iloc[from_i : to_i_exclusive]
+<el> = <Sr>.loc[key]                           # Or: <Sr>.iloc[i]
+<Sr> = <Sr>.loc[keys]                          # Or: <Sr>.iloc[coll_of_i]
+<Sr> = <Sr>.loc[from_key:to_key_inc]           # Or: <Sr>.iloc[from_i:to_i_exc]
 ```
 
 ```python
-<el> = <Sr>[key/index]                         # Or: <Sr>.key
-<Sr> = <Sr>[keys/indexes]                      # Or: <Sr>[<keys_slice/slice>]
+<el> = <Sr>[key/i]                             # Or: <Sr>.<key>
+<Sr> = <Sr>[keys/coll_of_i]                    # Or: <Sr>[key/i : key/i]
 <Sr> = <Sr>[bools]                             # Or: <Sr>.loc/iloc[bools]
 ```
 
@@ -3186,7 +3188,7 @@ plt.show()                                     # Displays the plot. Also plt.sav
 #### Series — Aggregate, Transform, Map:
 ```python
 <el> = <Sr>.sum/max/mean/idxmax/all()          # Or: <Sr>.agg(lambda <Sr>: <el>)
-<Sr> = <Sr>.rank/diff/cumsum/ffill/interplt()  # Or: <Sr>.agg/transform(lambda <Sr>: <Sr>)
+<Sr> = <Sr>.rank/diff/cumsum/ffill/interpo…()  # Or: <Sr>.agg/transform(lambda <Sr>: <Sr>)
 <Sr> = <Sr>.fillna(<el>)                       # Or: <Sr>.agg/transform/map(lambda <el>: <el>)
 ```
 
@@ -3214,7 +3216,7 @@ y    3
 |               |     y  2    |   y     2   |       y  2    |
 +---------------+-------------+-------------+---------------+
 ```
-* **Keys/indexes/bools can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`!**
+* **Keys/indices/bools can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`!**
 * **Methods ffill(), interpolate(), fillna() and dropna() accept `'inplace=True'`.**
 * **Last result has a hierarchical index. Use `'<Sr>[key_1, key_2]'` to get its values.**
 
@@ -3234,14 +3236,14 @@ b  3  4
 ```
 
 ```python
-<el>    = <DF>.loc[row_key, column_key]        # Or: <DF>.iloc[row_index, column_index]
-<Sr/DF> = <DF>.loc[row_key/s]                  # Or: <DF>.iloc[row_index/es]
-<Sr/DF> = <DF>.loc[:, column_key/s]            # Or: <DF>.iloc[:, column_index/es]
-<DF>    = <DF>.loc[row_bools, column_bools]    # Or: <DF>.iloc[row_bools, column_bools]
+<el>    = <DF>.loc[row_key, col_key]           # Or: <DF>.iloc[row_i, col_i]
+<Sr/DF> = <DF>.loc[row_key/s]                  # Or: <DF>.iloc[row_i/s]
+<Sr/DF> = <DF>.loc[:, col_key/s]               # Or: <DF>.iloc[:, col_i/s]
+<DF>    = <DF>.loc[row_bools, col_bools]       # Or: <DF>.iloc[row_bools, col_bools]
 ```
 
 ```python
-<Sr/DF> = <DF>[column_key/s]                   # Or: <DF>.column_key
+<Sr/DF> = <DF>[col_key/s]                      # Or: <DF>.<col_key>
 <DF>    = <DF>[row_bools]                      # Keeps rows as specified by bools.
 <DF>    = <DF>[<DF_of_bools>]                  # Assigns NaN to items that are False in bools.
 ```
@@ -3252,10 +3254,10 @@ b  3  4
 ```
 
 ```python
-<DF>    = <DF>.set_index(column_key)           # Replaces row keys with values from the column.
+<DF>    = <DF>.set_index(col_key)              # Replaces row keys with column's values.
 <DF>    = <DF>.reset_index(drop=False)         # Drops or moves row keys to column named index.
 <DF>    = <DF>.sort_index(ascending=True)      # Sorts rows by row keys. Use `axis=1` for cols.
-<DF>    = <DF>.sort_values(column_key/s)       # Sorts rows by passed column/s. Also `axis=1`.
+<DF>    = <DF>.sort_values(col_key/s)          # Sorts rows by passed column/s. Also `axis=1`.
 ```
 
 #### DataFrame — Merge, Join, Concat:
@@ -3305,7 +3307,7 @@ c  6  7
 #### DataFrame — Aggregate, Transform, Map:
 ```python
 <Sr> = <DF>.sum/max/mean/idxmax/all()          # Or: <DF>.apply/agg(lambda <Sr>: <el>)
-<DF> = <DF>.rank/diff/cumsum/ffill/interplt()  # Or: <DF>.apply/agg/transfrm(lambda <Sr>: <Sr>)
+<DF> = <DF>.rank/diff/cumsum/ffill/interpo…()  # Or: <DF>.apply/agg/transfo…(lambda <Sr>: <Sr>)
 <DF> = <DF>.fillna(<el>)                       # Or: <DF>.applymap(lambda <el>: <el>)
 ```
 * **All operations operate on columns by default. Pass `'axis=1'` to process the rows instead.**
@@ -3340,7 +3342,7 @@ b  3  4
 
 #### DataFrame — Plot, Encode, Decode:
 ```python
-<DF>.plot.line/area/bar/hist/scatter/box()     # Also: `x=column_key, y=column_key/s`.
+<DF>.plot.line/area/bar/scatter(x=col_key, …)  # `y=col_key/s`. Also hist/box(by=col_key).
 plt.show()                                     # Displays the plot. Also plt.savefig(<path>).
 ```
 
@@ -3435,10 +3437,10 @@ import pandas as pd, plotly.express as ex
 <div id="2a950764-39fc-416d-97fe-0a6226a3095f" class="plotly-graph-div" style="height:312px; width:914px;"></div>
 
 ```python
-covid = pd.read_csv('https://covid.ourworldindata.org/data/owid-covid-data.csv',
+covid = pd.read_csv('https://raw.githubusercontent.com/owid/covid-19-data/8dde8ca49b'
+                    '6e648c17dd420b2726ca0779402651/public/data/owid-covid-data.csv',
                     usecols=['iso_code', 'date', 'total_deaths', 'population'])
-continents = pd.read_csv('https://gist.githubusercontent.com/stevewithington/20a69c0b6d2ff'
-                         '846ea5d35e5fc47f26c/raw/country-and-continent-codes-list-csv.csv',
+continents = pd.read_csv('https://gto76.github.io/python-cheatsheet/web/continents.csv',
                          usecols=['Three_Letter_Country_Code', 'Continent_Name'])
 df = pd.merge(covid, continents, left_on='iso_code', right_on='Three_Letter_Country_Code')
 df = df.groupby(['Continent_Name', 'date']).sum().reset_index()

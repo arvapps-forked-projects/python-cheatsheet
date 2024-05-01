@@ -32,7 +32,7 @@ const hljs = require('highlightjs');
 const TOC =
   '<br>' +
   '<h2 id="toc">Contents</h2>\n' +
-  '<pre><code class="hljs bash" style="line-height: 1.3em;"><strong>ToC</strong> = {\n' +
+  '<pre><code class="hljs bash" style="line-height: 1.327em;"><strong>ToC</strong> = {\n' +
   '    <strong><span class="hljs-string">\'1. Collections\'</span></strong>: [<a href="#list">List</a>, <a href="#dictionary">Dictionary</a>, <a href="#set">Set</a>, <a href="#tuple">Tuple</a>, <a href="#range">Range</a>, <a href="#enumerate">Enumerate</a>, <a href="#iterator">Iterator</a>, <a href="#generator">Generator</a>],\n' +
   '    <strong><span class="hljs-string">\'2. Types\'</span></strong>:       [<a href="#type">Type</a>, <a href="#string">String</a>, <a href="#regex">Regular_Exp</a>, <a href="#format">Format</a>, <a href="#numbers">Numbers</a>, <a href="#combinatorics">Combinatorics</a>, <a href="#datetime">Datetime</a>],\n' +
   '    <strong><span class="hljs-string">\'3. Syntax\'</span></strong>:      [<a href="#arguments">Args</a>, <a href="#inline">Inline</a>, <a href="#imports">Import</a>, <a href="#decorator">Decorator</a>, <a href="#class">Class</a>, <a href="#ducktypes">Duck_Types</a>, <a href="#enum">Enum</a>, <a href="#exceptions">Exception</a>],\n' +
@@ -124,14 +124,14 @@ const MATCH_EXAMPLE =
 const COROUTINES =
   '<span class="hljs-keyword">import</span> asyncio, collections, curses, curses.textpad, enum, random, time\n' +
   '\n' +
-  'P = collections.namedtuple(<span class="hljs-string">\'P\'</span>, <span class="hljs-string">\'x y\'</span>)         <span class="hljs-comment"># Position</span>\n' +
-  'D = enum.Enum(<span class="hljs-string">\'D\'</span>, <span class="hljs-string">\'n e s w\'</span>)                  <span class="hljs-comment"># Direction</span>\n' +
-  'W, H = <span class="hljs-number">15</span>, <span class="hljs-number">7</span>                                   <span class="hljs-comment"># Width, Height</span>\n' +
+  'P = collections.namedtuple(<span class="hljs-string">\'P\'</span>, <span class="hljs-string">\'x y\'</span>)    <span class="hljs-comment"># Position</span>\n' +
+  'D = enum.Enum(<span class="hljs-string">\'D\'</span>, <span class="hljs-string">\'n e s w\'</span>)             <span class="hljs-comment"># Direction</span>\n' +
+  'W, H = <span class="hljs-number">15</span>, <span class="hljs-number">7</span>                              <span class="hljs-comment"># Width, Height</span>\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">(screen)</span>:</span>\n' +
-  '    curses.curs_set(<span class="hljs-number">0</span>)                         <span class="hljs-comment"># Makes cursor invisible.</span>\n' +
-  '    screen.nodelay(<span class="hljs-keyword">True</span>)                       <span class="hljs-comment"># Makes getch() non-blocking.</span>\n' +
-  '    asyncio.run(main_coroutine(screen))        <span class="hljs-comment"># Starts running asyncio code.</span>\n' +
+  '    curses.curs_set(<span class="hljs-number">0</span>)                    <span class="hljs-comment"># Makes cursor invisible.</span>\n' +
+  '    screen.nodelay(<span class="hljs-keyword">True</span>)                  <span class="hljs-comment"># Makes getch() non-blocking.</span>\n' +
+  '    asyncio.run(main_coroutine(screen))   <span class="hljs-comment"># Starts running asyncio code.</span>\n' +
   '\n' +
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main_coroutine</span><span class="hljs-params">(screen)</span>:</span>\n' +
   '    moves = asyncio.Queue()\n' +
@@ -150,18 +150,15 @@ const COROUTINES =
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">human_controller</span><span class="hljs-params">(screen, moves)</span>:</span>\n' +
   '    <span class="hljs-keyword">while</span> <span class="hljs-keyword">True</span>:\n' +
   '        key_mappings = {<span class="hljs-number">258</span>: D.s, <span class="hljs-number">259</span>: D.n, <span class="hljs-number">260</span>: D.w, <span class="hljs-number">261</span>: D.e}\n' +
-  '        ch = screen.getch()\n' +
-  '        <span class="hljs-keyword">if</span> d := key_mappings.get(ch):\n' +
+  '        <span class="hljs-keyword">if</span> d := key_mappings.get(screen.getch()):\n' +
   '            moves.put_nowait((<span class="hljs-string">\'*\'</span>, d))\n' +
   '        <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">0.005</span>)\n' +
   '\n' +
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">model</span><span class="hljs-params">(moves, state)</span>:</span>\n' +
   '    <span class="hljs-keyword">while</span> state[<span class="hljs-string">\'*\'</span>] <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> (state[id_] <span class="hljs-keyword">for</span> id_ <span class="hljs-keyword">in</span> range(<span class="hljs-number">10</span>)):\n' +
   '        id_, d = <span class="hljs-keyword">await</span> moves.get()\n' +
-  '        x, y   = state[id_]\n' +
   '        deltas = {D.n: P(<span class="hljs-number">0</span>, <span class="hljs-number">-1</span>), D.e: P(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>), D.s: P(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>), D.w: P(<span class="hljs-number">-1</span>, <span class="hljs-number">0</span>)}\n' +
-  '        dx, dy = deltas[d]\n' +
-  '        state[id_] = P((x + dx) % W, (y + dy) % H)\n' +
+  '        state[id_] = P((state[id_].x + deltas[d].x) % W, (state[id_].y + deltas[d].y) % H)\n' +
   '\n' +
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">view</span><span class="hljs-params">(state, screen)</span>:</span>\n' +
   '    offset = P(curses.COLS//<span class="hljs-number">2</span> - W//<span class="hljs-number">2</span>, curses.LINES//<span class="hljs-number">2</span> - H//<span class="hljs-number">2</span>)\n' +
@@ -169,18 +166,13 @@ const COROUTINES =
   '        screen.erase()\n' +
   '        curses.textpad.rectangle(screen, offset.y-<span class="hljs-number">1</span>, offset.x-<span class="hljs-number">1</span>, offset.y+H, offset.x+W)\n' +
   '        <span class="hljs-keyword">for</span> id_, p <span class="hljs-keyword">in</span> state.items():\n' +
-  '            screen.addstr(\n' +
-  '                offset.y + (p.y - state[<span class="hljs-string">\'*\'</span>].y + H//<span class="hljs-number">2</span>) % H,\n' +
-  '                offset.x + (p.x - state[<span class="hljs-string">\'*\'</span>].x + W//<span class="hljs-number">2</span>) % W,\n' +
-  '                str(id_)\n' +
-  '            )\n' +
+  '            screen.addstr(offset.y + (p.y - state[<span class="hljs-string">\'*\'</span>].y + H//<span class="hljs-number">2</span>) % H,\n' +
+  '                          offset.x + (p.x - state[<span class="hljs-string">\'*\'</span>].x + W//<span class="hljs-number">2</span>) % W, str(id_))\n' +
   '        screen.refresh()\n' +
   '        <span class="hljs-keyword">await</span> asyncio.sleep(<span class="hljs-number">0.005</span>)\n' +
   '\n' +
   '<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">\'__main__\'</span>:\n' +
-  '    start_time = time.perf_counter()\n' +
-  '    curses.wrapper(main)\n' +
-  '    print(<span class="hljs-string">f\'You survived <span class="hljs-subst">{time.perf_counter() - start_time:<span class="hljs-number">.2</span>f}</span> seconds.\'</span>)\n';
+  '    curses.wrapper(main)\n';
 
 const CURSES =
   '<span class="hljs-comment"># $ pip3 install windows-curses</span>\n' +
@@ -308,13 +300,27 @@ const MARIO =
   '<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">\'__main__\'</span>:\n' +
   '    main()\n';
 
-const PLOTLY =
+const GROUPBY =
   '<span class="hljs-meta">&gt;&gt;&gt; </span>gb = df.groupby(<span class="hljs-string">\'z\'</span>); gb.apply(print)\n' +
   '   x  y  z\n' +
   'a  <span class="hljs-number">1</span>  <span class="hljs-number">2</span>  <span class="hljs-number">3</span>\n' +
   '   x  y  z\n' +
   'b  <span class="hljs-number">4</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span>\n' +
   'c  <span class="hljs-number">7</span>  <span class="hljs-number">8</span>  <span class="hljs-number">6</span>';
+
+const CYTHON_1 =
+  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt; &lt;var_name&gt; = &lt;el&gt;\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt;[n_elements] &lt;var_name&gt; = [&lt;el&gt;, &lt;el&gt;, ...]\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype/void&gt; &lt;func_name&gt;(&lt;ctype&gt; &lt;arg_name&gt;): ...\n';
+
+const CYTHON_2 =
+  '<span class="hljs-keyword">cdef</span> <span class="hljs-class"><span class="hljs-keyword">class</span> &lt;<span class="hljs-title">class_name</span>&gt;:</span>\n' +
+  '    <span class="hljs-keyword">cdef</span> <span class="hljs-keyword">public</span> &lt;ctype&gt; &lt;attr_name&gt;\n' +
+  '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, &lt;ctype&gt; &lt;arg_name&gt;)</span>:</span>\n' +
+  '        self.&lt;attr_name&gt; = &lt;arg_name&gt;\n';
+
+const CYTHON_3 =
+  '<span class="hljs-keyword">cdef</span> <span class="hljs-keyword">enum</span> &lt;enum_name&gt;: &lt;member_name&gt;, &lt;member_name&gt;, ...\n';
 
 const INDEX =
   '<li><strong>Only available in the <a href="https://transactions.sendowl.com/products/78175486/4422834F/view">PDF</a>.</strong></li>\n' +
@@ -435,7 +441,7 @@ const DIAGRAM_7_B =
   "      ├── LookupError             <span class='hljs-comment'># Base class for errors when a collection can't find an item.</span>\n" +
   "      │    ├── IndexError         <span class='hljs-comment'># Raised when a sequence index is out of range.</span>\n" +
   "      │    └── KeyError           <span class='hljs-comment'># Raised when a dictionary key or set element is missing.</span>\n" +
-  "      ├── MemoryError             <span class='hljs-comment'># Out of memory. Could be too late to start deleting vars.</span>\n" +
+  "      ├── MemoryError             <span class='hljs-comment'># Out of memory. May be too late to start deleting objects.</span>\n" +
   "      ├── NameError               <span class='hljs-comment'># Raised when nonexistent name (variable/func/class) is used.</span>\n" +
   "      │    └── UnboundLocalError  <span class='hljs-comment'># Raised when local name is used before it's being defined.</span>\n" +
   "      ├── OSError                 <span class='hljs-comment'># Errors such as FileExistsError/TimeoutError (see #Open).</span>\n" +
@@ -472,12 +478,12 @@ const DIAGRAM_9_B =
   "┃                  │     excel    │   excel-tab  │     unix     ┃\n" +
   "┠──────────────────┼──────────────┼──────────────┼──────────────┨\n" +
   "┃ delimiter        │       ','    │      '\\t'    │       ','    ┃\n" +
-  "┃ quotechar        │       '\"'    │       '\"'    │       '\"'    ┃\n" +
-  "┃ doublequote      │      True    │      True    │      True    ┃\n" +
-  "┃ skipinitialspace │     False    │     False    │     False    ┃\n" +
   "┃ lineterminator   │    '\\r\\n'    │    '\\r\\n'    │      '\\n'    ┃\n" +
-  "┃ quoting          │         0    │         0    │         1    ┃\n" +
+  "┃ quotechar        │       '\"'    │       '\"'    │       '\"'    ┃\n" +
   "┃ escapechar       │      None    │      None    │      None    ┃\n" +
+  "┃ doublequote      │      True    │      True    │      True    ┃\n" +
+  "┃ quoting          │         0    │         0    │         1    ┃\n" +
+  "┃ skipinitialspace │     False    │     False    │     False    ┃\n" +
   "┗━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_95_A =
@@ -530,19 +536,19 @@ const DIAGRAM_11_B =
   '┗━━━━━━━━━━━━━┷━━━━━━━━━━━━━┛\n';
 
 const DIAGRAM_115_A =
-  '+--------------+----------+------------+-------------------------------+------+\n' +
-  '| pip3 install |   Type   |   Target   |          How to run           | Live |\n' +
-  '+--------------+----------+------------+-------------------------------+------+\n';
+  '+--------------+------------+-------------------------------+-------+------+\n' +
+  '| pip3 install |   Target   |          How to run           | Lines | Live |\n' +
+  '+--------------+------------+-------------------------------+-------+------+\n';
 
 const DIAGRAM_115_B =
-  '┏━━━━━━━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━┓\n' +
-  '┃ pip3 install │   Type   │   Target   │          How to run           │ Live ┃\n' +
-  '┠──────────────┼──────────┼────────────┼───────────────────────────────┼──────┨\n' +
-  '┃ pyinstrument │ Sampling │    CPU     │ pyinstrument test.py          │  ×   ┃\n' +
-  '┃ py-spy       │ Sampling │    CPU     │ py-spy top -- python3 test.py │  ✓   ┃\n' +
-  '┃ scalene      │ Sampling │ CPU+Memory │ scalene test.py               │  ×   ┃\n' +
-  '┃ memray       │ Tracing  │   Memory   │ memray run --live test.py     │  ✓   ┃\n' +
-  '┗━━━━━━━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━┛\n';
+  '┏━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━┯━━━━━━┓\n' +
+  '┃ pip3 install │   Target   │          How to run           │ Lines │ Live ┃\n' +
+  '┠──────────────┼────────────┼───────────────────────────────┼───────┼──────┨\n' +
+  '┃ pyinstrument │    CPU     │ pyinstrument test.py          │   ×   │  ×   ┃\n' +
+  '┃ py-spy       │    CPU     │ py-spy top -- python3 test.py │   ×   │  ✓   ┃\n' +
+  '┃ scalene      │ CPU+Memory │ scalene test.py               │   ✓   │  ×   ┃\n' +
+  '┃ memray       │   Memory   │ memray run --live test.py     │   ✓   │  ✓   ┃\n' +
+  '┗━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━┷━━━━━━┛\n';
 
 const DIAGRAM_12_A =
   '+-----------+-----------+------+-----------+\n' +
@@ -800,9 +806,9 @@ function highlightCode() {
 function changeCodeLanguages() {
   setApaches(['<D>', '<T>', '<DT>', '<TD>', '<a>', '<n>']);
   $('code').not('.python').not('.text').not('.bash').not('.apache').addClass('python');
-  $('code:contains(<el>       = <2d_array>[row_index, column_index])').removeClass().addClass('bash');
-  $('code:contains(<2d_array> = <2d_array>[row_indexes])').removeClass().addClass('bash');
-  $('code:contains(<2d_bools> = <2d_array> > <el/1d/2d_array>)').removeClass().addClass('bash');
+  $('code:contains(<el>       = <2d>[row_index, col_index])').removeClass().addClass('bash');
+  $('code:contains(<1d_array> = <2d>[row_indices, col_indices])').removeClass().addClass('bash');
+  $('code:contains(<2d_bools> = <2d> > <el/1d/2d>)').removeClass().addClass('bash');
   $('code.perl').removeClass().addClass('python');
 }
 
@@ -829,13 +835,16 @@ function fixHighlights() {
   $(`code:contains(\'<n>s\')`).html(STRUCT_FORMAT);
   $(`code:contains(match <object/expression>:)`).html(MATCH);
   $(`code:contains(>>> match Path)`).html(MATCH_EXAMPLE);
-  //$(`code:contains(import asyncio, collections, curses, curses.textpad, enum, random)`).html(COROUTINES);
+  $(`code:contains(import asyncio, collections, curses, curses.textpad, enum, random)`).html(COROUTINES);
   $(`code:contains(import curses, os)`).html(CURSES);
   $(`code:contains(pip3 install tqdm)`).html(PROGRESS_BAR);
   $(`code:contains(>>> logging.basicConfig()`).html(LOGGING_EXAMPLE);
   $(`code:contains(samples_f = (sin(i *)`).html(AUDIO);
   $(`code:contains(collections, dataclasses, enum, io, itertools)`).html(MARIO);
-  $(`code:contains(>>> gb = df.groupby)`).html(PLOTLY);
+  $(`code:contains(>>> gb = df.groupby)`).html(GROUPBY);
+  $(`code:contains(cdef <ctype> <var_name> = <el>)`).html(CYTHON_1);
+  $(`code:contains(cdef class <class_name>:)`).html(CYTHON_2);
+  $(`code:contains(cdef enum <enum_name>: <member_name>, <member_name>, ...)`).html(CYTHON_3);
   $(`ul:contains(Only available in)`).html(INDEX);
 }
 
