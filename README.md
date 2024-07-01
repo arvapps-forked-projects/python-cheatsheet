@@ -928,7 +928,7 @@ def fib(n):
     return n if n < 2 else fib(n-2) + fib(n-1)
 ```
 * **Default size of the cache is 128 values. Passing `'maxsize=None'` makes it unbounded.**
-* **CPython interpreter limits recursion depth to 1000 by default. To increase it use `'sys.setrecursionlimit(<depth>)'`.**
+* **CPython interpreter limits recursion depth to 1000 by default. To increase it use `'sys.setrecursionlimit(<int>)'`.**
 
 ### Parametrized Decorator
 **A decorator that accepts arguments and returns a normal decorator that accepts a function.**
@@ -1338,13 +1338,13 @@ from enum import Enum, auto
 class <enum_name>(Enum):
     <member_name> = auto()              # Increment of the last numeric value or 1.
     <member_name> = <value>             # Values don't have to be hashable.
-    <member_name> = <value>, <value>    # Tuple can be used for multiple values.
+    <member_name> = <value>, <value>    # Values can be collections (like this tuple).
 ```
 * **Methods receive the member they were called on as the 'self' argument.**
 * **Accessing a member named after a reserved keyword causes SyntaxError.**
 
 ```python
-<member> = <enum>.<member_name>         # Returns a member.
+<member> = <enum>.<member_name>         # Returns a member. Raises AttributeError.
 <member> = <enum>['<member_name>']      # Returns a member. Raises KeyError.
 <member> = <enum>(<value>)              # Returns a member. Raises ValueError.
 <str>    = <member>.name                # Returns member's name.
@@ -1632,7 +1632,7 @@ from pathlib import Path
 ```
 
 ```python
-<str>  = os.getcwd()                # Returns current directory. Same as `$ pwd`.
+<str>  = os.getcwd()                # Returns shell's working dir unless changed.
 <str>  = os.path.join(<path>, ...)  # Joins two or more pathname components.
 <str>  = os.path.realpath(<path>)   # Resolves symlinks and calls path.abspath().
 ```
@@ -1963,7 +1963,7 @@ Bytes
 ### Encode
 ```python
 <bytes> = bytes(<coll_of_ints>)          # Ints must be in range from 0 to 255.
-<bytes> = bytes(<str>, 'utf-8')          # Encodes string. Also <str>.encode('utf-8').
+<bytes> = bytes(<str>, 'utf-8')          # Encodes the string. Also <str>.encode().
 <bytes> = bytes.fromhex('<hex>')         # Hex pairs can be separated by whitespaces.
 <bytes> = <int>.to_bytes(n_bytes, …)     # `byteorder='big/little', signed=False`.
 ```
@@ -1971,7 +1971,7 @@ Bytes
 ### Decode
 ```python
 <list>  = list(<bytes>)                  # Returns ints in range from 0 to 255.
-<str>   = str(<bytes>, 'utf-8')          # Decodes bytes. Also <bytes>.decode('utf-8').
+<str>   = str(<bytes>, 'utf-8')          # Returns a string. Also <bytes>.decode().
 <str>   = <bytes>.hex()                  # Returns hex pairs. Accepts `sep=<str>`.
 <int>   = int.from_bytes(<bytes>, …)     # `byteorder='big/little', signed=False`.
 ```
@@ -2100,15 +2100,14 @@ Threading
 ---------
 **CPython interpreter can only run a single thread at a time. Using multiple threads won't result in a faster execution, unless at least one of the threads contains an I/O operation.**
 ```python
-from threading import Thread, RLock, Semaphore, Event, Barrier
+from threading import Thread, Lock, RLock, Semaphore, Event, Barrier
 from concurrent.futures import ThreadPoolExecutor, as_completed
 ```
 
 ### Thread
 ```python
 <Thread> = Thread(target=<function>)           # Use `args=<collection>` to set the arguments.
-<Thread>.start()                               # Starts the thread.
-<bool> = <Thread>.is_alive()                   # Checks if the thread has finished executing.
+<Thread>.start()                               # Starts the thread. Also <Thread>.is_alive().
 <Thread>.join()                                # Waits for the thread to finish.
 ```
 * **Use `'kwargs=<dict>'` to pass keyword arguments to the function.**
@@ -2116,7 +2115,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ### Lock
 ```python
-<lock> = RLock()                               # Lock that can only be released by acquirer.
+<lock> = Lock/RLock()                          # RLock can only be released by acquirer.
 <lock>.acquire()                               # Waits for the lock to be available.
 <lock>.release()                               # Makes the lock available again.
 ```
@@ -2159,7 +2158,7 @@ with <lock>:                                   # Enters the block by calling acq
 ```
 * **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called/blocking. Map() times from original call and as_completed() from first call to next(). As\_completed() fails if next() is called too late, even if thread finished on time.**
 * **Exceptions that happen inside threads are raised when next() is called on map's iterator or when result() is called on a Future. Its exception() method returns exception or None.**
-* **ProcessPoolExecutor provides true parallelism, but everything sent to/from workers must be [pickable](#pickle). Queues must be sent using executor's 'initargs' and 'initializer' parameters.**
+* **ProcessPoolExecutor provides true parallelism but: everything sent to/from workers must be [pickable](#pickle), queues must be sent using executor's 'initargs' and 'initializer' parameters, and all executors should only be reachable via `'if __name__ == "__main__": ...'`.**
 
 
 Operator
@@ -2167,20 +2166,20 @@ Operator
 **Module of functions that provide the functionality of operators. Functions are ordered by operator precedence, starting with least binding.**
 ```python
 import operator as op
-<bool> = op.not_(<obj>)                                         # or, and, not (or/and missing)
-<bool> = op.eq/ne/lt/le/gt/ge/is_/contains(<obj>, <obj>)        # ==, !=, <, <=, >, >=, is, in
-<obj>  = op.or_/xor/and_(<int/set>, <int/set>)                  # |, ^, &
-<int>  = op.lshift/rshift(<int>, <int>)                         # <<, >>
-<obj>  = op.add/sub/mul/truediv/floordiv/mod(<obj>, <obj>)      # +, -, *, /, //, %
-<num>  = op.neg/invert(<num>)                                   # -, ~
-<num>  = op.pow(<num>, <num>)                                   # **
-<func> = op.itemgetter/attrgetter/methodcaller(<obj> [, ...])   # [index/key], .name, .name()
+<bool> = op.not_(<obj>)                                        # or, and, not (or/and missing)
+<bool> = op.eq/ne/lt/le/gt/ge/is_/contains(<obj>, <obj>)       # ==, !=, <, <=, >, >=, is, in
+<obj>  = op.or_/xor/and_(<int/set>, <int/set>)                 # |, ^, &
+<int>  = op.lshift/rshift(<int>, <int>)                        # <<, >>
+<obj>  = op.add/sub/mul/truediv/floordiv/mod(<obj>, <obj>)     # +, -, *, /, //, %
+<num>  = op.neg/invert(<num>)                                  # -, ~
+<num>  = op.pow(<num>, <num>)                                  # **
+<func> = op.itemgetter/attrgetter/methodcaller(<obj> [, ...])  # [index/key], .name, .name()
 ```
 
 ```python
 elementwise_sum  = map(op.add, list_a, list_b)
-sorted_by_second = sorted(<collection>, key=op.itemgetter(1))
-sorted_by_both   = sorted(<collection>, key=op.itemgetter(1, 0))
+sorted_by_second = sorted(<coll.>, key=op.itemgetter(1))
+sorted_by_both   = sorted(<coll.>, key=op.itemgetter(1, 0))
 product_of_elems = functools.reduce(op.mul, <collection>)
 first_element    = op.methodcaller('pop', 0)(<list>)
 ```
@@ -2770,10 +2769,10 @@ from PIL import Image
 ```
 
 ```python
-<Image> = Image.new('<mode>', (width, height))  # Also `color=<int/tuple/str>`.
-<Image> = Image.open(<path>)                    # Identifies format based on file contents.
+<Image> = Image.new('<mode>', (width, height))  # Creates new image. Also `color=<int/tuple>`.
+<Image> = Image.open(<path>)                    # Identifies format based on file's contents.
 <Image> = <Image>.convert('<mode>')             # Converts image to the new mode.
-<Image>.save(<path>)                            # Selects format based on the path extension.
+<Image>.save(<path>)                            # Selects format based on extension (png/jpg…).
 <Image>.show()                                  # Opens image in the default preview app.
 ```
 
@@ -2782,7 +2781,7 @@ from PIL import Image
 <Image>.putpixel((x, y), <int/tuple>)           # Updates pixel's value.
 <ImagingCore> = <Image>.getdata()               # Returns a flattened view of pixel values.
 <Image>.putdata(<list/ImagingCore>)             # Updates pixels with a copy of the sequence.
-<Image>.paste(<Image>, (x, y))                  # Draws passed image at specified location.
+<Image>.paste(<Image>, (x, y))                  # Draws passed image at the specified location.
 ```
 
 ```python
@@ -2796,10 +2795,10 @@ from PIL import Image
 ```
 
 ### Modes
-* **`'L'` - 8-bit pixels, greyscale.**
-* **`'RGB'` - 3x8-bit pixels, true color.**
-* **`'RGBA'` - 4x8-bit pixels, true color with transparency mask.**
-* **`'HSV'` - 3x8-bit pixels, Hue, Saturation, Value color space.**
+* **`'L'` - Lightness (i.e. greyscale). Each pixel is an int between 0 and 255.**
+* **`'RGB'` - Red, green, blue (i.e. true color). Each pixel is a tuple of three ints.**
+* **`'RGBA'` - RGB with alpha. Low alpha (forth int) means more transparency.**
+* **`'HSV'` - Hue, saturation, value color space.**
 
 ### Examples
 #### Creates a PNG image of a rainbow gradient:
@@ -3000,8 +2999,8 @@ while not pg.event.get(pg.QUIT):
     for event in pg.event.get(pg.KEYDOWN):
         dx, dy = deltas.get(event.key, (0, 0))
         rect = rect.move((dx, dy))
-    screen.fill((0, 0, 0))
-    pg.draw.rect(screen, (255, 255, 255), rect)
+    screen.fill(pg.Color('black'))
+    pg.draw.rect(screen, pg.Color('white'), rect)
     pg.display.flip()
 ```
 
