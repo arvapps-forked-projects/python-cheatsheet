@@ -21,8 +21,8 @@ Contents
 Main
 ----
 ```python
-if __name__ == '__main__':      # Runs main() if file wasn't imported.
-    main()
+if __name__ == '__main__':      # Skips next line if file was imported.
+    main()                      # Runs `def main(): ...` function.
 ```
 
 
@@ -99,9 +99,9 @@ value = <dict>.pop(key)                         # Removes item or raises KeyErro
 ### Counter
 ```python
 >>> from collections import Counter
->>> colors = ['blue', 'blue', 'blue', 'red', 'red']
->>> counter = Counter(colors)
+>>> counter = Counter(['blue', 'blue', 'blue', 'red', 'red'])
 >>> counter['yellow'] += 1
+>>> print(counter)
 Counter({'blue': 3, 'red': 2, 'yellow': 1})
 >>> counter.most_common()[0]
 ('blue', 3)
@@ -153,11 +153,10 @@ Tuple
 
 ### Named Tuple
 **Tuple's subclass with named elements.**
-
 ```python
 >>> from collections import namedtuple
 >>> Point = namedtuple('Point', 'x y')
->>> p = Point(1, y=2)
+>>> p = Point(1, y=2); p
 Point(x=1, y=2)
 >>> p[0]
 1
@@ -186,7 +185,7 @@ Range
 Enumerate
 ---------
 ```python
-for i, el in enumerate(<collection> [, i_start]):
+for i, el in enumerate(<coll>, start=0):   # Returns next element and its index on each pass.
     ...
 ```
 
@@ -320,7 +319,7 @@ String
 <bool> = <sub_str> in <str>                  # Checks if string contains the substring.
 <bool> = <str>.startswith(<sub_str>)         # Pass tuple of strings for multiple options.
 <int>  = <str>.find(<sub_str>)               # Returns start index of the first match or -1.
-<int>  = <str>.index(<sub_str>)              # Same, but raises ValueError if missing.
+<int>  = <str>.index(<sub_str>)              # Same, but raises ValueError if there's no match.
 ```
 
 ```python
@@ -621,7 +620,7 @@ from dateutil.tz import tzlocal, gettz
 <DTa>    = <DT>.astimezone([<tzinfo>])      # Converts DT to the passed or local fixed zone.
 <Ta/DTa> = <T/DT>.replace(tzinfo=<tzinfo>)  # Changes object's timezone without conversion.
 ```
-* **Timezones returned by gettz(), tzlocal(), and implicit local timezone of naive objects have offsets that vary through time due to DST and historical changes of the zone's base offset.**
+* **Timezones returned by tzlocal(), gettz(), and implicit local timezone of naive objects have offsets that vary through time due to DST and historical changes of the zone's base offset.**
 * **Standard library's zoneinfo.ZoneInfo() can be used instead of gettz() on Python 3.9 and later. It requires 'tzdata' package on Windows. It doesn't return local tz if arg. is omitted.**
 
 ### Encode
@@ -740,7 +739,7 @@ def f(x, y, *, z): ...          # f(x=1, y=2, z=3) | f(1, y=2, z=3) | f(1, 2, z=
 <list>  = [*<coll.> [, ...]]    # Or: list(<collection>) [+ ...]
 <tuple> = (*<coll.>, [...])     # Or: tuple(<collection>) [+ ...]
 <set>   = {*<coll.> [, ...]}    # Or: set(<collection>) [| ...]
-<dict>  = {**<dict> [, ...]}    # Or: dict(<dict>) [| ...] (since 3.9)
+<dict>  = {**<dict> [, ...]}    # Or: <dict> | ... (since 3.9)
 ```
 
 ```python
@@ -853,7 +852,7 @@ def get_multiplier(a):
 ### Partial
 ```python
 from functools import partial
-<function> = partial(<function> [, <arg_1>, <arg_2>, ...])
+<function> = partial(<function> [, <arg_1> [, ...]])
 ```
 
 ```python
@@ -982,20 +981,20 @@ class MyClass:
 
 #### Expressions that call the str() method:
 ```python
-print(<el>)
-f'{<el>}'
-logging.warning(<el>)
-csv.writer(<file>).writerow([<el>])
-raise Exception(<el>)
+print(<obj>)
+f'{<obj>}'
+logging.warning(<obj>)
+csv.writer(<file>).writerow([<obj>])
+raise Exception(<obj>)
 ```
 
 #### Expressions that call the repr() method:
 ```python
-print/str/repr([<el>])
-print/str/repr({<el>: <el>})
-f'{<el>!r}'
-Z = dataclasses.make_dataclass('Z', ['a']); print/str/repr(Z(<el>))
->>> <el>
+print/str/repr([<obj>])
+print/str/repr({<obj>: <obj>})
+f'{<obj>!r}'
+Z = dataclasses.make_dataclass('Z', ['a']); print/str/repr(Z(<obj>))
+>>> <obj>
 ```
 
 ### Inheritance
@@ -1137,7 +1136,7 @@ class MyHashable:
 * **With 'total_ordering' decorator, you only need to provide eq() and one of lt(), gt(), le() or ge() special methods and the rest will be automatically generated.**
 * **Functions sorted() and min() only require lt() method, while max() only requires gt(). However, it is best to define them all so that confusion doesn't arise in other contexts.**
 * **When two lists, strings or dataclasses are compared, their values get compared in order until a pair of unequal values is found. The comparison of this two values is then returned. The shorter sequence is considered smaller in case of all values being equal.**
-* **For proper alphabetical order pass `'key=locale.strxfrm'` to sorted() after running `'locale.setlocale(locale.LC_COLLATE, "en_US.UTF-8")'`.**
+* **To sort collection of strings in proper alphabetical order pass `'key=locale.strxfrm'` to sorted() after running `'locale.setlocale(locale.LC_COLLATE, "en_US.UTF-8")'`.**
 
 ```python
 from functools import total_ordering
@@ -1185,7 +1184,8 @@ class Counter:
 
 ### Callable
 * **All functions and classes have a call() method, hence are callable.**
-* **When this cheatsheet uses `'<function>'` as an argument, it actually means `'<callable>'`.**
+* **To check if object is callable use `'callable(<obj>)'`, `'isinstance(<obj>, collections.abc.Callable)'`, or `'isinstance(<obj>, typing.Callable)'`.**
+* **When this cheatsheet uses `'<function>'` as an argument, it means `'<callable>'`.**
 ```python
 class Counter:
     def __init__(self):
@@ -1338,7 +1338,7 @@ from enum import Enum, auto
 class <enum_name>(Enum):
     <member_name> = auto()              # Increment of the last numeric value or 1.
     <member_name> = <value>             # Values don't have to be hashable.
-    <member_name> = <value>, <value>    # Values can be collections (like this tuple).
+    <member_name> = <el_1>, <el_2>      # Values can be collections (this is a tuple).
 ```
 * **Methods receive the member they were called on as the 'self' argument.**
 * **Accessing a member named after a reserved keyword causes SyntaxError.**
@@ -1415,14 +1415,14 @@ except (<exception>, [...]) as <name>: ...
 * **Also catches subclasses of the exception.**
 * **Use `'traceback.print_exc()'` to print the full error message to stderr.**
 * **Use `'print(<name>)'` to print just the cause of the exception (its arguments).**
-* **Use `'logging.exception(<message>)'` to log the passed message, followed by the full error message of the caught exception. For details see [logging](#logging).**
+* **Use `'logging.exception(<str>)'` to log the passed message, followed by the full error message of the caught exception. For details see [logging](#logging).**
 * **Use `'sys.exc_info()'` to get exception type, object, and traceback of caught exception.**
 
 ### Raising Exceptions
 ```python
 raise <exception>
 raise <exception>()
-raise <exception>(<el> [, ...])
+raise <exception>(<obj> [, ...])
 ```
 
 #### Re-raising caught exception:
@@ -1555,7 +1555,7 @@ p.add_argument('<name>', type=<type>, nargs='?/*')                # Optional arg
 ```
 
 * **Use `'help=<str>'` to set argument description that will be displayed in help message.**
-* **Use `'default=<el>'` to set option's or optional argument's default value.**
+* **Use `'default=<obj>'` to set option's or optional argument's default value.**
 * **Use `'type=FileType(<mode>)'` for files. Accepts 'encoding', but 'newline' is None.**
 
 
@@ -2158,7 +2158,7 @@ with <lock>:                                   # Enters the block by calling acq
 ```
 * **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called/blocking. Map() times from original call and as_completed() from first call to next(). As\_completed() fails if next() is called too late, even if thread finished on time.**
 * **Exceptions that happen inside threads are raised when next() is called on map's iterator or when result() is called on a Future. Its exception() method returns exception or None.**
-* **ProcessPoolExecutor provides true parallelism but: everything sent to/from workers must be [pickable](#pickle), queues must be sent using executor's 'initargs' and 'initializer' parameters, and all executors should only be reachable via `'if __name__ == "__main__": ...'`.**
+* **ProcessPoolExecutor provides true parallelism but: everything sent to/from workers must be [pickable](#pickle), queues must be sent using executor's 'initargs' and 'initializer' parameters, and executor should only be reachable via `'if __name__ == "__main__": ...'`.**
 
 
 Operator
@@ -2167,13 +2167,13 @@ Operator
 ```python
 import operator as op
 <bool> = op.not_(<obj>)                                        # or, and, not (or/and missing)
-<bool> = op.eq/ne/lt/le/gt/ge/is_/contains(<obj>, <obj>)       # ==, !=, <, <=, >, >=, is, in
+<bool> = op.eq/ne/lt/ge/is_/is_not/contains(<obj>, <obj>)      # ==, !=, <, >=, is, is not, in
 <obj>  = op.or_/xor/and_(<int/set>, <int/set>)                 # |, ^, &
 <int>  = op.lshift/rshift(<int>, <int>)                        # <<, >>
 <obj>  = op.add/sub/mul/truediv/floordiv/mod(<obj>, <obj>)     # +, -, *, /, //, %
 <num>  = op.neg/invert(<num>)                                  # -, ~
 <num>  = op.pow(<num>, <num>)                                  # **
-<func> = op.itemgetter/attrgetter/methodcaller(<obj> [, ...])  # [index/key], .name, .name()
+<func> = op.itemgetter/attrgetter/methodcaller(<obj> [, ...])  # [index/key], .name, .name([…])
 ```
 
 ```python
@@ -2183,8 +2183,8 @@ sorted_by_both   = sorted(<coll.>, key=op.itemgetter(1, 0))
 product_of_elems = functools.reduce(op.mul, <collection>)
 first_element    = op.methodcaller('pop', 0)(<list>)
 ```
-* **Bitwise operators require objects to have or(), xor(), and(), lshift(), rshift() and invert() special methods, unlike logical operators that work on all types of objects.**
-* **Also: `'<bool> = <bool> &|^ <bool>'` and `'<int> = <bool> &|^ <int>'`.**
+* **Most operators call the object's special method that is named after them (second object is passed as an argument), while logical operators call their own code that relies on bool().**
+* **Comparisons can be chained: `'x < y < z'` gets converted to `'(x < y) and (y < z)`'.**
 
 
 Match Statement
@@ -2200,15 +2200,15 @@ match <object/expression>:
 
 ### Patterns
 ```python
-<value_pattern> = 1/'abc'/True/None/math.pi          # Matches the literal or a dotted name.
-<class_pattern> = <type>()                           # Matches any object of that type.
-<wildcard_patt> = _                                  # Matches any object.
-<capture_patt>  = <name>                             # Matches any object and binds it to name.
-<or_pattern>    = <pattern> | <pattern> [| ...]      # Matches any of the patterns.
-<as_pattern>    = <pattern> as <name>                # Binds the match to the name.
-<sequence_patt> = [<pattern>, ...]                   # Matches sequence with matching items.
-<mapping_patt>  = {<value_pattern>: <pattern>, ...}  # Matches dictionary with matching items.
-<class_pattern> = <type>(<attr_name>=<patt>, ...)    # Matches object with matching attributes.
+<value_pattern> = 1/'abc'/True/None/math.pi        # Matches the literal or a dotted name.
+<class_pattern> = <type>()                         # Matches any object of that type.
+<wildcard_patt> = _                                # Matches any object.
+<capture_patt>  = <name>                           # Matches any object and binds it to name.
+<or_pattern>    = <pattern> | <pattern> [| ...]    # Matches any of the patterns.
+<as_pattern>    = <pattern> as <name>              # Binds match to name. Also <type>(<name>).
+<sequence_patt> = [<pattern>, ...]                 # Matches sequence with matching items.
+<mapping_patt>  = {<value_pattern>: <patt>, ...}   # Matches dictionary with matching items.
+<class_pattern> = <type>(<attr_name>=<patt>, ...)  # Matches object with matching attributes.
 ```
 * **Sequence pattern can also be written as a tuple.**
 * **Use `'*<name>'` and `'**<name>'` in sequence/mapping patterns to bind remaining items.**
@@ -2248,7 +2248,7 @@ logging.debug/info/warning/error/critical(<str>)     # Logs to the root logger.
 ### Setup
 ```python
 logging.basicConfig(
-    filename=None,                                   # Logs to console (stderr) by default.
+    filename=None,                                   # Logs to stderr or appends to file.
     format='%(levelname)s:%(name)s:%(message)s',     # Add '%(asctime)s' for local datetime.
     level=logging.WARNING,                           # Drops messages with lower priority.
     handlers=[logging.StreamHandler(sys.stderr)]     # Uses FileHandler if filename is set.
@@ -2288,26 +2288,26 @@ CRITICAL:my_module:Running out of disk space.
 Introspection
 -------------
 ```python
-<list> = dir()                             # Names of local variables, functions, classes, etc.
-<dict> = vars()                            # Dict of local variables, etc. Also locals().
-<dict> = globals()                         # Dict of global vars, etc. (incl. '__builtins__').
+<list> = dir()                          # Names of local vars, functions, classes and modules.
+<dict> = vars()                         # Dict of local vars, functions, etc. Also locals().
+<dict> = globals()                      # Dict of global vars, etc. (including '__builtins__').
 ```
 
 ```python
-<list> = dir(<object>)                     # Names of object's attributes (including methods).
-<dict> = vars(<object>)                    # Dict of writable attributes. Also <obj>.__dict__.
-<bool> = hasattr(<object>, '<attr_name>')  # Checks if getattr() raises an AttributeError.
-value  = getattr(<object>, '<attr_name>')  # Default value can be passed as the third argument.
-setattr(<object>, '<attr_name>', value)    # Only works on objects with __dict__ attribute.
-delattr(<object>, '<attr_name>')           # Same. Also `del <object>.<attr_name>`.
+<list> = dir(<obj>)                     # Names of all object's attributes (including methods).
+<dict> = vars(<obj>)                    # Dict of writable attributes. Also <obj>.__dict__.
+<bool> = hasattr(<obj>, '<attr_name>')  # Checks if getattr() raises AttributeError.
+value  = getattr(<obj>, '<attr_name>')  # Default value can be passed as the third argument.
+setattr(<obj>, '<attr_name>', value)    # Only works on objects with __dict__ attribute.
+delattr(<obj>, '<attr_name>')           # Same. Also `del <object>.<attr_name>`.
 ```
 
 ```python
-<Sig>  = inspect.signature(<function>)     # Returns function's Signature object.
-<dict> = <Sig>.parameters                  # Dict of Parameter objects. Also <Sig>.return_type.
-<memb> = <Param>.kind                      # Member of ParameterKind enum (KEYWORD_ONLY, ...).
-<obj>  = <Param>.default                   # Returns param's default value or Parameter.empty.
-<type> = <Param>.annotation                # Returns param's type hint or Parameter.empty.
+<Sig>  = inspect.signature(<function>)  # Returns function's Signature object.
+<dict> = <Sig>.parameters               # Dict of Parameter objects. Also <Sig>.return_type.
+<memb> = <Param>.kind                   # Member of ParamKind enum (Parameter.KEYWORD_ONLY, …).
+<obj>  = <Param>.default                # Returns parameter's default value or Parameter.empty.
+<type> = <Param>.annotation             # Returns parameter's type hint or Parameter.empty.
 ```
 
 
@@ -2336,7 +2336,7 @@ import asyncio as aio
 
 #### Runs a terminal game where you control an asterisk that must avoid numbers:
 ```python
-import asyncio, collections, curses, curses.textpad, enum, random, time
+import asyncio, collections, curses, curses.textpad, enum, random
 
 P = collections.namedtuple('P', 'x y')    # Position
 D = enum.Enum('D', 'n e s w')             # Direction
@@ -2352,7 +2352,7 @@ async def main_coroutine(screen):
     state = {'*': P(0, 0), **{id_: P(W//2, H//2) for id_ in range(10)}}
     ai    = [random_controller(id_, moves) for id_ in range(10)]
     mvc   = [human_controller(screen, moves), model(moves, state), view(state, screen)]
-    tasks = [asyncio.create_task(cor) for cor in ai + mvc]
+    tasks = [asyncio.create_task(coro) for coro in ai + mvc]
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
 async def random_controller(id_, moves):
@@ -2525,7 +2525,7 @@ from selenium import webdriver
 <El>.click/clear()                                     # Also <El>.send_keys(<str>).
 ```
 
-#### XPath — also available in browser's console via `'$x(<xpath>)'` and by lxml library:
+#### XPath — also available in lxml, Scrapy, and browser's console via `'$x(<xpath>)'`:
 ```python
 <xpath>     = //<element>[/ or // <element>]           # Child: /, Descendant: //, Parent: /..
 <xpath>     = //<element>/following::<element>         # Next sibling. Also preceding/parent/…
@@ -2547,7 +2547,7 @@ import flask
 
 ```python
 app = flask.Flask(__name__)                # Returns app object. Put at the top.
-app.run(host=None, port=None, debug=None)  # Or: `$ flask --app <module> run`
+app.run(host=None, port=None, debug=None)  # Or: $ flask --app FILE run [--ARG[=VAL]]
 ```
 * **Starts the app at `'http://localhost:5000'`. Use `'host="0.0.0.0"'` to run externally.**
 * **Install a WSGI server like [Waitress](https://flask.palletsprojects.com/en/latest/deploying/waitress/) and a HTTP server such as [Nginx](https://flask.palletsprojects.com/en/latest/deploying/nginx/) for better security.**
@@ -3354,7 +3354,7 @@ plt.show()                                     # Displays the plot. Also plt.sav
 
 ```python
 <DF> = pd.read_json/html('<str/path/url>')     # Run `$ pip3 install beautifulsoup4 lxml`.
-<DF> = pd.read_csv('<path/url>')               # `header/index_col/dtype/parse_dates=<obj>`.
+<DF> = pd.read_csv('<path/url>')               # `header/index_col/dtype/parse_dates/…=<obj>`.
 <DF> = pd.read_pickle/excel('<path/url>')      # Use `sheet_name=None` to get all Excel sheets.
 <DF> = pd.read_sql('<table/query>', <conn.>)   # SQLite3/SQLAlchemy connection (see #SQLite).
 ```
@@ -3526,8 +3526,8 @@ import <cython_script>
 * **Script needs to be saved with a `'pyx'` extension.**
 
 ```python
-cdef <ctype> <var_name> = <el>
-cdef <ctype>[n_elements] <var_name> = [<el>, <el>, ...]
+cdef <ctype> <var_name> = <obj>
+cdef <ctype>[n_elements] <var_name> = [<el_1>, <el_2>, ...]
 cdef <ctype/void> <func_name>(<ctype> <arg_name>): ...
 ```
 
