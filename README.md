@@ -14,7 +14,7 @@ Contents
 **&nbsp;&nbsp;&nbsp;** **4. System:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Exit`](#exit)**__,__ **[`Print`](#print)**__,__ **[`Input`](#input)**__,__ **[`Command_Line_Arguments`](#command-line-arguments)**__,__ **[`Open`](#open)**__,__ **[`Path`](#paths)**__,__ **[`OS_Commands`](#os-commands)**__.__  
 **&nbsp;&nbsp;&nbsp;** **5. Data:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`JSON`](#json)**__,__ **[`Pickle`](#pickle)**__,__ **[`CSV`](#csv)**__,__ **[`SQLite`](#sqlite)**__,__ **[`Bytes`](#bytes)**__,__ **[`Struct`](#struct)**__,__ **[`Array`](#array)**__,__ **[`Memory_View`](#memory-view)**__,__ **[`Deque`](#deque)**__.__  
 **&nbsp;&nbsp;&nbsp;** **6. Advanced:** **&nbsp;&nbsp;&nbsp;**  **[`Threading`](#threading)**__,__ **[`Operator`](#operator)**__,__ **[`Match_Stmt`](#match-statement)**__,__ **[`Logging`](#logging)**__,__ **[`Introspection`](#introspection)**__,__ **[`Coroutines`](#coroutines)**__.__  
-**&nbsp;&nbsp;&nbsp;** **7. Libraries:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Progress_Bar`](#progress-bar)**__,__ **[`Plots`](#plot)**__,__ **[`Tables`](#table)**__,__ **[`Curses`](#curses)**__,__ **[`GUIs`](#pysimplegui)**__,__ **[`Scraping`](#scraping)**__,__ **[`Web`](#web)**__,__ **[`Profiling`](#profiling)**__.__  
+**&nbsp;&nbsp;&nbsp;** **7. Libraries:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Progress_Bar`](#progress-bar)**__,__ **[`Plot`](#plot)**__,__ **[`Table`](#table)**__,__ **[`Console_App`](#console-app)**__,__ **[`GUI`](#gui-app)**__,__ **[`Scraping`](#scraping)**__,__ **[`Web`](#web)**__,__ **[`Profile`](#profiling)**__.__  
 **&nbsp;&nbsp;&nbsp;** **8. Multimedia:** **&nbsp;&nbsp;**  **[`NumPy`](#numpy)**__,__ **[`Image`](#image)**__,__ **[`Animation`](#animation)**__,__ **[`Audio`](#audio)**__,__ **[`Synthesizer`](#synthesizer)**__,__ **[`Pygame`](#pygame)**__,__ **[`Pandas`](#pandas)**__,__ **[`Plotly`](#plotly)**__.__
 
 
@@ -339,7 +339,7 @@ String
 ```python
 <bool> = <str>.isdecimal()                   # Checks for [0-9]. Also [०-९] and [٠-٩].
 <bool> = <str>.isdigit()                     # Checks for [²³¹…] and isdecimal().
-<bool> = <str>.isnumeric()                   # Checks for [¼½¾], [零〇一…] and isdigit().
+<bool> = <str>.isnumeric()                   # Checks for [¼½¾…], [零〇一…] and isdigit().
 <bool> = <str>.isalnum()                     # Checks for [a-zA-Z…] and isnumeric().
 <bool> = <str>.isprintable()                 # Checks for [ !#$%…] and isalnum().
 <bool> = <str>.isspace()                     # Checks for [ \t\n\r\f\v\x1c-\x1f\x85\xa0…].
@@ -530,7 +530,7 @@ from random import random, randint, choice        # Also: shuffle, gauss, triang
 <int> = ±0b<bin>                                  # Or: ±0x<hex>
 <int> = int('±<bin>', 2)                          # Or: int('±<hex>', 16)
 <int> = int('±0b<bin>', 0)                        # Or: int('±0x<hex>', 0)
-<str> = bin(<int>)                                # Returns '[-]0b<bin>'.
+<str> = bin(<int>)                                # Returns '[-]0b<bin>'. Also hex().
 ```
 
 ### Bitwise Operators
@@ -827,7 +827,7 @@ import <package>.<module>  # Imports a built-in or '<package>/<module>.py'.
 * **Package is a collection of modules, but it can also define its own objects.**
 * **On a filesystem this corresponds to a directory of Python files with an optional init script.**
 * **Running `'import <package>'` does not automatically provide access to the package's modules unless they are explicitly imported in its init script.**
-* **Location of the file that is passed to python command serves as a root of all local imports.**
+* **Directory of the file that is passed to python command serves as a root of local imports.**
 * **For relative imports use `'from .[…][<pkg/module>[.…]] import <obj>'`.**
 
 
@@ -927,7 +927,7 @@ def fib(n):
     return n if n < 2 else fib(n-2) + fib(n-1)
 ```
 * **Default size of the cache is 128 values. Passing `'maxsize=None'` makes it unbounded.**
-* **CPython interpreter limits recursion depth to 1000 by default. To increase it use `'sys.setrecursionlimit(<int>)'`.**
+* **CPython interpreter limits recursion depth to 3000 by default. To increase it use `'sys.setrecursionlimit(<int>)'`.**
 
 ### Parametrized Decorator
 **A decorator that accepts arguments and returns a normal decorator that accepts a function.**
@@ -1456,7 +1456,7 @@ BaseException
       +-- LookupError             # Base class for errors when a collection can't find an item.
       |    +-- IndexError         # Raised when a sequence index is out of range.
       |    +-- KeyError           # Raised when a dictionary key or set element is missing.
-      +-- MemoryError             # Out of memory. May be too late to start deleting objects.
+      +-- MemoryError             # Out of memory. May be too late to start deleting variables.
       +-- NameError               # Raised when nonexistent name (variable/func/class) is used.
       |    +-- UnboundLocalError  # Raised when local name is used before it's being defined.
       +-- OSError                 # Errors such as FileExistsError/TimeoutError (see #Open).
@@ -1501,8 +1501,8 @@ Exit
 ```python
 import sys
 sys.exit()                        # Exits with exit code 0 (success).
-sys.exit(<el>)                    # Prints to stderr and exits with 1.
 sys.exit(<int>)                   # Exits with the passed exit code.
+sys.exit(<obj>)                   # Prints to stderr and exits with 1.
 ```
 
 
@@ -1572,7 +1572,7 @@ Open
 
 ### Modes
 * **`'r'`  - Read (default).**
-* **`'w'`  - Write (truncate).**
+* **`'w'`  - Write (truncate, i.e. delete existing contents).**
 * **`'x'`  - Write or fail if the file already exists.**
 * **`'a'`  - Append.**
 * **`'w+'` - Read and write (truncate).**
@@ -1698,7 +1698,7 @@ from pathlib import Path
 
 ```python
 <str>  = str(<Path>)                # Returns path as a string.
-<file> = open(<Path>)               # Also <Path>.read/write_text/bytes().
+<file> = open(<Path>)               # Also <Path>.read/write_text/bytes(<args>).
 ```
 
 
@@ -1884,7 +1884,7 @@ SQLite
 ```python
 import sqlite3
 <conn> = sqlite3.connect(<path>)                # Opens existing or new file. Also ':memory:'.
-<conn>.close()                                  # Closes the connection.
+<conn>.close()                                  # Closes connection. Discards uncommitted data.
 ```
 
 ### Read
@@ -2049,7 +2049,7 @@ from array import array
 
 ```python
 <bytes> = bytes(<array>)                       # Returns a copy of array's memory.
-<file>.write(<array>)                          # Writes array to the binary file.
+<file>.write(<array>)                          # Writes array's memory to the file.
 ```
 
 
@@ -2059,9 +2059,9 @@ Memory View
 
 ```python
 <mview> = memoryview(<bytes/bytearray/array>)  # Immutable if bytes, else mutable.
-<real>  = <mview>[index]                       # Returns an int or a float.
+<obj>   = <mview>[index]                       # Returns int, float or bytes ('c' format).
 <mview> = <mview>[<slice>]                     # Returns mview with rearranged elements.
-<mview> = <mview>.cast('<typecode>')           # Only works between b/B/c and other types.
+<mview> = <mview>.cast('<typecode>')           # Only works between B/b/c and other types.
 <mview>.release()                              # Releases memory buffer of the base object.
 ```
 
@@ -2069,11 +2069,11 @@ Memory View
 <bytes> = bytes(<mview>)                       # Returns a new bytes object.
 <bytes> = <bytes>.join(<coll_of_mviews>)       # Joins mviews using bytes as a separator.
 <array> = array('<typecode>', <mview>)         # Treats mview as a sequence of numbers.
-<file>.write(<mview>)                          # Writes mview to the binary file.
+<file>.write(<mview>)                          # Writes `bytes(<mview>)` to the file.
 ```
 
 ```python
-<list>  = list(<mview>)                        # Returns a list of ints or floats.
+<list>  = list(<mview>)                        # Returns a list of ints, floats or bytes.
 <str>   = str(<mview>, 'utf-8')                # Treats mview as a bytes object.
 <str>   = <mview>.hex()                        # Returns hex pairs. Accepts `sep=<str>`.
 ```
@@ -2154,7 +2154,7 @@ with <lock>:                                   # Enters the block by calling acq
 <bool> = <Future>.done()                       # Checks if the thread has finished executing.
 <obj>  = <Future>.result(timeout=None)         # Waits for thread to finish and returns result.
 <bool> = <Future>.cancel()                     # Cancels or returns False if running/finished.
-<iter> = as_completed(<coll_of_Futures>)       # Next() waits for next completed Future.
+<iter> = as_completed(<coll_of_Futures>)       # `next(<iter>)` returns next completed Future.
 ```
 * **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called/blocking. Map() times from original call and as_completed() from first call to next(). As\_completed() fails if next() is called too late, even if thread finished on time.**
 * **Exceptions that happen inside threads are raised when next() is called on map's iterator or when result() is called on a Future. Its exception() method returns exception or None.**
@@ -2204,8 +2204,8 @@ match <object/expression>:
 <class_pattern> = <type>()                         # Matches any object of that type.
 <wildcard_patt> = _                                # Matches any object.
 <capture_patt>  = <name>                           # Matches any object and binds it to name.
-<or_pattern>    = <pattern> | <pattern> [| ...]    # Matches any of the patterns.
 <as_pattern>    = <pattern> as <name>              # Binds match to name. Also <type>(<name>).
+<or_pattern>    = <pattern> | <pattern> [| ...]    # Matches any of the patterns.
 <sequence_patt> = [<pattern>, ...]                 # Matches sequence with matching items.
 <mapping_patt>  = {<value_pattern>: <patt>, ...}   # Matches dictionary with matching items.
 <class_pattern> = <type>(<attr_name>=<patt>, ...)  # Matches object with matching attributes.
@@ -2234,50 +2234,50 @@ match <object/expression>:
 Logging
 -------
 ```python
-import logging
+import logging as log
 ```
 
 ```python
-logging.basicConfig(filename=<path>, level='DEBUG')  # Configures the root logger (see Setup).
-logging.debug/info/warning/error/critical(<str>)     # Logs to the root logger.
-<Logger> = logging.getLogger(__name__)               # Logger named after the module.
-<Logger>.<level>(<str>)                              # Logs to the logger.
-<Logger>.exception(<str>)                            # Error() that appends caught exception.
+log.basicConfig(filename=<path>, level='DEBUG')   # Configures the root logger (see Setup).
+log.debug/info/warning/error/critical(<str>)      # Logs to the root logger.
+<Logger> = log.getLogger(__name__)                # Logger named after the module.
+<Logger>.<level>(<str>)                           # Logs to the logger.
+<Logger>.exception(<str>)                         # Error() that appends caught exception.
 ```
 
 ### Setup
 ```python
-logging.basicConfig(
-    filename=None,                                   # Logs to stderr or appends to file.
-    format='%(levelname)s:%(name)s:%(message)s',     # Add '%(asctime)s' for local datetime.
-    level=logging.WARNING,                           # Drops messages with lower priority.
-    handlers=[logging.StreamHandler(sys.stderr)]     # Uses FileHandler if filename is set.
+log.basicConfig(
+    filename=None,                                # Logs to stderr or appends to file.
+    format='%(levelname)s:%(name)s:%(message)s',  # Add '%(asctime)s' for local datetime.
+    level=log.WARNING,                            # Drops messages with lower priority.
+    handlers=[log.StreamHandler(sys.stderr)]      # Uses FileHandler if filename is set.
 )
 ```
 
 ```python
-<Formatter> = logging.Formatter('<format>')          # Creates a Formatter.
-<Handler> = logging.FileHandler(<path>, mode='a')    # Creates a Handler. Also `encoding=None`.
-<Handler>.setFormatter(<Formatter>)                  # Adds Formatter to the Handler.
-<Handler>.setLevel(<int/str>)                        # Processes all messages by default.
-<Logger>.addHandler(<Handler>)                       # Adds Handler to the Logger.
-<Logger>.setLevel(<int/str>)                         # What is sent to its/ancestors' handlers.
-<Logger>.propagate = <bool>                          # Cuts off ancestors' handlers if False.
+<Formatter> = log.Formatter('<format>')           # Creates a Formatter.
+<Handler> = log.FileHandler(<path>, mode='a')     # Creates a Handler. Also `encoding=None`.
+<Handler>.setFormatter(<Formatter>)               # Adds Formatter to the Handler.
+<Handler>.setLevel(<int/str>)                     # Processes all messages by default.
+<Logger>.addHandler(<Handler>)                    # Adds Handler to the Logger.
+<Logger>.setLevel(<int/str>)                      # What is sent to its/ancestors' handlers.
+<Logger>.propagate = <bool>                       # Cuts off ancestors' handlers if False.
 ```
 * **Parent logger can be specified by naming the child logger `'<parent>.<name>'`.**
 * **If logger doesn't have a set level it inherits it from the first ancestor that does.**
 * **Formatter also accepts: pathname, filename, funcName, lineno, thread and process.**
-* **A `'handlers.RotatingFileHandler'` creates and deletes log files based on 'maxBytes' and 'backupCount' arguments.**
+* **A `'log.handlers.RotatingFileHandler'` creates and deletes log files based on 'maxBytes' and 'backupCount' arguments.**
 
 #### Creates a logger that writes all messages to file and sends them to the root's handler that prints warnings or higher:
 ```python
->>> logger = logging.getLogger('my_module')
->>> handler = logging.FileHandler('test.log', encoding='utf-8')
->>> handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s:%(name)s:%(message)s'))
+>>> logger = log.getLogger('my_module')
+>>> handler = log.FileHandler('test.log', encoding='utf-8')
+>>> handler.setFormatter(log.Formatter('%(asctime)s %(levelname)s:%(name)s:%(message)s'))
 >>> logger.addHandler(handler)
 >>> logger.setLevel('DEBUG')
->>> logging.basicConfig()
->>> logging.root.handlers[0].setLevel('WARNING')
+>>> log.basicConfig()
+>>> log.root.handlers[0].setLevel('WARNING')
 >>> logger.critical('Running out of disk space.')
 CRITICAL:my_module:Running out of disk space.
 >>> print(open('test.log').read())
@@ -2329,9 +2329,9 @@ import asyncio as aio
 ```
 
 ```python
-<coro> = aio.gather(<coro/task>, ...)     # Schedules coroutines. Returns results when awaited.
+<coro> = aio.gather(<coro/task>, ...)     # Schedules coros. Returns list of results on await.
 <coro> = aio.wait(<tasks>, …)             # `aio.ALL/FIRST_COMPLETED`. Returns (done, pending).
-<iter> = aio.as_completed(<coros/tasks>)  # Iter of coros. All return next result when awaited.
+<iter> = aio.as_completed(<coros/tasks>)  # Iterator of coros. All return next result on await.
 ```
 
 #### Runs a terminal game where you control an asterisk that must avoid numbers:
@@ -2413,6 +2413,7 @@ import matplotlib.pyplot as plt
 
 plt.plot/bar/scatter(x_data, y_data [, label=<str>])  # Or: plt.plot(y_data)
 plt.legend()                                          # Adds a legend.
+plt.title/xlabel/ylabel(<str>)                        # Adds a title/labels.
 plt.savefig(<path>)                                   # Saves the figure.
 plt.show()                                            # Displays the figure.
 plt.clf()                                             # Clears the figure.
@@ -2431,8 +2432,8 @@ print(tabulate.tabulate(rows, headers='firstrow'))
 ```
 
 
-Curses
-------
+Console App
+-----------
 #### Runs a basic file explorer in the console:
 ```python
 # $ pip3 install windows-curses
@@ -2462,8 +2463,8 @@ if __name__ == '__main__':
 ```
 
 
-PySimpleGUI
------------
+GUI App
+-------
 #### A weight converter GUI application:
 
 ```python
@@ -2521,17 +2522,17 @@ from selenium import webdriver
 <Drv>.get('<url>')                                     # Also <Drv>.implicitly_wait(seconds).
 <El> = <Drv/El>.find_element('css selector', '<css>')  # '<tag>#<id>.<class>[<attr>="<val>"]'.
 <list> = <Drv/El>.find_elements('xpath', '<xpath>')    # '//<tag>[@<attr>="<val>"]'.
-<str> = <El>.get_attribute/get_property(<str>)         # Also <El>.text/tag_name.
+<str> = <El>.get_attribute(<str>)                      # Property if exists. Also <El>.text.
 <El>.click/clear()                                     # Also <El>.send_keys(<str>).
 ```
 
 #### XPath — also available in lxml, Scrapy, and browser's console via `'$x(<xpath>)'`:
 ```python
-<xpath>     = //<element>[/ or // <element>]           # Child: /, Descendant: //, Parent: /..
-<xpath>     = //<element>/following::<element>         # Next sibling. Also preceding/parent/…
+<xpath>     = //<element>[/ or // <element>]           # /<child>, //<descendant>, /../<siblng>
+<xpath>     = //<element>/following::<element>         # Next element. Also preceding/parent/…
 <element>   = <tag><conditions><index>                 # `<tag> = */a/…`, `<index> = [1/2/…]`.
 <condition> = [<sub_cond> [and/or <sub_cond>]]         # For negation use `not(<sub_cond>)`.
-<sub_cond>  = @<attr>="<val>"                          # `.="<val>"` matches complete text.
+<sub_cond>  = @<attr>[="<val>"]                        # `text()=`, `.=` match (complete) text.
 <sub_cond>  = contains(@<attr>, "<val>")               # Is <val> a substring of attr's value?
 <sub_cond>  = [//]<element>                            # Has matching child? Descendant if //.
 ```

@@ -39,7 +39,7 @@ const TOC =
   '    <strong><span class="hljs-string">\'4. System\'</span></strong>:      [<a href="#exit">Exit</a>, <a href="#print">Print</a>, <a href="#input">Input</a>, <a href="#commandlinearguments">Command_Line_Arguments</a>, <a href="#open">Open</a>, <a href="#paths">Path</a>, <a href="#oscommands">OS_Commands</a>],\n' +
   '    <strong><span class="hljs-string">\'5. Data\'</span></strong>:        [<a href="#json">JSON</a>, <a href="#pickle">Pickle</a>, <a href="#csv">CSV</a>, <a href="#sqlite">SQLite</a>, <a href="#bytes">Bytes</a>, <a href="#struct">Struct</a>, <a href="#array">Array</a>, <a href="#memoryview">Memory_View</a>, <a href="#deque">Deque</a>],\n' +
   '    <strong><span class="hljs-string">\'6. Advanced\'</span></strong>:    [<a href="#threading">Threading</a>, <a href="#operator">Operator</a>, <a href="#matchstatement">Match_Stmt</a>, <a href="#logging">Logging</a>, <a href="#introspection">Introspection</a>, <a href="#coroutines">Coroutines</a>],\n' +
-  '    <strong><span class="hljs-string">\'7. Libraries\'</span></strong>:   [<a href="#progressbar">Progress_Bar</a>, <a href="#plot">Plots</a>, <a href="#table">Tables</a>, <a href="#curses">Curses</a>, <a href="#pysimplegui">GUIs</a>, <a href="#scraping">Scraping</a>, <a href="#web">Web</a>, <a href="#profiling">Profiling</a>],\n' +
+  '    <strong><span class="hljs-string">\'7. Libraries\'</span></strong>:   [<a href="#progressbar">Progress_Bar</a>, <a href="#plot">Plot</a>, <a href="#table">Table</a>, <a href="#consoleapp">Console_App</a>, <a href="#guiapp">GUI</a>, <a href="#scraping">Scraping</a>, <a href="#web">Web</a>, <a href="#profiling">Profile</a>],\n' +
   '    <strong><span class="hljs-string">\'8. Multimedia\'</span></strong>:  [<a href="#numpy">NumPy</a>, <a href="#image">Image</a>, <a href="#animation">Animation</a>, <a href="#audio">Audio</a>, <a href="#synthesizer">Synthesizer</a>, <a href="#pygame">Pygame</a>, <a href="#pandas">Pandas</a>, <a href="#plotly">Plotly</a>]\n' +
   '}\n' +
   '</code></pre>\n';
@@ -48,7 +48,7 @@ const BIN_HEX =
   '&lt;int&gt; = ±<span class="hljs-number">0b</span>&lt;bin&gt;                                  <span class="hljs-comment"># Or: ±0x&lt;hex&gt;</span>\n' +
   '&lt;int&gt; = int(<span class="hljs-string">\'±&lt;bin&gt;\'</span>, <span class="hljs-number">2</span>)                          <span class="hljs-comment"># Or: int(\'±&lt;hex&gt;\', 16)</span>\n' +
   '&lt;int&gt; = int(<span class="hljs-string">\'±0b&lt;bin&gt;\'</span>, <span class="hljs-number">0</span>)                        <span class="hljs-comment"># Or: int(\'±0x&lt;hex&gt;\', 0)</span>\n' +
-  '&lt;str&gt; = bin(&lt;int&gt;)                                <span class="hljs-comment"># Returns \'[-]0b&lt;bin&gt;\'.</span>\n';
+  '&lt;str&gt; = bin(&lt;int&gt;)                                <span class="hljs-comment"># Returns \'[-]0b&lt;bin&gt;\'. Also hex().</span>\n';
 
 const LRU_CACHE =
   '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache\n' +
@@ -441,7 +441,7 @@ const DIAGRAM_7_B =
   "      ├── LookupError             <span class='hljs-comment'># Base class for errors when a collection can't find an item.</span>\n" +
   "      │    ├── IndexError         <span class='hljs-comment'># Raised when a sequence index is out of range.</span>\n" +
   "      │    └── KeyError           <span class='hljs-comment'># Raised when a dictionary key or set element is missing.</span>\n" +
-  "      ├── MemoryError             <span class='hljs-comment'># Out of memory. May be too late to start deleting objects.</span>\n" +
+  "      ├── MemoryError             <span class='hljs-comment'># Out of memory. May be too late to start deleting variables.</span>\n" +
   "      ├── NameError               <span class='hljs-comment'># Raised when nonexistent name (variable/func/class) is used.</span>\n" +
   "      │    └── UnboundLocalError  <span class='hljs-comment'># Raised when local name is used before it's being defined.</span>\n" +
   "      ├── OSError                 <span class='hljs-comment'># Errors such as FileExistsError/TimeoutError (see #Open).</span>\n" +
@@ -827,7 +827,7 @@ function fixHighlights() {
   $(`code:contains(<int> = ±0b<bin>)`).html(BIN_HEX);
   $(`code:contains(@lru_cache(maxsize=None))`).html(LRU_CACHE);
   $(`code:contains(@debug(print_result=True))`).html(PARAMETRIZED_DECORATOR);
-  $(`code:contains(print/str/repr([obj]))`).html(REPR_USE_CASES);
+  $(`code:contains(print/str/repr([<obj>]))`).html(REPR_USE_CASES);
   $(`code:contains((self, a=None):)`).html(CONSTRUCTOR_OVERLOADING);
   $(`code:contains(make_dataclass(\'<class_name>\')`).html(DATACLASS);
   $(`code:contains(shutil.copy)`).html(SHUTIL_COPY);
