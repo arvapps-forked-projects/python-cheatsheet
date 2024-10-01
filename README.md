@@ -1571,14 +1571,14 @@ Open
 * **`'newline=""'` means no conversions take place, but input is still broken into chunks by readline() and readlines() on every '\n', '\r' and '\r\n'.**
 
 ### Modes
-* **`'r'`  - Read (default).**
-* **`'w'`  - Write (truncate, i.e. delete existing contents).**
+* **`'r'`  - Read. Used by default.**
+* **`'w'`  - Write. Deletes existing contents.**
 * **`'x'`  - Write or fail if the file already exists.**
-* **`'a'`  - Append.**
-* **`'w+'` - Read and write (truncate).**
+* **`'a'`  - Append. Creates new file if it doesn't exist.**
+* **`'w+'` - Read and write. Deletes existing contents.**
 * **`'r+'` - Read and write from the start.**
 * **`'a+'` - Read and write from the end.**
-* **`'b'`  - Binary mode (`'br'`, `'bw'`, `'bx'`, …).**
+* **`'b'`  - Binary mode (`'br'`, `'bw'`, `'bx'`, …)**
 
 ### Exceptions
 * **`'FileNotFoundError'` can be raised when reading with `'r'` or `'r+'`.**
@@ -1632,7 +1632,7 @@ from pathlib import Path
 ```
 
 ```python
-<str>  = os.getcwd()                # Returns shell's working dir unless changed.
+<str>  = os.getcwd()                # Returns working dir. Starts as shell's $PWD.
 <str>  = os.path.join(<path>, ...)  # Joins two or more pathname components.
 <str>  = os.path.realpath(<path>)   # Resolves symlinks and calls path.abspath().
 ```
@@ -1731,7 +1731,7 @@ os.remove(<path>)                   # Deletes the file.
 os.rmdir(<path>)                    # Deletes the empty directory.
 shutil.rmtree(<path>)               # Deletes the directory.
 ```
-* **Paths can be either strings, Paths or DirEntry objects.**
+* **Paths can be either strings, Paths, or DirEntry objects.**
 * **Functions report OS related errors by raising either OSError or one of its [subclasses](#exceptions-1).**
 
 ### Shell Commands
@@ -1913,8 +1913,7 @@ with <conn>:                                    # Exits the block with commit() 
 <conn>.execute('<query>', <dict/namedtuple>)    # Replaces ':<key>'s with values.
 <conn>.executemany('<query>', <coll_of_above>)  # Runs execute() multiple times.
 ```
-* **Passed values can be of type str, int, float, bytes, None, bool, datetime.date or datetime.datetime.**
-* **Bools will be stored and returned as ints and dates as [ISO formatted strings](#encode).**
+* **Passed values can be of type str, int, float, bytes, None or bool (stored as 1 or 0).**
 
 ### Example
 **Values are not actually saved in this example because `'conn.commit()'` is omitted!**
@@ -1927,7 +1926,8 @@ with <conn>:                                    # Exits the block with commit() 
 [(1, 'Jean-Luc', 187)]
 ```
 
-### SqlAlchemy
+### SQLAlchemy
+**Library for interacting with various DB systems via SQL, method chaining, or ORM.**
 ```python
 # $ pip3 install sqlalchemy
 from sqlalchemy import create_engine, text
@@ -2034,7 +2034,7 @@ b'\x00\x01\x00\x02\x00\x00\x00\x03'
 
 Array
 -----
-**List that can only hold numbers of a predefined type. Available types and their minimum sizes in bytes are listed above. Type sizes and byte order are always determined by the system, however bytes of each element can be swapped with byteswap() method.**
+**List that can only hold numbers of a predefined type. Available types and their minimum sizes in bytes are listed above. Type sizes and byte order are always determined by the system, however bytes of each element can be reversed with byteswap() method.**
 
 ```python
 from array import array
@@ -2042,14 +2042,14 @@ from array import array
 
 ```python
 <array> = array('<typecode>', <coll_of_nums>)  # Array from collection of numbers.
-<array> = array('<typecode>', <bytes>)         # Array from bytes object.
+<array> = array('<typecode>', <bytes>)         # Copies bytes to array's memory.
 <array> = array('<typecode>', <array>)         # Treats array as a sequence of numbers.
 <array>.fromfile(<file>, n_items)              # Appends items from the binary file.
 ```
 
 ```python
 <bytes> = bytes(<array>)                       # Returns a copy of array's memory.
-<file>.write(<array>)                          # Writes array's memory to the file.
+<file>.write(<array>)                          # Writes array's memory to binary file.
 ```
 
 
@@ -2058,23 +2058,23 @@ Memory View
 **A sequence object that points to the memory of another bytes-like object. Each element can reference a single or multiple consecutive bytes, depending on format. Order and number of elements can be changed with slicing.**
 
 ```python
-<mview> = memoryview(<bytes/bytearray/array>)  # Immutable if bytes, else mutable.
-<obj>   = <mview>[index]                       # Returns int, float or bytes ('c' format).
-<mview> = <mview>[<slice>]                     # Returns mview with rearranged elements.
+<mview> = memoryview(<bytes/bytearray/array>)  # Immutable if bytes is passed, else mutable.
+<obj>   = <mview>[index]                       # Returns int/float. Bytes if format is 'c'.
+<mview> = <mview>[<slice>]                     # Returns memoryview with rearranged elements.
 <mview> = <mview>.cast('<typecode>')           # Only works between B/b/c and other types.
 <mview>.release()                              # Releases memory buffer of the base object.
 ```
 
 ```python
 <bytes> = bytes(<mview>)                       # Returns a new bytes object.
-<bytes> = <bytes>.join(<coll_of_mviews>)       # Joins mviews using bytes as a separator.
-<array> = array('<typecode>', <mview>)         # Treats mview as a sequence of numbers.
-<file>.write(<mview>)                          # Writes `bytes(<mview>)` to the file.
+<bytes> = <bytes>.join(<coll_of_mviews>)       # Joins memoryviews using bytes as a separator.
+<array> = array('<typecode>', <mview>)         # Treats memoryview as a sequence of numbers.
+<file>.write(<mview>)                          # Writes `bytes(<mview>)` to the binary file.
 ```
 
 ```python
 <list>  = list(<mview>)                        # Returns a list of ints, floats or bytes.
-<str>   = str(<mview>, 'utf-8')                # Treats mview as a bytes object.
+<str>   = str(<mview>, 'utf-8')                # Treats memoryview as a bytes object.
 <str>   = <mview>.hex()                        # Returns hex pairs. Accepts `sep=<str>`.
 ```
 
@@ -2156,8 +2156,8 @@ with <lock>:                                   # Enters the block by calling acq
 <bool> = <Future>.cancel()                     # Cancels or returns False if running/finished.
 <iter> = as_completed(<coll_of_Futures>)       # `next(<iter>)` returns next completed Future.
 ```
-* **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called/blocking. Map() times from original call and as_completed() from first call to next(). As\_completed() fails if next() is called too late, even if thread finished on time.**
-* **Exceptions that happen inside threads are raised when next() is called on map's iterator or when result() is called on a Future. Its exception() method returns exception or None.**
+* **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called/blocking. Map() times from original call and as_completed() from first call to next(). As\_completed() fails if next() is called too late, even if all threads have finished.**
+* **Exceptions that happen inside threads are raised when map iterator's next() or Future's result() are called. Future's exception() method returns exception object or None.**
 * **ProcessPoolExecutor provides true parallelism but: everything sent to/from workers must be [pickable](#pickle), queues must be sent using executor's 'initargs' and 'initializer' parameters, and executor should only be reachable via `'if __name__ == "__main__": ...'`.**
 
 
@@ -2267,7 +2267,8 @@ log.basicConfig(
 * **Parent logger can be specified by naming the child logger `'<parent>.<name>'`.**
 * **If logger doesn't have a set level it inherits it from the first ancestor that does.**
 * **Formatter also accepts: pathname, filename, funcName, lineno, thread and process.**
-* **A `'log.handlers.RotatingFileHandler'` creates and deletes log files based on 'maxBytes' and 'backupCount' arguments.**
+* **RotatingFileHandler creates and deletes files based on 'maxBytes' and 'backupCount' args.**
+* **An object with `'filter(<LogRecord>)'` method (or the method itself) can be added to loggers and handlers via addFilter(). Message is dropped if filter() returns a false value.**
 
 #### Creates a logger that writes all messages to file and sends them to the root's handler that prints warnings or higher:
 ```python
@@ -2304,10 +2305,9 @@ delattr(<obj>, '<attr_name>')           # Same. Also `del <object>.<attr_name>`.
 
 ```python
 <Sig>  = inspect.signature(<function>)  # Returns function's Signature object.
-<dict> = <Sig>.parameters               # Dict of Parameter objects. Also <Sig>.return_type.
+<dict> = <Sig>.parameters               # Dict of Parameters. Also <Sig>.return_annotation.
 <memb> = <Param>.kind                   # Member of ParamKind enum (Parameter.KEYWORD_ONLY, …).
-<obj>  = <Param>.default                # Returns parameter's default value or Parameter.empty.
-<type> = <Param>.annotation             # Returns parameter's type hint or Parameter.empty.
+<obj>  = <Param>.default                # Parameter.empty if missing. Also <Param>.annotation.
 ```
 
 
@@ -2413,7 +2413,7 @@ import matplotlib.pyplot as plt
 
 plt.plot/bar/scatter(x_data, y_data [, label=<str>])  # Or: plt.plot(y_data)
 plt.legend()                                          # Adds a legend.
-plt.title/xlabel/ylabel(<str>)                        # Adds a title/labels.
+plt.title/xlabel/ylabel(<str>)                        # Adds a title/label.
 plt.savefig(<path>)                                   # Saves the figure.
 plt.show()                                            # Displays the figure.
 plt.clf()                                             # Clears the figure.
@@ -2680,7 +2680,7 @@ import numpy as np
 
 ```python
 <array> = np.concatenate(<list_of_arrays>, axis=0)      # Links arrays along first axis (rows).
-<array> = np.row_stack/column_stack(<list_of_arrays>)   # Treats 1d arrays as rows or columns.
+<array> = np.vstack/column_stack(<list_of_arrays>)      # Treats 1d arrays as rows or columns.
 <array> = np.tile/repeat(<array>, <int/list> [, axis])  # Tiles array or repeats its elements.
 ```
 * **Shape is a tuple of dimension sizes. A 100x50 RGB image has shape (50, 100, 3).**
@@ -2707,32 +2707,33 @@ import numpy as np
 ```
 * **`':'` returns a slice of all dimension's indices. Omitted dimensions default to `':'`.**
 * **Indices should not be tuples because Python converts `'obj[i, j]'`  to `'obj[(i, j)]'`!**
-* **`'ix_()'` returns two 2d arrays. Indices of different shapes get unified with broadcasting.**
+* **Indexing with a slice and 1d array works the same as when using two slices (lines 4, 6, 7).**
+* **`'ix_([1, 2], [3, 4])'` returns `'[[1], [2]]'` and `'[[3, 4]]'`. Due to broadcasting rules, this is the same as using `'[[1, 1], [2, 2]]'` and `'[[3, 4], [3, 4]]'`.**
 * **Any value that is broadcastable to the indexed shape can be assigned to the selection.**
 
 ### Broadcasting
 **Set of rules by which NumPy functions operate on arrays of different sizes and/or dimensions.**
 
 ```python
-left  = [[0.1], [0.6], [0.8]]                           # Shape: (3, 1)
-right = [ 0.1 ,  0.6 ,  0.8 ]                           # Shape: (3,)
+left  = [ 0.1 ,  0.6 ,  0.8 ]                           # Shape: (3,)
+right = [[0.1], [0.6], [0.8]]                           # Shape: (3, 1)
 ```
 
 #### 1. If array shapes differ in length, left-pad the shorter shape with ones:
 ```python
-left  = [[0.1], [0.6], [0.8]]                           # Shape: (3, 1)
-right = [[0.1 ,  0.6 ,  0.8]]                           # Shape: (1, 3) <- !
+left  = [[0.1 ,  0.6 ,  0.8]]                           # Shape: (1, 3) <- !
+right = [[0.1], [0.6], [0.8]]                           # Shape: (3, 1)
 ```
 
 #### 2. If any dimensions differ in size, expand the ones that have size 1 by duplicating their elements:
 ```python
-left  = [[0.1,  0.1,  0.1],                             # Shape: (3, 3) <- !
-         [0.6,  0.6,  0.6],
-         [0.8,  0.8,  0.8]]
-
-right = [[0.1,  0.6,  0.8],                             # Shape: (3, 3) <- !
+left  = [[0.1,  0.6,  0.8],                             # Shape: (3, 3) <- !
          [0.1,  0.6,  0.8],
          [0.1,  0.6,  0.8]]
+
+right = [[0.1,  0.1,  0.1],                             # Shape: (3, 3) <- !
+         [0.6,  0.6,  0.6],
+         [0.8,  0.8,  0.8]]
 ```
 
 ### Example
@@ -2740,15 +2741,13 @@ right = [[0.1,  0.6,  0.8],                             # Shape: (3, 3) <- !
 
 ```python
 >>> points = np.array([0.1, 0.6, 0.8])
- [ 0.1,  0.6,  0.8]
+[ 0.1,  0.6,  0.8 ]
 >>> wrapped_points = points.reshape(3, 1)
-[[ 0.1],
- [ 0.6],
- [ 0.8]]
->>> distances = wrapped_points - points
-[[ 0. , -0.5, -0.7],
- [ 0.5,  0. , -0.2],
- [ 0.7,  0.2,  0. ]]
+[[0.1], [0.6], [0.8]]
+>>> distances = points - wrapped_points
+[[ 0. ,  0.5,  0.7],
+ [-0.5,  0. ,  0.2],
+ [-0.7, -0.2,  0. ]]
 >>> distances = np.abs(distances)
 [[ 0. ,  0.5,  0.7],
  [ 0.5,  0. ,  0.2],
@@ -2773,7 +2772,7 @@ from PIL import Image
 <Image> = Image.new('<mode>', (width, height))  # Creates new image. Also `color=<int/tuple>`.
 <Image> = Image.open(<path>)                    # Identifies format based on file's contents.
 <Image> = <Image>.convert('<mode>')             # Converts image to the new mode.
-<Image>.save(<path>)                            # Selects format based on extension (png/jpg…).
+<Image>.save(<path>)                            # Selects format based on extension (PNG/JPG…).
 <Image>.show()                                  # Opens image in the default preview app.
 ```
 
@@ -2796,10 +2795,11 @@ from PIL import Image
 ```
 
 ### Modes
-* **`'L'` - Lightness (i.e. greyscale). Each pixel is an int between 0 and 255.**
-* **`'RGB'` - Red, green, blue (i.e. true color). Each pixel is a tuple of three ints.**
-* **`'RGBA'` - RGB with alpha. Low alpha (forth int) means more transparency.**
-* **`'HSV'` - Hue, saturation, value color space.**
+* **`'L'` - Lightness (greyscale image). Each pixel is an int between 0 and 255.**
+* **`'RGB'` - Red, green, blue (true color image). Each pixel is a tuple of three ints.**
+* **`'RGBA'` - RGB with alpha. Low alpha (i.e. forth int) makes pixel more transparent.**
+* **`'HSV'` - Hue, saturation, value. Three ints representing color in HSV color space.**
+
 
 ### Examples
 #### Creates a PNG image of a rainbow gradient:
@@ -2824,14 +2824,14 @@ img.show()
 ### Image Draw
 ```python
 from PIL import ImageDraw
-<ImageDraw> = ImageDraw.Draw(<Image>)           # Object for adding 2D graphics to the image.
-<ImageDraw>.point((x, y))                       # Draws a point. Truncates floats into ints.
-<ImageDraw>.line((x1, y1, x2, y2 [, ...]))      # To get anti-aliasing use Image's resize().
-<ImageDraw>.arc((x1, y1, x2, y2), deg1, deg2)   # Always draws in clockwise direction.
-<ImageDraw>.rectangle((x1, y1, x2, y2))         # To rotate use Image's rotate() and paste().
-<ImageDraw>.polygon((x1, y1, x2, y2, ...))      # Last point gets connected to the first.
-<ImageDraw>.ellipse((x1, y1, x2, y2))           # To rotate use Image's rotate() and paste().
-<ImageDraw>.text((x, y), <str>, font=<Font>)    # `<Font> = ImageFont.truetype(<path>, size)`
+<Draw> = ImageDraw.Draw(<Image>)                # Object for adding 2D graphics to the image.
+<Draw>.point((x, y))                            # Draws a point. Truncates floats into ints.
+<Draw>.line((x1, y1, x2, y2 [, ...]))           # To get anti-aliasing use Image's resize().
+<Draw>.arc((x1, y1, x2, y2), deg1, deg2)        # Always draws in clockwise direction.
+<Draw>.rectangle((x1, y1, x2, y2))              # To rotate use Image's rotate() and paste().
+<Draw>.polygon((x1, y1, x2, y2, ...))           # Last point gets connected to the first.
+<Draw>.ellipse((x1, y1, x2, y2))                # To rotate use Image's rotate() and paste().
+<Draw>.text((x, y), <str>, font=<Font>)         # `<Font> = ImageFont.truetype(<path>, size)`
 ```
 * **Use `'fill=<color>'` to set the primary color.**
 * **Use `'width=<int>'` to set the width of lines or contours.**
@@ -3100,7 +3100,7 @@ def run(screen, images, mario, tiles):
         pressed -= {keys.get(e.key) for e in pg.event.get(pg.KEYUP)}
         update_speed(mario, tiles, pressed)
         update_position(mario, tiles)
-        draw(screen, images, mario, tiles, pressed)
+        draw(screen, images, mario, tiles)
 
 def update_speed(mario, tiles, pressed):
     x, y = mario.spd
@@ -3114,7 +3114,8 @@ def update_position(mario, tiles):
     n_steps = max(abs(s) for s in mario.spd)
     for _ in range(n_steps):
         mario.spd = stop_on_collision(mario.spd, get_boundaries(mario.rect, tiles))
-        mario.rect.topleft = x, y = x + (mario.spd.x / n_steps), y + (mario.spd.y / n_steps)
+        x, y = x + (mario.spd.x / n_steps), y + (mario.spd.y / n_steps)
+        mario.rect.topleft = x, y
 
 def get_boundaries(rect, tiles):
     deltas = {D.n: P(0, -1), D.e: P(1, 0), D.s: P(0, 1), D.w: P(-1, 0)}
@@ -3124,16 +3125,15 @@ def stop_on_collision(spd, bounds):
     return P(x=0 if (D.w in bounds and spd.x < 0) or (D.e in bounds and spd.x > 0) else spd.x,
              y=0 if (D.n in bounds and spd.y < 0) or (D.s in bounds and spd.y > 0) else spd.y)
 
-def draw(screen, images, mario, tiles, pressed):
-    def get_marios_image_index():
-        if D.s not in get_boundaries(mario.rect, tiles):
-            return 4
-        return next(mario.frame_cycle) if {D.w, D.e} & pressed else 6
+def draw(screen, images, mario, tiles):
     screen.fill((85, 168, 255))
-    mario.facing_left = (D.w in pressed) if {D.w, D.e} & pressed else mario.facing_left
-    screen.blit(images[get_marios_image_index() + mario.facing_left * 9], mario.rect)
+    mario.facing_left = mario.spd.x < 0 if mario.spd.x else mario.facing_left
+    is_airborne = D.s not in get_boundaries(mario.rect, tiles)
+    image_index = 4 if is_airborne else (next(mario.frame_cycle) if mario.spd.x else 6)
+    screen.blit(images[image_index + mario.facing_left * 9], mario.rect)
     for t in tiles:
-        screen.blit(images[18 if t.x in [0, (W-1)*16] or t.y in [0, (H-1)*16] else 19], t)
+        is_border = t.x in [0, (W-1)*16] or t.y in [0, (H-1)*16]
+        screen.blit(images[18 if is_border else 19], t)
     pg.display.flip()
 
 if __name__ == '__main__':
@@ -3539,22 +3539,19 @@ cdef class <class_name>:
         self.<attr_name> = <arg_name>
 ```
 
-```python
-cdef enum <enum_name>: <member_name>, <member_name>, ...
-```
-
 ### Virtual Environments
 **System for installing libraries directly into project's directory.**
 
 ```bash
-$ python3 -m venv <name>      # Creates virtual environment in current directory.
-$ source <name>/bin/activate  # Activates venv. On Windows run `<name>\Scripts\activate`.
-$ pip3 install <library>      # Installs the library into active environment.
-$ python3 <path>              # Runs the script in active environment. Also `./<path>`.
-$ deactivate                  # Deactivates the active virtual environment.
+$ python3 -m venv NAME      # Creates virtual environment in current directory.
+$ source NAME/bin/activate  # Activates env. On Windows run `NAME\Scripts\activate`.
+$ pip3 install LIBRARY      # Installs the library into active environment.
+$ python3 FILE              # Runs the script in active environment. Also `./FILE`.
+$ deactivate                # Deactivates the active virtual environment.
 ```
 
 ### Basic Script Template
+**Run the script with `'$ python3 FILE'` or `'$ chmod u+x FILE; ./FILE'`. To automatically start the debugger when uncaught exception occurs run `'$ python3 -m pdb -cc FILE'`.**
 ```python
 #!/usr/bin/env python3
 #
