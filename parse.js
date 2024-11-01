@@ -30,9 +30,7 @@ const hljs = require('highlightjs');
 
 
 const TOC =
-  '<br>' +
-  '<h2 id="toc">Contents</h2>\n' +
-  '<pre><code class="hljs bash" style="line-height: 1.327em;"><strong>ToC</strong> = {\n' +
+  '<pre style="border-left: none;padding-left: 1.9px;"><code class="hljs bash" style="line-height: 1.327em;"><strong>ToC</strong> = {\n' +
   '    <strong><span class="hljs-string">\'1. Collections\'</span></strong>: [<a href="#list">List</a>, <a href="#dictionary">Dictionary</a>, <a href="#set">Set</a>, <a href="#tuple">Tuple</a>, <a href="#range">Range</a>, <a href="#enumerate">Enumerate</a>, <a href="#iterator">Iterator</a>, <a href="#generator">Generator</a>],\n' +
   '    <strong><span class="hljs-string">\'2. Types\'</span></strong>:       [<a href="#type">Type</a>, <a href="#string">String</a>, <a href="#regex">Regular_Exp</a>, <a href="#format">Format</a>, <a href="#numbers">Numbers</a>, <a href="#combinatorics">Combinatorics</a>, <a href="#datetime">Datetime</a>],\n' +
   '    <strong><span class="hljs-string">\'3. Syntax\'</span></strong>:      [<a href="#arguments">Args</a>, <a href="#inline">Inline</a>, <a href="#imports">Import</a>, <a href="#decorator">Decorator</a>, <a href="#class">Class</a>, <a href="#ducktypes">Duck_Types</a>, <a href="#enum">Enum</a>, <a href="#exceptions">Exception</a>],\n' +
@@ -50,12 +48,12 @@ const BIN_HEX =
   '&lt;int&gt; = int(<span class="hljs-string">\'±0b&lt;bin&gt;\'</span>, <span class="hljs-number">0</span>)                        <span class="hljs-comment"># Or: int(\'±0x&lt;hex&gt;\', 0)</span>\n' +
   '&lt;str&gt; = bin(&lt;int&gt;)                                <span class="hljs-comment"># Returns \'[-]0b&lt;bin&gt;\'. Also hex().</span>\n';
 
-const LRU_CACHE =
-  '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> lru_cache\n' +
+const CACHE =
+  '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> cache\n' +
   '\n' +
-  '<span class="hljs-meta">@lru_cache(maxsize=None)</span>\n' +
+  '<span class="hljs-meta">@cache</span>\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fib</span><span class="hljs-params">(n)</span>:</span>\n' +
-  '    <span class="hljs-keyword">return</span> n <span class="hljs-keyword">if</span> n &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">else</span> fib(n-<span class="hljs-number">2</span>) + fib(n-<span class="hljs-number">1</span>)\n';
+  '    <span class="hljs-keyword">return</span> n <span class="hljs-keyword">if</span> n &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">else</span> fib(n-<span class="hljs-number">2</span>) + fib(n-<span class="hljs-number">1</span>)';
 
 const PARAMETRIZED_DECORATOR =
   '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> wraps\n' +
@@ -114,11 +112,9 @@ const MATCH_EXAMPLE =
   '<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">from</span> pathlib <span class="hljs-keyword">import</span> Path\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">match</span> Path(<span class="hljs-string">\'/home/gto/python-cheatsheet/README.md\'</span>):\n' +
   '<span class="hljs-meta">... </span>    <span class="hljs-keyword">case</span> Path(\n' +
-  '<span class="hljs-meta">... </span>        parts=[<span class="hljs-string">\'/\'</span>, <span class="hljs-string">\'home\'</span>, user, *_],\n' +
-  '<span class="hljs-meta">... </span>        stem=stem,\n' +
-  '<span class="hljs-meta">... </span>        suffix=(<span class="hljs-string">\'.md\'</span> | <span class="hljs-string">\'.txt\'</span>) <span class="hljs-keyword">as</span> suffix\n' +
-  '<span class="hljs-meta">... </span>    ) <span class="hljs-keyword">if</span> stem.lower() == <span class="hljs-string">\'readme\'</span>:\n' +
-  '<span class="hljs-meta">... </span>        print(<span class="hljs-string">f\'<span class="hljs-subst">{stem}</span><span class="hljs-subst">{suffix}</span> is a readme file that belongs to user <span class="hljs-subst">{user}</span>.\'</span>)\n' +
+  '<span class="hljs-meta">... </span>        parts=[<span class="hljs-string">\'/\'</span>, <span class="hljs-string">\'home\'</span>, user, *_]\n' +
+  '<span class="hljs-meta">... </span>    ) <span class="hljs-keyword">as</span> p <span class="hljs-keyword">if</span> p.name.lower().startswith(<span class="hljs-string">\'readme\'</span>) <span class="hljs-keyword">and</span> p.is_file():\n' +
+  '<span class="hljs-meta">... </span>        print(<span class="hljs-string">f\'<span class="hljs-subst">{p.name}</span> is a readme file that belongs to user <span class="hljs-subst">{user}</span>.\'</span>)\n' +
   '<span class="hljs-string">\'README.md is a readme file that belongs to user gto.\'</span>\n';
 
 const COROUTINES =
@@ -135,7 +131,7 @@ const COROUTINES =
   '\n' +
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main_coroutine</span><span class="hljs-params">(screen)</span>:</span>\n' +
   '    moves = asyncio.Queue()\n' +
-  '    state = {<span class="hljs-string">\'*\'</span>: P(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>), **{id_: P(W//<span class="hljs-number">2</span>, H//<span class="hljs-number">2</span>) <span class="hljs-keyword">for</span> id_ <span class="hljs-keyword">in</span> range(<span class="hljs-number">10</span>)}}\n' +
+  '    state = {<span class="hljs-string">\'*\'</span>: P(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>)} | {id_: P(W//<span class="hljs-number">2</span>, H//<span class="hljs-number">2</span>) <span class="hljs-keyword">for</span> id_ <span class="hljs-keyword">in</span> range(<span class="hljs-number">10</span>)}\n' +
   '    ai    = [random_controller(id_, moves) <span class="hljs-keyword">for</span> id_ <span class="hljs-keyword">in</span> range(<span class="hljs-number">10</span>)]\n' +
   '    mvc   = [human_controller(screen, moves), model(moves, state), view(state, screen)]\n' +
   '    tasks = [asyncio.create_task(coro) <span class="hljs-keyword">for</span> coro <span class="hljs-keyword">in</span> ai + mvc]\n' +
@@ -220,7 +216,20 @@ const LOGGING_EXAMPLE =
   '<span class="hljs-meta">&gt;&gt;&gt; </span>print(open(<span class="hljs-string">\'test.log\'</span>).read())\n' +
   '2023-02-07 23:21:01,430 CRITICAL:my_module:Running out of disk space.\n';
 
-const AUDIO =
+const AUDIO_1 =
+  '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">write_to_wav_file</span><span class="hljs-params">(filename, samples_f, p=<span class="hljs-keyword">None</span>, nchannels=<span class="hljs-number">1</span>, sampwidth=<span class="hljs-number">2</span>, framerate=<span class="hljs-number">44100</span>)</span>:</span>\n' +
+  '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_bytes</span><span class="hljs-params">(a_float)</span>:</span>\n' +
+  '        a_float = max(<span class="hljs-number">-1</span>, min(<span class="hljs-number">1</span> - <span class="hljs-number">2e-16</span>, a_float))\n' +
+  '        a_float += p.sampwidth == <span class="hljs-number">1</span>\n' +
+  '        a_float *= pow(<span class="hljs-number">2</span>, p.sampwidth * <span class="hljs-number">8</span> - <span class="hljs-number">1</span>)\n' +
+  '        <span class="hljs-keyword">return</span> int(a_float).to_bytes(p.sampwidth, <span class="hljs-string">\'little\'</span>, signed=(p.sampwidth != <span class="hljs-number">1</span>))\n' +
+  '    <span class="hljs-keyword">if</span> p <span class="hljs-keyword">is</span> <span class="hljs-keyword">None</span>:\n' +
+  '        p = wave._wave_params(nchannels, sampwidth, framerate, <span class="hljs-number">0</span>, <span class="hljs-string">\'NONE\'</span>, <span class="hljs-string">\'not compressed\'</span>)\n' +
+  '    <span class="hljs-keyword">with</span> wave.open(filename, <span class="hljs-string">\'wb\'</span>) <span class="hljs-keyword">as</span> file:\n' +
+  '        file.setparams(p)\n' +
+  '        file.writeframes(<span class="hljs-string">b\'\'</span>.join(get_bytes(f) <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> samples_f))\n';
+
+const AUDIO_2 =
   '<span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> pi, sin\n' +
   'samples_f = (sin(i * <span class="hljs-number">2</span> * pi * <span class="hljs-number">440</span> / <span class="hljs-number">44100</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">100_000</span>))\n' +
   'write_to_wav_file(<span class="hljs-string">\'test.wav\'</span>, samples_f)\n';
@@ -291,7 +300,7 @@ const MARIO =
   '    mario.facing_left = mario.spd.x &lt; <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> mario.spd.x <span class="hljs-keyword">else</span> mario.facing_left\n' +
   '    is_airborne = D.s <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> get_boundaries(mario.rect, tiles)\n' +
   '    image_index = <span class="hljs-number">4</span> <span class="hljs-keyword">if</span> is_airborne <span class="hljs-keyword">else</span> (next(mario.frame_cycle) <span class="hljs-keyword">if</span> mario.spd.x <span class="hljs-keyword">else</span> <span class="hljs-number">6</span>)\n' +
-  '    screen.blit(images[image_index + mario.facing_left * <span class="hljs-number">9</span>], mario.rect)\n' +
+  '    screen.blit(images[image_index + (mario.facing_left * <span class="hljs-number">9</span>)], mario.rect)\n' +
   '    <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> tiles:\n' +
   '        is_border = t.x <span class="hljs-keyword">in</span> [<span class="hljs-number">0</span>, (W-<span class="hljs-number">1</span>)*<span class="hljs-number">16</span>] <span class="hljs-keyword">or</span> t.y <span class="hljs-keyword">in</span> [<span class="hljs-number">0</span>, (H-<span class="hljs-number">1</span>)*<span class="hljs-number">16</span>]\n' +
   '        screen.blit(images[<span class="hljs-number">18</span> <span class="hljs-keyword">if</span> is_border <span class="hljs-keyword">else</span> <span class="hljs-number">19</span>], t)\n' +
@@ -301,6 +310,7 @@ const MARIO =
   '    main()\n';
 
 const GROUPBY =
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>df = pd.DataFrame([[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>], [<span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">6</span>]], list(<span class="hljs-string">\'abc\'</span>), list(<span class="hljs-string">\'xyz\'</span>))\n' +
   '<span class="hljs-meta">&gt;&gt;&gt; </span>gb = df.groupby(<span class="hljs-string">\'z\'</span>); gb.apply(print)\n' +
   '   x  y  z\n' +
   'a  <span class="hljs-number">1</span>  <span class="hljs-number">2</span>  <span class="hljs-number">3</span>\n' +
@@ -325,7 +335,8 @@ const CYTHON_3 =
 const INDEX =
   '<li><strong>Only available in the <a href="https://transactions.sendowl.com/products/78175486/4422834F/view">PDF</a>.</strong></li>\n' +
   '<li><strong>Ctrl+F / ⌘F is usually sufficient.</strong></li>\n' +
-  '<li><strong>Searching <code class="python hljs"><span class="hljs-string">\'#&lt;title&gt;\'</span></code> will limit the search to the titles.</strong></li>\n';
+  '<li><strong>Searching <code class="python hljs"><span class="hljs-string">\'#&lt;title&gt;\'</span></code> will limit the search to the titles.</strong></li>\n' +
+  '<li><strong>Click on the <code class="python hljs"><span class="hljs-string">\'#\'</span></code> symbol to get a link to specific section.</strong></li>\n';
 
 
 const DIAGRAM_1_A =
@@ -487,19 +498,19 @@ const DIAGRAM_9_B =
   "┗━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_95_A =
-  '+------------+--------------+----------+----------------------------------+\n' +
-  '| Dialect    | pip3 install | import   |           Dependencies           |\n' +
-  '+------------+--------------+----------+----------------------------------+\n';
+  '+-----------------+--------------+----------------------------------+\n' +
+  '| Dialect         | pip3 install |           Dependencies           |\n' +
+  '+-----------------+--------------+----------------------------------+\n';
 
 const DIAGRAM_95_B =
-  '┏━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n' +
-  '┃ Dialect    │ pip3 install │ import   │           Dependencies           ┃\n' +
-  '┠────────────┼──────────────┼──────────┼──────────────────────────────────┨\n' +
-  '┃ mysql      │ mysqlclient  │ MySQLdb  │ www.pypi.org/project/mysqlclient ┃\n' +
-  '┃ postgresql │ psycopg2     │ psycopg2 │ www.pypi.org/project/psycopg2    ┃\n' +
-  '┃ mssql      │ pyodbc       │ pyodbc   │ www.pypi.org/project/pyodbc      ┃\n' +
-  '┃ oracle     │ oracledb     │ oracledb │ www.pypi.org/project/oracledb    ┃\n' +
-  '┗━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n';
+  '┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n' +
+  '┃ Dialect         │ pip3 install │           Dependencies           ┃\n' +
+  '┠─────────────────┼──────────────┼──────────────────────────────────┨\n' +
+  '┃ mysql           │ mysqlclient  │ www.pypi.org/project/mysqlclient ┃\n' +
+  '┃ postgresql      │ psycopg2     │ www.pypi.org/project/psycopg2    ┃\n' +
+  '┃ mssql           │ pyodbc       │ www.pypi.org/project/pyodbc      ┃\n' +
+  '┃ oracle+oracledb │ oracledb     │ www.pypi.org/project/oracledb    ┃\n' +
+  '┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n';
 
 const DIAGRAM_10_A =
   '+-------------+-------------+\n' +
@@ -763,6 +774,7 @@ function insertLinks() {
 function unindentBanner() {
   const montyImg = $('img').first();
   montyImg.parent().addClass('banner');
+  montyImg.parent().css({"margin-bottom": "20px", "padding-bottom": "7px"})
   const downloadPraragrapth = $('p').first();
   downloadPraragrapth.addClass('banner');
 }
@@ -825,7 +837,7 @@ function fixClasses() {
 
 function fixHighlights() {
   $(`code:contains(<int> = ±0b<bin>)`).html(BIN_HEX);
-  $(`code:contains(@lru_cache(maxsize=None))`).html(LRU_CACHE);
+  $(`code:contains( + fib(n)`).html(CACHE);
   $(`code:contains(@debug(print_result=True))`).html(PARAMETRIZED_DECORATOR);
   $(`code:contains(print/str/repr([<obj>]))`).html(REPR_USE_CASES);
   $(`code:contains((self, a=None):)`).html(CONSTRUCTOR_OVERLOADING);
@@ -839,7 +851,8 @@ function fixHighlights() {
   $(`code:contains(import curses, os)`).html(CURSES);
   $(`code:contains(pip3 install tqdm)`).html(PROGRESS_BAR);
   $(`code:contains(>>> log.basicConfig()`).html(LOGGING_EXAMPLE);
-  $(`code:contains(samples_f = (sin(i *)`).html(AUDIO);
+  $(`code:contains(a_float = max()`).html(AUDIO_1);
+  $(`code:contains(samples_f = (sin(i *)`).html(AUDIO_2);
   $(`code:contains(collections, dataclasses, enum, io, itertools)`).html(MARIO);
   $(`code:contains(>>> gb = df.groupby)`).html(GROUPBY);
   $(`code:contains(cdef <ctype> <var_name> = <obj>)`).html(CYTHON_1);
