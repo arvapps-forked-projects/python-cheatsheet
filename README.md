@@ -13,8 +13,8 @@ Contents
 **&nbsp;&nbsp;&nbsp;** **3. Syntax:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Args`](#arguments)**__,__ **[`Inline`](#inline)**__,__ **[`Import`](#imports)**__,__ **[`Decorator`](#decorator)**__,__ **[`Class`](#class)**__,__ **[`Duck_Types`](#duck-types)**__,__ **[`Enum`](#enum)**__,__ **[`Exception`](#exceptions)**__.__  
 **&nbsp;&nbsp;&nbsp;** **4. System:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Exit`](#exit)**__,__ **[`Print`](#print)**__,__ **[`Input`](#input)**__,__ **[`Command_Line_Arguments`](#command-line-arguments)**__,__ **[`Open`](#open)**__,__ **[`Path`](#paths)**__,__ **[`OS_Commands`](#os-commands)**__.__  
 **&nbsp;&nbsp;&nbsp;** **5. Data:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`JSON`](#json)**__,__ **[`Pickle`](#pickle)**__,__ **[`CSV`](#csv)**__,__ **[`SQLite`](#sqlite)**__,__ **[`Bytes`](#bytes)**__,__ **[`Struct`](#struct)**__,__ **[`Array`](#array)**__,__ **[`Memory_View`](#memory-view)**__,__ **[`Deque`](#deque)**__.__  
-**&nbsp;&nbsp;&nbsp;** **6. Advanced:** **&nbsp;&nbsp;&nbsp;**  **[`Threading`](#threading)**__,__ **[`Operator`](#operator)**__,__ **[`Match_Stmt`](#match-statement)**__,__ **[`Logging`](#logging)**__,__ **[`Introspection`](#introspection)**__,__ **[`Coroutines`](#coroutines)**__.__  
-**&nbsp;&nbsp;&nbsp;** **7. Libraries:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Progress_Bar`](#progress-bar)**__,__ **[`Plot`](#plot)**__,__ **[`Table`](#table)**__,__ **[`Console_App`](#console-app)**__,__ **[`GUI`](#gui-app)**__,__ **[`Scraping`](#scraping)**__,__ **[`Web`](#web)**__,__ **[`Profile`](#profiling)**__.__  
+**&nbsp;&nbsp;&nbsp;** **6. Advanced:** **&nbsp;&nbsp;&nbsp;**  **[`Operator`](#operator)**__,__ **[`Match_Stmt`](#match-statement)**__,__ **[`Logging`](#logging)**__,__ **[`Introspection`](#introspection)**__,__ **[`Threading`](#threading)**__,__ **[`Coroutines`](#coroutines)**__.__  
+**&nbsp;&nbsp;&nbsp;** **7. Libraries:** **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**  **[`Progress_Bar`](#progress-bar)**__,__ **[`Plot`](#plot)**__,__ **[`Table`](#table)**__,__ **[`Console_App`](#console-app)**__,__ **[`GUI`](#gui-app)**__,__ **[`Scraping`](#scraping)**__,__ **[`Web`](#web-app)**__,__ **[`Profile`](#profiling)**__.__  
 **&nbsp;&nbsp;&nbsp;** **8. Multimedia:** **&nbsp;&nbsp;**  **[`NumPy`](#numpy)**__,__ **[`Image`](#image)**__,__ **[`Animation`](#animation)**__,__ **[`Audio`](#audio)**__,__ **[`Synthesizer`](#synthesizer)**__,__ **[`Pygame`](#pygame)**__,__ **[`Pandas`](#pandas)**__,__ **[`Plotly`](#plotly)**__.__
 
 
@@ -50,19 +50,22 @@ List
 ```
 
 ```python
-sum_of_elements  = sum(<collection>)
+<el>  = max(<collection>)       # Returns largest element. Also min(<el_1>, ...).
+<num> = sum(<collection>)       # Returns sum of elements. Also math.prod(<coll>).
+```
+
+```python
 elementwise_sum  = [sum(pair) for pair in zip(list_a, list_b)]
 sorted_by_second = sorted(<collection>, key=lambda el: el[1])
 sorted_by_both   = sorted(<collection>, key=lambda el: (el[1], el[0]))
 flatter_list     = list(itertools.chain.from_iterable(<list>))
-product_of_elems = functools.reduce(lambda out, el: out * el, <collection>)
-list_of_chars    = list(<str>)
 ```
-* **For details about sorted(), min() and max() see [sortable](#sortable).**
-* **Module [operator](#operator) provides functions itemgetter() and mul() that offer the same functionality as [lambda](#lambda) expressions above.**
+* **For details about sort(), sorted(), min() and max() see [sortable](#sortable).**
+* **Module [operator](#operator) has function itemgetter() that can replace listed [lambdas](#lambda).**
+* **This text uses the term 'collection' instead of 'iterable'. For rationale see [collection](#collection).**
 
 ```python
-<int> = len(<list>)             # Returns number of items. Also works on other collections.
+<int> = len(<list>)             # Returns number of items. Also works on dict, set and string.
 <int> = <list>.count(<el>)      # Returns number of occurrences. Also `if <el> in <coll>: ...`.
 <int> = <list>.index(<el>)      # Returns index of the first occurrence or raises ValueError.
 <el>  = <list>.pop()            # Removes and returns item from the end or at index if passed.
@@ -79,8 +82,8 @@ Dictionary
 ```
 
 ```python
-<view> = <dict>.keys()                          # Coll. of keys that reflects changes.
-<view> = <dict>.values()                        # Coll. of values that reflects changes.
+<view> = <dict>.keys()                          # Collection of keys that reflects changes.
+<view> = <dict>.values()                        # Collection of values that reflects changes.
 <view> = <dict>.items()                         # Coll. of key-value tuples that reflects chgs.
 ```
 
@@ -388,9 +391,7 @@ import re
 '\w' == '[a-zA-Z0-9_]'                            # Also [ª²³…]. Matches an alphanumeric or _.
 '\s' == '[ \t\n\r\f\v]'                           # Also [\x1c-\x1f…]. Matches a whitespace.
 ```
-
-* **By default, decimal characters, alphanumerics and whitespaces from all alphabets are matched unless `'flags=re.ASCII'` argument is used.**
-* **It restricts special sequence matches to `'[\x00-\x7f]'` (the first 128 characters) and also prevents `'\s'` from accepting `'[\x1c-\x1f]'` (file, table, row, and field separators).**
+* **By default, decimal characters and alphanumerics from all alphabets are matched unless `'flags=re.ASCII'` is used. It restricts special sequence matches to the first 128 Unicode characters and also prevents `'\s'` from accepting `'\x1c'`, `'\x1d'`, `'\x1e'` and `'\x1f'` (non-printable characters that divide text into files, tables, rows and fields, respectively).**
 * **Use a capital letter for negation (all non-ASCII characters will be matched when used in combination with ASCII flag).**
 
 
@@ -493,7 +494,7 @@ Format
 Numbers
 -------
 ```python
-<int>      = int(<float/str/bool>)                # Or: math.floor(<float>)
+<int>      = int(<float/str/bool>)                # Or: math.trunc(<float>)
 <float>    = float(<int/str/bool>)                # Or: <int/float>e±<int>
 <complex>  = complex(real=0, imag=0)              # Or: <int/float> ± <int/float>j
 <Fraction> = fractions.Fraction(0, 1)             # Or: Fraction(numerator=0, denominator=1)
@@ -605,7 +606,7 @@ import zoneinfo, dateutil.tz
 <DT> = datetime(year, month, day, hour=0)   # Also: `minute=0, second=0, microsecond=0, …`.
 <TD> = timedelta(weeks=0, days=0, hours=0)  # Also: `minutes=0, seconds=0, microseconds=0`.
 ```
-* **Aware `<a>` time and datetime objects have defined timezone, while naive `<n>` don't. If object is naive, it is presumed to be in the system's timezone!**
+* **Aware times and datetimes have defined timezone, while naive don't. If object is naive, it is presumed to be in the system's timezone!**
 * **`'fold=1'` means the second pass in case of time jumping back for one hour.**
 * **Timedelta normalizes arguments to ±days, seconds (< 86 400) and microseconds (< 1M). Its str() method returns `'[±D, ]H:MM:SS[.…]'` and total_seconds() a float of all seconds.**
 * **Use `'<D/DT>.weekday()'` to get the day of the week as an int, with Monday being 0.**
@@ -931,7 +932,7 @@ from functools import cache
 def fib(n):
     return n if n < 2 else fib(n-2) + fib(n-1)
 ```
-* **Potential problem with cache is that it can grow indefinitely. To clear its stored values run `'fib.cache_clear()'`, or use `'@lru_cache(maxsize=<int>)'` decorator instead.**
+* **Potential problem with cache is that it can grow indefinitely. To clear stored values run `'fib.cache_clear()'`, or use `'@lru_cache(maxsize=<int>)'` decorator instead.**
 * **CPython interpreter limits recursion depth to 3000 by default. To increase it run `'sys.setrecursionlimit(<int>)'`.**
 
 ### Parametrized Decorator
@@ -974,15 +975,15 @@ class MyClass:
     def get_class_name(cls):
         return cls.__name__
 ```
-* **Return value of str() should be readable and of repr() unambiguous.**
-* **If only repr() is defined, it will also be used for str().**
-* **Methods decorated with `'@staticmethod'` do not receive 'self' nor 'cls' as their first arg.**
 
 ```python
 >>> obj = MyClass(1)
 >>> obj.a, str(obj), repr(obj)
 (1, '1', 'MyClass(1)')
 ```
+* **Return value of str() should be readable and of repr() unambiguous.**
+* **If only repr() is defined, it will also be used for str().**
+* **Methods decorated with `'@staticmethod'` do not receive 'self' nor 'cls' as their first argument.**
 
 #### Expressions that call the str() method:
 ```python
@@ -1055,9 +1056,9 @@ class <class_name>:
 * **For attributes of arbitrary type use `'typing.Any'`.**
 
 ```python
-<class> = make_dataclass('<class_name>', <coll_of_attribute_names>)
-<class> = make_dataclass('<class_name>', <coll_of_tuples>)
-<tuple> = ('<attr_name>', <type> [, <default_value>])
+Point = make_dataclass('Point', ['x', 'y'])
+Point = make_dataclass('Point', [('x', float), ('y', float)])
+Point = make_dataclass('Point', [('x', float, 0), ('y', float, 0)])
 ```
 
 ### Property
@@ -1293,7 +1294,7 @@ class MySequence:
 ```
 
 #### Discrepancies between glossary definitions and abstract base classes:
-* **Glossary on Python's website defines iterable as any object with iter() or getitem() and sequence as any object with getitem() and len(). It does not define collection.**
+* **Python's glossary defines iterable as any object with iter() or getitem() and sequence as any object with getitem() and len(). It does not define collection.**
 * **Passing ABC Iterable to isinstance() or issubclass() checks whether object/class has method iter(), while ABC Collection checks for iter(), contains() and len().**
 
 ### ABC Sequence
@@ -1582,7 +1583,7 @@ Open
 * **`'w+'` - Read and write. Deletes existing contents.**
 * **`'r+'` - Read and write from the start.**
 * **`'a+'` - Read and write from the end.**
-* **`'b'`  - Binary mode (`'rb'`, `'wb'`, `'xb'`, …)**
+* **`'b'`  - Binary mode (`'rb'`, `'wb'`, `'xb'`, …).**
 
 ### Exceptions
 * **`'FileNotFoundError'` can be raised when reading with `'r'` or `'r+'`.**
@@ -1660,7 +1661,7 @@ from pathlib import Path
 
 ```python
 <stat> = os.stat(<path>)            # Or: <DirEntry/Path>.stat()
-<num>  = <stat>.st_mtime/st_size/…  # Modification time, size in bytes, ...
+<num>  = <stat>.st_mtime/st_size/…  # Modification time, size in bytes, etc.
 ```
 
 ### DirEntry
@@ -1740,9 +1741,9 @@ shutil.rmtree(<path>)               # Deletes the directory.
 
 ### Shell Commands
 ```python
-<pipe> = os.popen('<command>')      # Executes command in sh/cmd. Returns its stdout pipe.
+<pipe> = os.popen('<commands>')     # Executes commands in sh/cmd. Returns combined stdout.
 <str>  = <pipe>.read(size=-1)       # Reads 'size' chars or until EOF. Also readline/s().
-<int>  = <pipe>.close()             # Closes the pipe. Returns None on success (returncode 0).
+<int>  = <pipe>.close()             # Returns None if last command exited with returncode 0.
 ```
 
 #### Sends '1 + 1' to the basic calculator and captures its output:
@@ -1768,22 +1769,22 @@ JSON
 
 ```python
 import json
-<str>    = json.dumps(<object>)     # Converts object to JSON string.
-<object> = json.loads(<str>)        # Converts JSON string to object.
+<str>  = json.dumps(<list/dict>)    # Converts collection to JSON string.
+<coll> = json.loads(<str>)          # Converts JSON string to collection.
 ```
 
-### Read Object from JSON File
+### Read Collection from JSON File
 ```python
 def read_json_file(filename):
     with open(filename, encoding='utf-8') as file:
         return json.load(file)
 ```
 
-### Write Object to JSON File
+### Write Collection to JSON File
 ```python
-def write_to_json_file(filename, an_object):
+def write_to_json_file(filename, list_or_dict):
     with open(filename, 'w', encoding='utf-8') as file:
-        json.dump(an_object, file, ensure_ascii=False, indent=2)
+        json.dump(list_or_dict, file, ensure_ascii=False, indent=2)
 ```
 
 
@@ -1883,41 +1884,41 @@ def write_to_csv_file(filename, rows, mode='w', **csv_params):
 
 SQLite
 ------
-**A server-less database engine that stores each database into a separate file.**
+**A server-less database engine that stores each database into its own file.**
 
 ```python
 import sqlite3
-<conn> = sqlite3.connect(<path>)                # Opens existing or new file. Also ':memory:'.
-<conn>.close()                                  # Closes connection. Discards uncommitted data.
+<conn> = sqlite3.connect(<path>)               # Opens existing or new file. Also ':memory:'.
+<conn>.close()                                 # Closes connection. Discards uncommitted data.
 ```
 
 ### Read
 ```python
-<cursor> = <conn>.execute('<query>')            # Can raise a subclass of sqlite3.Error.
-<tuple>  = <cursor>.fetchone()                  # Returns next row. Also next(<cursor>).
-<list>   = <cursor>.fetchall()                  # Returns remaining rows. Also list(<cursor>).
+<cursor> = <conn>.execute('<query>')           # Can raise a subclass of sqlite3.Error.
+<tuple>  = <cursor>.fetchone()                 # Returns next row. Also next(<cursor>).
+<list>   = <cursor>.fetchall()                 # Returns remaining rows. Also list(<cursor>).
 ```
 
 ### Write
 ```python
-<conn>.execute('<query>')                       # Can raise a subclass of sqlite3.Error.
-<conn>.commit()                                 # Saves all changes since the last commit.
-<conn>.rollback()                               # Discards all changes since the last commit.
+<conn>.execute('<query>')                      # Can raise a subclass of sqlite3.Error.
+<conn>.commit()                                # Saves all changes since the last commit.
+<conn>.rollback()                              # Discards all changes since the last commit.
 ```
 
 #### Or:
 ```python
-with <conn>:                                    # Exits the block with commit() or rollback(),
-    <conn>.execute('<query>')                   # depending on whether any exception occurred.
+with <conn>:                                   # Exits the block with commit() or rollback(),
+    <conn>.execute('<query>')                  # depending on whether any exception occurred.
 ```
 
 ### Placeholders
 ```python
-<conn>.execute('<query>', <list/tuple>)         # Replaces '?'s in query with values.
-<conn>.execute('<query>', <dict/namedtuple>)    # Replaces ':<key>'s with values.
-<conn>.executemany('<query>', <coll_of_above>)  # Runs execute() multiple times.
+<conn>.execute('<query>', <list/tuple>)        # Replaces '?'s in query with values.
+<conn>.execute('<query>', <dict/namedtuple>)   # Replaces ':<key>'s with values.
+<conn>.executemany('<query>', <coll_of_coll>)  # Runs execute() multiple times.
 ```
-* **Passed values can be of type str, int, float, bytes, None or bool (stored as 1 or 0).**
+* **Passed values can be of type str, int, float, bytes, None, or bool (stored as 1 or 0).**
 
 ### Example
 **Values are not actually saved in this example because `'conn.commit()'` is omitted!**
@@ -1935,10 +1936,10 @@ with <conn>:                                    # Exits the block with commit() 
 ```python
 # $ pip3 install sqlalchemy
 from sqlalchemy import create_engine, text
-<engine> = create_engine('<url>')               # Url: 'dialect://user:password@host/dbname'.
-<conn>   = <engine>.connect()                   # Creates a connection. Also <conn>.close().
-<cursor> = <conn>.execute(text('<query>'), …)   # Replaces ':<key>'s with keyword arguments.
-with <conn>.begin(): ...                        # Exits the block with commit or rollback.
+<engine> = create_engine('<url>')              # Url: 'dialect://user:password@host/dbname'.
+<conn>   = <engine>.connect()                  # Creates a connection. Also <conn>.close().
+<cursor> = <conn>.execute(text('<query>'), …)  # Replaces ':<key>'s with keyword arguments.
+with <conn>.begin(): ...                       # Exits the block with commit or rollback.
 ```
 
 ```text
@@ -2045,15 +2046,15 @@ from array import array
 ```
 
 ```python
-<array> = array('<typecode>', <coll_of_nums>)  # Array from collection of numbers.
-<array> = array('<typecode>', <bytes>)         # Copies bytes to array's memory.
-<array> = array('<typecode>', <array>)         # Treats array as a sequence of numbers.
-<array>.fromfile(<file>, n_items)              # Appends items from the binary file.
+<array> = array('<typecode>', <coll_of_nums>)  # Creates array from collection of numbers.
+<array> = array('<typecode>', <bytes>)         # Writes passed bytes to array's memory.
+<array> = array('<typecode>', <array>)         # Treats passed array as a sequence of numbers.
+<array>.fromfile(<file>, n_items)              # Appends file's contents to array's memory.
 ```
 
 ```python
 <bytes> = bytes(<array>)                       # Returns a copy of array's memory.
-<file>.write(<array>)                          # Writes array's memory to binary file.
+<file>.write(<array>)                          # Writes array's memory to the binary file.
 ```
 
 
@@ -2085,7 +2086,7 @@ Memory View
 
 Deque
 -----
-**A thread-safe list with efficient appends and pops from either side. Pronounced "deck".**
+**List with efficient appends and pops from either side. Pronounced "deck".**
 
 ```python
 from collections import deque
@@ -2100,74 +2101,9 @@ from collections import deque
 ```
 
 
-Threading
----------
-**CPython interpreter can only run a single thread at a time. Using multiple threads won't result in a faster execution, unless at least one of the threads contains an I/O operation.**
-```python
-from threading import Thread, Lock, RLock, Semaphore, Event, Barrier
-from concurrent.futures import ThreadPoolExecutor, as_completed
-```
-
-### Thread
-```python
-<Thread> = Thread(target=<function>)           # Use `args=<collection>` to set the arguments.
-<Thread>.start()                               # Starts the thread. Also <Thread>.is_alive().
-<Thread>.join()                                # Waits for the thread to finish.
-```
-* **Use `'kwargs=<dict>'` to pass keyword arguments to the function.**
-* **Use `'daemon=True'`, or the program will not be able to exit while the thread is alive.**
-
-### Lock
-```python
-<lock> = Lock/RLock()                          # RLock can only be released by acquirer.
-<lock>.acquire()                               # Waits for the lock to be available.
-<lock>.release()                               # Makes the lock available again.
-```
-
-#### Or:
-```python
-with <lock>:                                   # Enters the block by calling acquire() and
-    ...                                        # exits it with release(), even on error.
-```
-
-### Semaphore, Event, Barrier
-```python
-<Semaphore> = Semaphore(value=1)               # Lock that can be acquired by 'value' threads.
-<Event>     = Event()                          # Method wait() blocks until set() is called.
-<Barrier>   = Barrier(n_times)                 # Wait() blocks until it's called n_times.
-```
-
-### Queue
-```python
-<Queue> = queue.Queue(maxsize=0)               # A thread-safe first-in-first-out queue.
-<Queue>.put(<el>)                              # Blocks until queue stops being full.
-<Queue>.put_nowait(<el>)                       # Raises queue.Full exception if full.
-<el> = <Queue>.get()                           # Blocks until queue stops being empty.
-<el> = <Queue>.get_nowait()                    # Raises queue.Empty exception if empty.
-```
-
-### Thread Pool Executor
-```python
-<Exec> = ThreadPoolExecutor(max_workers=None)  # Or: `with ThreadPoolExecutor() as <name>: ...`
-<iter> = <Exec>.map(<func>, <args_1>, ...)     # Multithreaded and non-lazy map(). Keeps order.
-<Futr> = <Exec>.submit(<func>, <arg_1>, ...)   # Creates a thread and returns its Future obj.
-<Exec>.shutdown()                              # Blocks until all threads finish executing.
-```
-
-```python
-<bool> = <Future>.done()                       # Checks if the thread has finished executing.
-<obj>  = <Future>.result(timeout=None)         # Waits for thread to finish and returns result.
-<bool> = <Future>.cancel()                     # Cancels or returns False if running/finished.
-<iter> = as_completed(<coll_of_Futures>)       # `next(<iter>)` returns next completed Future.
-```
-* **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called/blocking. Map() times from original call and as_completed() from first call to next(). As\_completed() fails if next() is called too late, even if all threads are done.**
-* **Exceptions that happen inside threads are raised when map iterator's next() or Future's result() are called. Future's exception() method returns exception object or None.**
-* **ProcessPoolExecutor provides true parallelism but: everything sent to/from workers must be [pickable](#pickle), queues must be sent using executor's 'initargs' and 'initializer' parameters, and executor should only be reachable via `'if __name__ == "__main__": ...'`.**
-
-
 Operator
 --------
-**Module of functions that provide the functionality of operators. Functions are ordered by operator precedence, starting with least binding.**
+**Module of functions that provide the functionality of operators. Functions are ordered and grouped by operator precedence—from least to most binding. Logical and arithmetic operators in rows 1, 3 and 5 are also ordered by precedence within a group.**
 ```python
 import operator as op
 ```
@@ -2185,9 +2121,8 @@ import operator as op
 
 ```python
 elementwise_sum  = map(op.add, list_a, list_b)
-sorted_by_second = sorted(<coll.>, key=op.itemgetter(1))
-sorted_by_both   = sorted(<coll.>, key=op.itemgetter(1, 0))
-product_of_elems = functools.reduce(op.mul, <collection>)
+sorted_by_second = sorted(<coll>, key=op.itemgetter(1))
+sorted_by_both   = sorted(<coll>, key=op.itemgetter(1, 0))
 first_element    = op.methodcaller('pop', 0)(<list>)
 ```
 * **Most operators call the object's special method that is named after them (second object is passed as an argument), while logical operators call their own code that relies on bool().**
@@ -2294,26 +2229,91 @@ CRITICAL:my_module:Running out of disk space.
 Introspection
 -------------
 ```python
-<list> = dir()                      # List of of local names (including functions and classes).
+<list> = dir()                      # List of local names (variables, funcs, classes, modules).
 <dict> = vars()                     # Dict of local names and their objects. Also locals().
-<dict> = globals()                  # Dict of global names (for instance '__builtin__' module).
+<dict> = globals()                  # Dict of global names and their objects, e.g. __builtin__.
 ```
 
 ```python
-<list> = dir(<obj>)                 # Returns names of all object's attributes (incl. methods).
+<list> = dir(<obj>)                 # Returns names of object's attributes (including methods).
 <dict> = vars(<obj>)                # Returns dict of writable attributes. Also <obj>.__dict__.
 <bool> = hasattr(<obj>, '<name>')   # Checks if object possesses attribute with passed name.
 value  = getattr(<obj>, '<name>')   # Returns object's attribute or raises AttributeError.
-setattr(<obj>, '<name>', value)     # Sets attribute. Only works on objects with __dict__.
+setattr(<obj>, '<name>', value)     # Sets attribute. Only works on objects with __dict__ attr.
 delattr(<obj>, '<name>')            # Deletes attribute from __dict__. Also `del <obj>.<name>`.
 ```
 
 ```python
-<Sig>  = inspect.signature(<func>)  # Returns function's Signature object. Can accept a class.
+<Sig>  = inspect.signature(<func>)  # Returns a Signature object of the passed function.
 <dict> = <Sig>.parameters           # Returns dict of Parameters. Also <Sig>.return_annotation.
 <memb> = <Param>.kind               # Returns ParameterKind member (Parameter.KEYWORD_ONLY, …).
 <type> = <Param>.annotation         # Returns Parameter.empty if missing. Also <Param>.default.
 ```
+
+
+Threading
+---------
+**CPython interpreter can only run a single thread at a time. Using multiple threads won't result in a faster execution, unless at least one of the threads contains an I/O operation.**
+```python
+from threading import Thread, Lock, RLock, Semaphore, Event, Barrier
+from concurrent.futures import ThreadPoolExecutor, as_completed
+```
+
+### Thread
+```python
+<Thread> = Thread(target=<function>)           # Use `args=<collection>` to set the arguments.
+<Thread>.start()                               # Starts the thread. Also <Thread>.is_alive().
+<Thread>.join()                                # Waits for the thread to finish.
+```
+* **Use `'kwargs=<dict>'` to pass keyword arguments to the function.**
+* **Use `'daemon=True'`, or the program will not be able to exit while the thread is alive.**
+
+### Lock
+```python
+<lock> = Lock/RLock()                          # RLock can only be released by acquirer.
+<lock>.acquire()                               # Waits for the lock to be available.
+<lock>.release()                               # Makes the lock available again.
+```
+
+#### Or:
+```python
+with <lock>:                                   # Enters the block by calling acquire() and
+    ...                                        # exits it with release(), even on error.
+```
+
+### Semaphore, Event, Barrier
+```python
+<Semaphore> = Semaphore(value=1)               # Lock that can be acquired by 'value' threads.
+<Event>     = Event()                          # Method wait() blocks until set() is called.
+<Barrier>   = Barrier(n_times)                 # Wait() blocks until it's called n_times.
+```
+
+### Queue
+```python
+<Queue> = queue.Queue(maxsize=0)               # A thread-safe first-in-first-out queue.
+<Queue>.put(<el>)                              # Blocks until queue stops being full.
+<Queue>.put_nowait(<el>)                       # Raises queue.Full exception if full.
+<el> = <Queue>.get()                           # Blocks until queue stops being empty.
+<el> = <Queue>.get_nowait()                    # Raises queue.Empty exception if empty.
+```
+
+### Thread Pool Executor
+```python
+<Exec> = ThreadPoolExecutor(max_workers=None)  # Or: `with ThreadPoolExecutor() as <name>: ...`
+<iter> = <Exec>.map(<func>, <args_1>, ...)     # Multithreaded and non-lazy map(). Keeps order.
+<Futr> = <Exec>.submit(<func>, <arg_1>, ...)   # Creates a thread and returns its Future obj.
+<Exec>.shutdown()                              # Blocks until all threads finish executing.
+```
+
+```python
+<bool> = <Future>.done()                       # Checks if the thread has finished executing.
+<obj>  = <Future>.result(timeout=None)         # Waits for thread to finish and returns result.
+<bool> = <Future>.cancel()                     # Cancels or returns False if running/finished.
+<iter> = as_completed(<coll_of_Futures>)       # `next(<iter>)` returns next completed Future.
+```
+* **Map() and as\_completed() also accept 'timeout'. It causes futures.TimeoutError when next() is called/blocking. Map() times from original call and as_completed() from first call to next(). As\_completed() fails if next() is called too late, even if all threads are done.**
+* **Exceptions that happen inside threads are raised when map iterator's next() or Future's result() are called. Future's exception() method returns exception object or None.**
+* **ProcessPoolExecutor provides true parallelism but: everything sent to/from workers must be [pickable](#pickle), queues must be sent using executor's 'initargs' and 'initializer' parameters, and executor should only be reachable via `'if __name__ == "__main__": ...'`.**
 
 
 Coroutines
@@ -2419,9 +2419,9 @@ import matplotlib.pyplot as plt
 plt.plot/bar/scatter(x_data, y_data [, label=<str>])  # Also plt.plot(y_data).
 plt.legend()                                          # Adds a legend.
 plt.title/xlabel/ylabel(<str>)                        # Adds a title or label.
-plt.savefig(<path>)                                   # Saves the figure.
-plt.show()                                            # Displays the figure.
-plt.clf()                                             # Clears the figure.
+plt.savefig(<path>)                                   # Saves the plot.
+plt.show()                                            # Displays the plot.
+plt.clf()                                             # Clears the plot.
 ```
 
 
@@ -2553,7 +2553,7 @@ import flask as fl
 
 ```python
 app = fl.Flask(__name__)                   # Returns the app object. Put at the top.
-app.run(host=None, port=None, debug=None)  # Or: $ flask --app FILE run [--ARG[=VAL] …]
+app.run(host=None, port=None, debug=None)  # Or: $ flask --app FILE run [--ARG[=VAL]]…
 ```
 * **Starts the app at `'http://localhost:5000'`. Use `'host="0.0.0.0"'` to run externally.**
 * **Install a WSGI server like [Waitress](https://flask.palletsprojects.com/en/latest/deploying/waitress/) and a HTTP server such as [Nginx](https://flask.palletsprojects.com/en/latest/deploying/nginx/) for better security.**
@@ -2777,7 +2777,7 @@ from PIL import Image
 <Image> = Image.open(<path>)                    # Identifies format based on file's contents.
 <Image> = <Image>.convert('<mode>')             # Converts image to the new mode (see Modes).
 <Image>.save(<path>)                            # Selects format based on extension (PNG/JPG…).
-<Image>.show()                                  # Opens image in the default preview app.
+<Image>.show()                                  # Displays image in default preview app.
 ```
 
 ```python
@@ -2795,7 +2795,7 @@ from PIL import Image
 
 ```python
 <array> = np.array(<Image>)                     # Creates a 2d/3d NumPy array from the image.
-<Image> = Image.fromarray(np.uint8(<array>))    # Use `<array>.clip(0, 255)` to clip values.
+<Image> = Image.fromarray(np.uint8(<array>))    # Use <array>.clip(0, 255) to clip the values.
 ```
 
 ### Modes
@@ -2832,10 +2832,10 @@ from PIL import ImageDraw
 <Draw>.point((x, y))                            # Draws a point. Truncates floats into ints.
 <Draw>.line((x1, y1, x2, y2 [, ...]))           # To get anti-aliasing use Image's resize().
 <Draw>.arc((x1, y1, x2, y2), deg1, deg2)        # Draws in clockwise dir. Also pieslice().
-<Draw>.rectangle((x1, y1, x2, y2))              # To rotate use Image's rotate() and paste().
+<Draw>.rectangle((x1, y1, x2, y2))              # Also rounded_rectangle(), regular_polygon().
 <Draw>.polygon((x1, y1, x2, y2, ...))           # Last point gets connected to the first.
-<Draw>.ellipse((x1, y1, x2, y2))                # Also rounded_rectangle(), regular_polygon().
-<Draw>.text((x, y), <str>, font=<Font>)         # `<Font> = ImageFont.truetype(<path>, size)`
+<Draw>.ellipse((x1, y1, x2, y2))                # To rotate use Image's rotate() and paste().
+<Draw>.text((x, y), <str>, font=<Font>)         # `<Font> = ImageFont.truetype(<path>, size)`.
 ```
 * **Use `'fill=<color>'` to set the primary color.**
 * **Use `'width=<int>'` to set the width of lines or contours.**
@@ -2876,7 +2876,7 @@ import wave
 <int>   = <Wave>.getnchannels()       # Returns number of samples per frame.
 <int>   = <Wave>.getsampwidth()       # Returns number of bytes per sample.
 <tuple> = <Wave>.getparams()          # Returns namedtuple of all parameters.
-<bytes> = <Wave>.readframes(nframes)  # Returns next n frames. All if -1.
+<bytes> = <Wave>.readframes(nframes)  # Returns next n frames (-1 returns all).
 ```
 
 ```python
@@ -2913,7 +2913,7 @@ def read_wav_file(filename):
         p = file.getparams()
         frames = file.readframes(-1)
     bytes_samples = (frames[i : i + p.sampwidth] for i in range(0, len(frames), p.sampwidth))
-    return [get_int(b) / pow(2, p.sampwidth * 8 - 1) for b in bytes_samples], p
+    return [get_int(b) / pow(2, (p.sampwidth * 8) - 1) for b in bytes_samples], p
 ```
 
 ### Write Float Samples to WAV File
@@ -2922,7 +2922,7 @@ def write_to_wav_file(filename, samples_f, p=None, nchannels=1, sampwidth=2, fra
     def get_bytes(a_float):
         a_float = max(-1, min(1 - 2e-16, a_float))
         a_float += p.sampwidth == 1
-        a_float *= pow(2, p.sampwidth * 8 - 1)
+        a_float *= pow(2, (p.sampwidth * 8) - 1)
         return int(a_float).to_bytes(p.sampwidth, 'little', signed=(p.sampwidth != 1))
     if p is None:
         p = wave._wave_params(nchannels, sampwidth, framerate, 0, 'NONE', 'not compressed')
@@ -3146,6 +3146,8 @@ if __name__ == '__main__':
 
 Pandas
 ------
+**Data analysis library. For examples see [Plotly](#plotly).**
+
 ```python
 # $ pip3 install pandas matplotlib
 import pandas as pd, matplotlib.pyplot as plt
@@ -3155,80 +3157,75 @@ import pandas as pd, matplotlib.pyplot as plt
 **Ordered dictionary with a name.**
 
 ```python
->>> sr = pd.Series([1, 2], index=['x', 'y'], name='a'); sr
+>>> s = pd.Series([1, 2], index=['x', 'y'], name='a'); s
 x    1
 y    2
 Name: a, dtype: int64
 ```
 
 ```python
-<Sr> = pd.Series(<list>)                       # Assigns RangeIndex starting at 0.
-<Sr> = pd.Series(<dict>)                       # Takes dictionary's keys for index.
-<Sr> = pd.Series(<dict/Series>, index=<list>)  # Only keeps items with keys specified in index.
+<S>  = pd.Series(<list>)                       # Creates index from list's indices.
+<S>  = pd.Series(<dict>)                       # Creates index from dictionary's keys.
+<S>  = pd.Series(<dict/Series>, index=<list>)  # Only keeps items with keys specified in index.
 ```
 
 ```python
-<el> = <Sr>.loc[key]                           # Or: <Sr>.iloc[i]
-<Sr> = <Sr>.loc[coll_of_keys]                  # Or: <Sr>.iloc[coll_of_i]
-<Sr> = <Sr>.loc[from_key : to_key_inc]         # Or: <Sr>.iloc[from_i : to_i_exc]
+<el> = <S>.loc[key]                            # Or: <S>.iloc[i]
+<S>  = <S>.loc[coll_of_keys]                   # Or: <S>.iloc[coll_of_i]
+<S>  = <S>.loc[from_key : to_key_inc]          # Or: <S>.iloc[from_i : to_i_exc]
 ```
 
 ```python
-<el> = <Sr>[key/i]                             # Or: <Sr>.<key>
-<Sr> = <Sr>[coll_of_keys/coll_of_i]            # Or: <Sr>[key/i : key/i]
-<Sr> = <Sr>[bools]                             # Or: <Sr>.loc/iloc[bools]
+<el> = <S>[key/i]                              # Or: <S>.<key>
+<S>  = <S>[coll_of_keys/coll_of_i]             # Or: <S>[key/i : key/i]
+<S>  = <S>[bools]                              # Or: <S>.loc/iloc[bools]
 ```
 
 ```python
-<Sr> = <Sr> > <el/Sr>                          # Returns a Series of bools.
-<Sr> = <Sr> + <el/Sr>                          # Items with non-matching keys get value NaN.
+<S>  = <S> > <el/S>                            # Returns S of bools. Pairs items by keys.
+<S>  = <S> + <el/S>                            # Items with non-matching keys get value NaN.
 ```
 
 ```python
-<Sr> = pd.concat(<coll_of_Sr>)                 # Concats multiple series into one long Series.
-<Sr> = <Sr>.combine_first(<Sr>)                # Adds items that are not yet present.
-<Sr>.update(<Sr>)                              # Updates items that are already present.
+<S> = pd.concat(<coll_of_S>)                   # Concats multiple series into one long Series.
+<S> = <S>.combine_first(<S>)                   # Adds items that are not yet present.
+<S>.update(<S>)                                # Updates items that are already present.
 ```
 
 ```python
-<Sr>.plot.line/area/bar/pie/hist()             # Generates a Matplotlib plot.
+<S>.plot.line/area/bar/pie/hist()              # Generates a plot. Accepts `title=<str>`.
 plt.show()                                     # Displays the plot. Also plt.savefig(<path>).
 ```
+* **Indexing objects can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`!**
+* **Pandas uses NumPy types like `'np.int64'`. Series is converted to `'float64'` if we assign np.nan to any item. Use `'<S>.astype(<str/type>)'` to get converted Series.**
 
 #### Series — Aggregate, Transform, Map:
 ```python
-<el> = <Sr>.sum/max/mean/idxmax/all()          # Or: <Sr>.agg(lambda <Sr>: <el>)
-<Sr> = <Sr>.rank/diff/cumsum/ffill/interpo…()  # Or: <Sr>.agg/transform(lambda <Sr>: <Sr>)
-<Sr> = <Sr>.fillna(<el>)                       # Or: <Sr>.agg/transform/map(lambda <el>: <el>)
-```
-
-```python
->>> sr = pd.Series([2, 3], index=['x', 'y']); sr
-x    2
-y    3
+<el> = <S>.sum/max/mean/idxmax/all()           # Or: <S>.agg(lambda <S>: <el>)
+<S>  = <S>.rank/diff/cumsum/ffill/interpol…()  # Or: <S>.agg/transform(lambda <S>: <S>)
+<S>  = <S>.isna/fillna/isin([<el/coll>])       # Or: <S>.agg/transform/map(lambda <el>: <el>)
 ```
 
 ```text
-+---------------+-------------+-------------+---------------+
-|               |    'sum'    |   ['sum']   | {'s': 'sum'}  |
-+---------------+-------------+-------------+---------------+
-| sr.apply(…)   |      5      |    sum  5   |     s  5      |
-| sr.agg(…)     |             |             |               |
-+---------------+-------------+-------------+---------------+
++--------------+-------------+-------------+---------------+
+|              |    'sum'    |   ['sum']   | {'s': 'sum'}  |
++--------------+-------------+-------------+---------------+
+| s.apply(…)   |      3      |    sum  3   |     s  3      |
+| s.agg(…)     |             |             |               |
++--------------+-------------+-------------+---------------+
 ```
 
 ```text
-+---------------+-------------+-------------+---------------+
-|               |    'rank'   |   ['rank']  | {'r': 'rank'} |
-+---------------+-------------+-------------+---------------+
-| sr.apply(…)   |             |      rank   |               |
-| sr.agg(…)     |     x  1    |   x     1   |    r  x  1    |
-|               |     y  2    |   y     2   |       y  2    |
-+---------------+-------------+-------------+---------------+
++--------------+-------------+-------------+---------------+
+|              |    'rank'   |   ['rank']  | {'r': 'rank'} |
++--------------+-------------+-------------+---------------+
+| s.apply(…)   |             |      rank   |               |
+| s.agg(…)     |    x  1.0   |   x   1.0   |   r  x  1.0   |
+|              |    y  2.0   |   y   2.0   |      y  2.0   |
++--------------+-------------+-------------+---------------+
 ```
-* **Indexing objects can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`!**
 * **Methods ffill(), interpolate(), fillna() and dropna() accept `'inplace=True'`.**
-* **Last result has a hierarchical index. Use `'<Sr>[key_1, key_2]'` to get its values.**
+* **Last result has a multi-index. Use `'<S>[key_1, key_2]'` to get its values.**
 
 ### DataFrame
 **Table with labeled rows and columns.**
@@ -3241,33 +3238,39 @@ b  3  4
 ```
 
 ```python
-<DF>    = pd.DataFrame(<list_of_rows>)         # Rows can be either lists, dicts or series.
-<DF>    = pd.DataFrame(<dict_of_columns>)      # Columns can be either lists, dicts or series.
+<DF>   = pd.DataFrame(<list_of_rows>)          # Rows can be either lists, dicts or series.
+<DF>   = pd.DataFrame(<dict_of_columns>)       # Columns can be either lists, dicts or series.
 ```
 
 ```python
-<el>    = <DF>.loc[row_key, col_key]           # Or: <DF>.iloc[row_i, col_i]
-<Sr/DF> = <DF>.loc[row_key/s]                  # Or: <DF>.iloc[row_i/s]
-<Sr/DF> = <DF>.loc[:, col_key/s]               # Or: <DF>.iloc[:, col_i/s]
-<DF>    = <DF>.loc[row_bools, col_bools]       # Or: <DF>.iloc[row_bools, col_bools]
+<el>   = <DF>.loc[row_key, col_key]            # Or: <DF>.iloc[row_i, col_i]
+<S/DF> = <DF>.loc[row_key/s]                   # Or: <DF>.iloc[row_i/s]
+<S/DF> = <DF>.loc[:, col_key/s]                # Or: <DF>.iloc[:, col_i/s]
+<DF>   = <DF>.loc[row_bools, col_bools]        # Or: <DF>.iloc[row_bools, col_bools]
 ```
 
 ```python
-<Sr/DF> = <DF>[col_key/s]                      # Or: <DF>.<col_key>
-<DF>    = <DF>[row_bools]                      # Keeps rows as specified by bools.
-<DF>    = <DF>[<DF_of_bools>]                  # Assigns NaN to items that are False in bools.
+<S/DF> = <DF>[col_key/s]                       # Or: <DF>.<col_key>
+<DF>   = <DF>[row_bools]                       # Keeps rows as specified by bools.
+<DF>   = <DF>[<DF_of_bools>]                   # Assigns NaN to items that are False in bools.
 ```
 
 ```python
-<DF>    = <DF> > <el/Sr/DF>                    # Returns DF of bools. Sr is treated as a row.
-<DF>    = <DF> + <el/Sr/DF>                    # Items with non-matching keys get value NaN.
+<DF>   = <DF> > <el/S/DF>                      # Returns DF of bools. S is treated as a row.
+<DF>   = <DF> + <el/S/DF>                      # Items with non-matching keys get value NaN.
 ```
 
 ```python
-<DF>    = <DF>.set_index(col_key)              # Replaces row keys with column's values.
-<DF>    = <DF>.reset_index(drop=False)         # Drops or moves row keys to column named index.
-<DF>    = <DF>.sort_index(ascending=True)      # Sorts rows by row keys. Use `axis=1` for cols.
-<DF>    = <DF>.sort_values(col_key/s)          # Sorts rows by passed column/s. Also `axis=1`.
+<DF>   = <DF>.set_index(col_key)               # Replaces row keys with column's values.
+<DF>   = <DF>.reset_index(drop=False)          # Drops or moves row keys to column named index.
+<DF>   = <DF>.sort_index(ascending=True)       # Sorts rows by row keys. Use `axis=1` for cols.
+<DF>   = <DF>.sort_values(col_key/s)           # Sorts rows by passed column/s. Also `axis=1`.
+```
+
+```python
+<DF>   = <DF>.head/tail/sample(<int>)          # Returns first, last, or random n rows.
+<DF>   = <DF>.describe()                       # Describes columns. Also info(), corr(), shape.
+<DF>   = <DF>.query('<query>')                 # Filters rows with e.g. 'col_1 == val_1 and …'.
 ```
 
 ```python
@@ -3301,58 +3304,54 @@ c  6  7
 |           axis=0,      | a  1   2   .  |     2      |            | Uses 'outer' by default. |
 |           join=…)      | b  3   4   .  |     4      |            | A Series is treated as a |
 |                        | b  .   4   5  |     4      |            | column. To add a row use |
-|                        | c  .   6   7  |     6      |            | pd.concat([l, DF([sr])]).|
+|                        | c  .   6   7  |     6      |            | pd.concat([l, DF([s])]). |
 +------------------------+---------------+------------+------------+--------------------------+
 | pd.concat([l, r],      |    x  y  y  z |            |            | Adds columns at the      |
 |           axis=1,      | a  1  2  .  . | x  y  y  z |            | right end. Uses 'outer'  |
 |           join=…)      | b  3  4  4  5 | 3  4  4  5 |            | by default. A Series is  |
 |                        | c  .  .  6  7 |            |            | treated as a column.     |
 +------------------------+---------------+------------+------------+--------------------------+
-| l.combine_first(r)     |    x   y   z  |            |            | Adds missing rows and    |
-|                        | a  1   2   .  |            |            | columns. Also updates    |
-|                        | b  3   4   5  |            |            | items that contain NaN.  |
-|                        | c  .   6   7  |            |            | Argument r must be a DF. |
-+------------------------+---------------+------------+------------+--------------------------+
 ```
 
 #### DataFrame — Aggregate, Transform, Map:
 ```python
-<Sr> = <DF>.sum/max/mean/idxmax/all()          # Or: <DF>.apply/agg(lambda <Sr>: <el>)
-<DF> = <DF>.rank/diff/cumsum/ffill/interpo…()  # Or: <DF>.apply/agg/transfo…(lambda <Sr>: <Sr>)
-<DF> = <DF>.fillna(<el>)                       # Or: <DF>.applymap(lambda <el>: <el>)
+<S>  = <DF>.sum/max/mean/idxmax/all()          # Or: <DF>.apply/agg(lambda <S>: <el>)
+<DF> = <DF>.rank/diff/cumsum/ffill/interpo…()  # Or: <DF>.apply/agg/transform(lambda <S>: <S>)
+<DF> = <DF>.isna/fillna/isin([<el/coll>])      # Or: <S>.agg/transform/map(lambda <el>: <el>)
 ```
-* **All operations operate on columns by default. Pass `'axis=1'` to process the rows instead.**
 
+```text
++----------------+---------------+---------------+---------------+
+|                |     'sum'     |    ['sum']    | {'x': 'sum'}  |
++----------------+---------------+---------------+---------------+
+| l.apply(…)     |      x  4     |        x  y   |     x  4      |
+| l.agg(…)       |      y  6     |   sum  4  6   |               |
++----------------+---------------+---------------+---------------+
+```
+
+```text
++----------------+---------------+---------------+---------------+
+|                |     'rank'    |    ['rank']   | {'x': 'rank'} |
++----------------+---------------+---------------+---------------+
+| l.apply(…)     |               |       x    y  |               |
+| l.agg(…)       |       x    y  |    rank rank  |         x     |
+| l.transform(…) |  a  1.0  1.0  |  a  1.0  1.0  |    a  1.0     |
+|                |  b  2.0  2.0  |  b  2.0  2.0  |    b  2.0     |
++----------------+---------------+---------------+---------------+
+```
+* **All methods operate on columns by default. Pass `'axis=1'` to process the rows instead.**
+* **Fifth result's columns are indexed with a multi-index. This means we need a tuple of column keys to specify a column: `'<DF>.loc[row_key, (col_key_1, col_key_2)]'`.**
+
+#### DataFrame — Multi-Index:
 ```python
->>> df = pd.DataFrame([[1, 2], [3, 4]], index=['a', 'b'], columns=['x', 'y']); df
-   x  y
-a  1  2
-b  3  4
+<DF>   = <DF>.xs(row_key, level=<int>)         # Rows with key on passed level of multi-index.
+<DF>   = <DF>.xs(row_keys, level=<ints>)       # Rows that have first key on first level, etc.
+<DF>   = <DF>.set_index(col_keys)              # Combines multiple columns into a multi-index.
+<S/DF> = <DF>.stack/unstack(level=-1)          # Combines col keys with row keys or vice versa.
+<DF>   = <DF>.pivot_table(index=col_key/s)     # `columns=key/s, values=key/s, aggfunc='mean'`.
 ```
-
-```text
-+-----------------+-------------+-------------+---------------+
-|                 |    'sum'    |   ['sum']   | {'x': 'sum'}  |
-+-----------------+-------------+-------------+---------------+
-| df.apply(…)     |     x  4    |       x  y  |     x  4      |
-| df.agg(…)       |     y  6    |  sum  4  6  |               |
-+-----------------+-------------+-------------+---------------+
-```
-
-```text
-+-----------------+-------------+-------------+---------------+
-|                 |    'rank'   |   ['rank']  | {'x': 'rank'} |
-+-----------------+-------------+-------------+---------------+
-| df.apply(…)     |             |      x    y |               |
-| df.agg(…)       |      x  y   |   rank rank |        x      |
-| df.transform(…) |   a  1  1   | a    1    1 |     a  1      |
-|                 |   b  2  2   | b    2    2 |     b  2      |
-+-----------------+-------------+-------------+---------------+
-```
-* **Use `'<DF>[col_key_1, col_key_2][row_key]'` to get the fifth result's values.**
 
 #### DataFrame — Encode, Decode:
-
 ```python
 <DF> = pd.read_json/html('<str/path/url>')     # Run `$ pip3 install beautifulsoup4 lxml`.
 <DF> = pd.read_csv('<path/url>')               # `header/index_col/dtype/usecols/…=<obj>`.
@@ -3367,12 +3366,28 @@ b  3  4
 <DF>.to_sql('<table_name>', <connection>)      # Also `if_exists='fail/replace/append'`.
 ```
 * **Read\_csv() only parses dates of columns that were specified by 'parse\_dates' argument. It automatically tries to detect the format, but it can be helped with 'date\_format' or 'datefirst' arguments. Both dates and datetimes get stored as pd.Timestamp objects.**
-* **If there's a single invalid date then it returns the whole column as a series of strings, unlike `'<Sr> = pd.to_datetime(<Sr>, errors="coerce")'`, which uses pd.NaT.**
-* **To get specific attributes from a series of Timestamps use `'<Sr>.dt.year/date/…'`.**
+* **If there's a single invalid date then it returns the whole column as a series of strings, unlike `'<S> = pd.to_datetime(<S>, errors="coerce")'`, which uses pd.NaT.**
+* **To get specific attributes from a series of Timestamps use `'<S>.dt.year/date/…'`.**
 
 ### GroupBy
 **Object that groups together rows of a dataframe based on the value of the passed column.**
 
+```python
+<GB> = <DF>.groupby(col_key/s)                 # Splits DF into groups based on passed column.
+<DF> = <GB>.apply(<func>)                      # Maps each group. Func can return DF, S or el.
+<DF> = <GB>.filter(<func>)                     # Drops a group if function returns False.
+<DF> = <GB>.get_group(<el>)                    # Selects a group by grouping column's value.
+<S>  = <GB>.size()                             # S of group sizes. Same keys as get_group().
+<GB> = <GB>[col_key]                           # Single column GB. All operations return S.
+```
+
+```python
+<DF> = <GB>.sum/max/mean/idxmax/all()          # Or: <GB>.agg(lambda <S>: <el>)
+<DF> = <GB>.rank/diff/cumsum/ffill()           # Or: <GB>.transform(lambda <S>: <S>)
+<DF> = <GB>.fillna(<el>)                       # Or: <GB>.transform(lambda <S>: <S>)
+```
+
+#### Divides rows into groups and sums their columns. Result has a named index that creates column `'z'` on reset_index():
 ```python
 >>> df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 6]], list('abc'), list('xyz'))
 >>> gb = df.groupby('z'); gb.apply(print)
@@ -3381,39 +3396,20 @@ a  1  2  3
    x  y  z
 b  4  5  6
 c  7  8  6
-```
-
-```python
-<GB> = <DF>.groupby(col_key/s)                 # Splits DF into groups based on passed column.
-<DF> = <GB>.apply(<func>)                      # Maps each group. Func can return DF, Sr or el.
-<DF> = <GB>.get_group(<el>)                    # Selects a group by grouping column's value.
-<Sr> = <GB>.size()                             # A Sr of group sizes. Same keys as get_group().
-<GB> = <GB>[col_key]                           # Single column GB. All operations return a Sr.
-```
-
-#### GroupBy — Aggregate, Transform, Map:
-```python
-<DF> = <GB>.sum/max/mean/idxmax/all()          # Or: <GB>.agg(lambda <Sr>: <el>)
-<DF> = <GB>.rank/diff/cumsum/ffill()           # Or: <GB>.transform(lambda <Sr>: <Sr>)
-<DF> = <GB>.fillna(<el>)                       # Or: <GB>.transform(lambda <Sr>: <Sr>)
-```
-
-```python
 >>> gb.sum()
     x   y
 z
 3   1   2
 6  11  13
 ```
-* **Result has a named index that creates column `'z'` instead of `'index'` on reset_index().**
 
 ### Rolling
 **Object for rolling window calculations.**
 
 ```python
-<RSr/RDF/RGB> = <Sr/DF/GB>.rolling(win_size)   # Also: `min_periods=None, center=False`.
-<RSr/RDF/RGB> = <RDF/RGB>[col_key/s]           # Or: <RDF/RGB>.col_key
-<Sr/DF>       = <R>.mean/sum/max()             # Or: <R>.apply/agg(<agg_func/str>)
+<RS/RDF/RGB> = <S/DF/GB>.rolling(win_size)     # Also: `min_periods=None, center=False`.
+<RS/RDF/RGB> = <RDF/RGB>[col_key/s]            # Or: <RDF/RGB>.col_key
+<S/DF>       = <R>.mean/sum/max()              # Or: <R>.apply/agg(<agg_func/str>)
 ```
 
 
@@ -3427,7 +3423,7 @@ import plotly.express as px, pandas as pd
 ```python
 <Fig> = px.line(<DF>, x=col_key, y=col_key)            # Or: px.line(x=<list>, y=<list>)
 <Fig>.update_layout(margin=dict(t=0, r=0, b=0, l=0))   # Also `paper_bgcolor='rgb(0, 0, 0)'`.
-<Fig>.write_html/json/image('<path>')                  # Also <Fig>.show().
+<Fig>.write_html/json/image('<path>')                  # <Fig>.show() displays the plot.
 ```
 
 ```python
@@ -3590,4 +3586,4 @@ Index
 * **Only available in the [PDF](https://transactions.sendowl.com/products/78175486/4422834F/view).**
 * **Ctrl+F / ⌘F is usually sufficient.**
 * **Searching `'#<title>'` on the [webpage](https://gto76.github.io/python-cheatsheet/) will limit the search to the titles.**
-* **Click on the `'🔗'` symbol to get a link to specific section.**
+* **Click on the title's `'🔗'` to get a link to its section.**

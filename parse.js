@@ -36,8 +36,8 @@ const TOC =
   '    <strong><span class="hljs-string">\'3. Syntax\'</span></strong>:      [<a href="#arguments">Args</a>, <a href="#inline">Inline</a>, <a href="#imports">Import</a>, <a href="#decorator">Decorator</a>, <a href="#class">Class</a>, <a href="#ducktypes">Duck_Types</a>, <a href="#enum">Enum</a>, <a href="#exceptions">Exception</a>],\n' +
   '    <strong><span class="hljs-string">\'4. System\'</span></strong>:      [<a href="#exit">Exit</a>, <a href="#print">Print</a>, <a href="#input">Input</a>, <a href="#commandlinearguments">Command_Line_Arguments</a>, <a href="#open">Open</a>, <a href="#paths">Path</a>, <a href="#oscommands">OS_Commands</a>],\n' +
   '    <strong><span class="hljs-string">\'5. Data\'</span></strong>:        [<a href="#json">JSON</a>, <a href="#pickle">Pickle</a>, <a href="#csv">CSV</a>, <a href="#sqlite">SQLite</a>, <a href="#bytes">Bytes</a>, <a href="#struct">Struct</a>, <a href="#array">Array</a>, <a href="#memoryview">Memory_View</a>, <a href="#deque">Deque</a>],\n' +
-  '    <strong><span class="hljs-string">\'6. Advanced\'</span></strong>:    [<a href="#threading">Threading</a>, <a href="#operator">Operator</a>, <a href="#matchstatement">Match_Stmt</a>, <a href="#logging">Logging</a>, <a href="#introspection">Introspection</a>, <a href="#coroutines">Coroutines</a>],\n' +
-  '    <strong><span class="hljs-string">\'7. Libraries\'</span></strong>:   [<a href="#progressbar">Progress_Bar</a>, <a href="#plot">Plot</a>, <a href="#table">Table</a>, <a href="#consoleapp">Console_App</a>, <a href="#guiapp">GUI</a>, <a href="#scraping">Scraping</a>, <a href="#web">Web</a>, <a href="#profiling">Profile</a>],\n' +
+  '    <strong><span class="hljs-string">\'6. Advanced\'</span></strong>:    [<a href="#operator">Operator</a>, <a href="#matchstatement">Match_Stmt</a>, <a href="#logging">Logging</a>, <a href="#introspection">Introspection</a>, <a href="#threading">Threading</a>, <a href="#coroutines">Coroutines</a>],\n' +
+  '    <strong><span class="hljs-string">\'7. Libraries\'</span></strong>:   [<a href="#progressbar">Progress_Bar</a>, <a href="#plot">Plot</a>, <a href="#table">Table</a>, <a href="#consoleapp">Console_App</a>, <a href="#guiapp">GUI</a>, <a href="#scraping">Scraping</a>, <a href="#webapp">Web</a>, <a href="#profiling">Profile</a>],\n' +
   '    <strong><span class="hljs-string">\'8. Multimedia\'</span></strong>:  [<a href="#numpy">NumPy</a>, <a href="#image">Image</a>, <a href="#animation">Animation</a>, <a href="#audio">Audio</a>, <a href="#synthesizer">Synthesizer</a>, <a href="#pygame">Pygame</a>, <a href="#pandas">Pandas</a>, <a href="#plotly">Plotly</a>]\n' +
   '}\n' +
   '</code></pre>\n';
@@ -83,11 +83,6 @@ const CONSTRUCTOR_OVERLOADING =
   '<span class="hljs-class"><span class="hljs-keyword">class</span> &lt;<span class="hljs-title">name</span>&gt;:</span>\n' +
   '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, a=<span class="hljs-keyword">None</span>)</span>:</span>\n' +
   '        self.a = a\n';
-
-const DATACLASS =
-  '&lt;class&gt; = make_dataclass(<span class="hljs-string">\'&lt;class_name&gt;\'</span>, &lt;coll_of_attribute_names&gt;)\n' +
-  '&lt;class&gt; = make_dataclass(<span class="hljs-string">\'&lt;class_name&gt;\'</span>, &lt;coll_of_tuples&gt;)\n' +
-  '&lt;tuple&gt; = (<span class="hljs-string">\'&lt;attr_name&gt;\'</span>, &lt;type&gt; [, &lt;default_value&gt;])';
 
 const SHUTIL_COPY =
   'shutil.copy(from, to)               <span class="hljs-comment"># Copies the file. \'to\' can exist or be a dir.</span>\n' +
@@ -221,7 +216,7 @@ const AUDIO_1 =
   '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_bytes</span><span class="hljs-params">(a_float)</span>:</span>\n' +
   '        a_float = max(<span class="hljs-number">-1</span>, min(<span class="hljs-number">1</span> - <span class="hljs-number">2e-16</span>, a_float))\n' +
   '        a_float += p.sampwidth == <span class="hljs-number">1</span>\n' +
-  '        a_float *= pow(<span class="hljs-number">2</span>, p.sampwidth * <span class="hljs-number">8</span> - <span class="hljs-number">1</span>)\n' +
+  '        a_float *= pow(<span class="hljs-number">2</span>, (p.sampwidth * <span class="hljs-number">8</span>) - <span class="hljs-number">1</span>)\n' +
   '        <span class="hljs-keyword">return</span> int(a_float).to_bytes(p.sampwidth, <span class="hljs-string">\'little\'</span>, signed=(p.sampwidth != <span class="hljs-number">1</span>))\n' +
   '    <span class="hljs-keyword">if</span> p <span class="hljs-keyword">is</span> <span class="hljs-keyword">None</span>:\n' +
   '        p = wave._wave_params(nchannels, sampwidth, framerate, <span class="hljs-number">0</span>, <span class="hljs-string">\'NONE\'</span>, <span class="hljs-string">\'not compressed\'</span>)\n' +
@@ -316,7 +311,13 @@ const GROUPBY =
   'a  <span class="hljs-number">1</span>  <span class="hljs-number">2</span>  <span class="hljs-number">3</span>\n' +
   '   x  y  z\n' +
   'b  <span class="hljs-number">4</span>  <span class="hljs-number">5</span>  <span class="hljs-number">6</span>\n' +
-  'c  <span class="hljs-number">7</span>  <span class="hljs-number">8</span>  <span class="hljs-number">6</span>';
+  'c  <span class="hljs-number">7</span>  <span class="hljs-number">8</span>  <span class="hljs-number">6</span>\n' +
+  '<span class="hljs-meta">&gt;&gt;&gt; </span>gb.sum()\n' +
+  '    x   y\n' +
+  'z\n' +
+  '<span class="hljs-number">3</span>   <span class="hljs-number">1</span>   <span class="hljs-number">2</span>\n' +
+  '<span class="hljs-number">6</span>  <span class="hljs-number">11</span>  <span class="hljs-number">13</span>';
+
 
 const CYTHON_1 =
   '<span class="hljs-keyword">cdef</span> &lt;ctype&gt; &lt;var_name&gt; = &lt;obj&gt;\n' +
@@ -336,7 +337,7 @@ const INDEX =
   '<li><strong>Only available in the <a href="https://transactions.sendowl.com/products/78175486/4422834F/view">PDF</a>.</strong></li>\n' +
   '<li><strong>Ctrl+F / ⌘F is usually sufficient.</strong></li>\n' +
   '<li><strong>Searching <code class="python hljs"><span class="hljs-string">\'#&lt;title&gt;\'</span></code> will limit the search to the titles.</strong></li>\n' +
-  '<li><strong>Click on the <code class="python hljs"><span class="hljs-string">\'#\'</span></code> symbol to get a link to specific section.</strong></li>\n';
+  '<li><strong>Click on the title\'s <code class="python hljs"><span class="hljs-string">\'#\'</span></code> to get a link to its section.</strong></li>\n';
 
 
 const DIAGRAM_1_A =
@@ -576,26 +577,26 @@ const DIAGRAM_12_B =
   '┗━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━┷━━━━━━━━━━━┛\n';
 
 const DIAGRAM_13_A =
-  '| sr.apply(…)   |      5      |    sum  5   |     s  5      |';
+  '| s.apply(…)   |      3      |    sum  3   |     s  3      |';
 
 const DIAGRAM_13_B =
-  "┏━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
-  "┃               │    'sum'    │   ['sum']   │ {'s': 'sum'}  ┃\n" +
-  "┠───────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ sr.apply(…)   │      5      │    sum  5   │     s  5      ┃\n" +
-  "┃ sr.agg(…)     │             │             │               ┃\n" +
-  "┗━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
+  "┏━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃              │    'sum'    │   ['sum']   │ {'s': 'sum'}  ┃\n" +
+  "┠──────────────┼─────────────┼─────────────┼───────────────┨\n" +
+  "┃ s.apply(…)   │      3      │    sum  3   │     s  3      ┃\n" +
+  "┃ s.agg(…)     │             │             │               ┃\n" +
+  "┗━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
   "\n" +
-  "┏━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
-  "┃               │    'rank'   │   ['rank']  │ {'r': 'rank'} ┃\n" +
-  "┠───────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ sr.apply(…)   │             │      rank   │               ┃\n" +
-  "┃ sr.agg(…)     │     x  1    │   x     1   │    r  x  1    ┃\n" +
-  "┃               │     y  2    │   y     2   │       y  2    ┃\n" +
-  "┗━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
+  "┏━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃              │    'rank'   │   ['rank']  │ {'r': 'rank'} ┃\n" +
+  "┠──────────────┼─────────────┼─────────────┼───────────────┨\n" +
+  "┃ s.apply(…)   │             │      rank   │               ┃\n" +
+  "┃ s.agg(…)     │    x  1.0   │   x   1.0   │   r  x  1.0   ┃\n" +
+  "┃              │    y  2.0   │   y   2.0   │      y  2.0   ┃\n" +
+  "┗━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_14_A =
-  "|               |    'rank'   |   ['rank']  | {'r': 'rank'} |";
+  "|              |    'rank'   |   ['rank']  | {'r': 'rank'} |";
 
 const DIAGRAM_15_A =
   '+------------------------+---------------+------------+------------+--------------------------+';
@@ -618,41 +619,36 @@ const DIAGRAM_15_B =
   "┃           axis=0,      │ a  1   2   .  │     2      │            │ Uses 'outer' by default. ┃\n" +
   "┃           join=…)      │ b  3   4   .  │     4      │            │ A Series is treated as a ┃\n" +
   "┃                        │ b  .   4   5  │     4      │            │ column. To add a row use ┃\n" +
-  "┃                        │ c  .   6   7  │     6      │            │ pd.concat([l, DF([sr])]).┃\n" +
+  "┃                        │ c  .   6   7  │     6      │            │ pd.concat([l, DF([s])]). ┃\n" +
   "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
   "┃ pd.concat([l, r],      │    x  y  y  z │            │            │ Adds columns at the      ┃\n" +
   "┃           axis=1,      │ a  1  2  .  . │ x  y  y  z │            │ right end. Uses 'outer'  ┃\n" +
   "┃           join=…)      │ b  3  4  4  5 │ 3  4  4  5 │            │ by default. A Series is  ┃\n" +
   "┃                        │ c  .  .  6  7 │            │            │ treated as a column.     ┃\n" +
-  "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
-  "┃ l.combine_first(r)     │    x   y   z  │            │            │ Adds missing rows and    ┃\n" +
-  "┃                        │ a  1   2   .  │            │            │ columns. Also updates    ┃\n" +
-  "┃                        │ b  3   4   5  │            │            │ items that contain NaN.  ┃\n" +
-  "┃                        │ c  .   6   7  │            │            │ Argument r must be a DF. ┃\n" +
   "┗━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_16_A =
-  '| df.apply(…)     |     x  4    |       x  y  |     x  4      |';
+  '| l.apply(…)     |      x  4     |        x  y   |     x  4      |';
 
 const DIAGRAM_16_B =
-  "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
-  "┃                 │    'sum'    │   ['sum']   │ {'x': 'sum'}  ┃\n" +
-  "┠─────────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ df.apply(…)     │     x  4    │       x  y  │     x  4      ┃\n" +
-  "┃ df.agg(…)       │     y  6    │  sum  4  6  │               ┃\n" +
-  "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃                │     'sum'     │    ['sum']    │ {'x': 'sum'}  ┃\n" +
+  "┠────────────────┼───────────────┼───────────────┼───────────────┨\n" +
+  "┃ l.apply(…)     │      x  4     │        x  y   │     x  4      ┃\n" +
+  "┃ l.agg(…)       │      y  6     │   sum  4  6   │               ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
   "\n" +
-  "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
-  "┃                 │    'rank'   │   ['rank']  │ {'x': 'rank'} ┃\n" +
-  "┠─────────────────┼─────────────┼─────────────┼───────────────┨\n" +
-  "┃ df.apply(…)     │             │      x    y │               ┃\n" +
-  "┃ df.agg(…)       │      x  y   │   rank rank │        x      ┃\n" +
-  "┃ df.transform(…) │   a  1  1   │ a    1    1 │     a  1      ┃\n" +
-  "┃                 │   b  2  2   │ b    2    2 │     b  2      ┃\n" +
-  "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃                │     'rank'    │    ['rank']   │ {'x': 'rank'} ┃\n" +
+  "┠────────────────┼───────────────┼───────────────┼───────────────┨\n" +
+  "┃ l.apply(…)     │               │       x    y  │               ┃\n" +
+  "┃ l.agg(…)       │       x    y  │    rank rank  │         x     ┃\n" +
+  "┃ l.transform(…) │  a  1.0  1.0  │  a  1.0  1.0  │    a  1.0     ┃\n" +
+  "┃                │  b  2.0  2.0  │  b  2.0  2.0  │    b  2.0     ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_17_A =
-  "|                 |    'rank'   |   ['rank']  | {'x': 'rank'} |";
+  "|                |     'rank'    |    ['rank']   | {'x': 'rank'} |";
 
 const DIAGRAM_18_A =
   '| gb.agg(…)       |      x   y  |             |      x    y |               |';
@@ -841,7 +837,6 @@ function fixHighlights() {
   $(`code:contains(@debug(print_result=True))`).html(PARAMETRIZED_DECORATOR);
   $(`code:contains(print/str/repr([<obj>]))`).html(REPR_USE_CASES);
   $(`code:contains((self, a=None):)`).html(CONSTRUCTOR_OVERLOADING);
-  $(`code:contains(make_dataclass(\'<class_name>\')`).html(DATACLASS);
   $(`code:contains(shutil.copy)`).html(SHUTIL_COPY);
   $(`code:contains(os.rename)`).html(OS_RENAME);
   $(`code:contains(\'<n>s\')`).html(STRUCT_FORMAT);
