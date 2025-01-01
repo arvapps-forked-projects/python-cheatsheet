@@ -110,7 +110,7 @@ const MATCH_EXAMPLE =
   '<span class="hljs-meta">... </span>        parts=[<span class="hljs-string">\'/\'</span>, <span class="hljs-string">\'home\'</span>, user, *_]\n' +
   '<span class="hljs-meta">... </span>    ) <span class="hljs-keyword">as</span> p <span class="hljs-keyword">if</span> p.name.lower().startswith(<span class="hljs-string">\'readme\'</span>) <span class="hljs-keyword">and</span> p.is_file():\n' +
   '<span class="hljs-meta">... </span>        print(<span class="hljs-string">f\'<span class="hljs-subst">{p.name}</span> is a readme file that belongs to user <span class="hljs-subst">{user}</span>.\'</span>)\n' +
-  '<span class="hljs-string">\'README.md is a readme file that belongs to user gto.\'</span>\n';
+  'README.md is a readme file that belongs to user gto.\n';
 
 const COROUTINES =
   '<span class="hljs-keyword">import</span> asyncio, collections, curses, curses.textpad, enum, random\n' +
@@ -320,21 +320,20 @@ const GROUPBY =
 
 
 const CYTHON_1 =
-  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt; &lt;var_name&gt; = &lt;obj&gt;\n' +
-  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt;[n_elements] &lt;var_name&gt; = [&lt;el_1&gt;, &lt;el_2&gt;, ...]\n' +
-  '<span class="hljs-keyword">cdef</span> &lt;ctype/void&gt; &lt;func_name&gt;(&lt;ctype&gt; &lt;arg_name&gt;): ...\n';
+  '<span class="hljs-keyword">cdef</span> &lt;ctype/type&gt; &lt;var_name&gt; [= &lt;obj&gt;]\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt;[n_elements] &lt;var_name&gt; [= &lt;coll_of_nums&gt;]\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype/type/void&gt; &lt;func_name&gt;(&lt;ctype/type&gt; &lt;arg_name&gt;): ...\n';
 
 const CYTHON_2 =
   '<span class="hljs-keyword">cdef</span> <span class="hljs-class"><span class="hljs-keyword">class</span> &lt;<span class="hljs-title">class_name</span>&gt;:</span>\n' +
-  '    <span class="hljs-keyword">cdef</span> <span class="hljs-keyword">public</span> &lt;ctype&gt; &lt;attr_name&gt;\n' +
-  '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, &lt;ctype&gt; &lt;arg_name&gt;)</span>:</span>\n' +
+  '    <span class="hljs-keyword">cdef</span> <span class="hljs-keyword">public</span> &lt;ctype/type&gt; &lt;attr_name&gt;\n' +
+  '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, &lt;ctype/type&gt; &lt;arg_name&gt;)</span>:</span>\n' +
   '        self.&lt;attr_name&gt; = &lt;arg_name&gt;\n';
 
 const CYTHON_3 =
   '<span class="hljs-keyword">cdef</span> <span class="hljs-keyword">enum</span> &lt;enum_name&gt;: &lt;member_name&gt;, &lt;member_name&gt;, ...\n';
 
 const INDEX =
-  '<li><strong>Only available in the <a href="https://transactions.sendowl.com/products/78175486/4422834F/view">PDF</a>.</strong></li>\n' +
   '<li><strong>Ctrl+F / ⌘F is usually sufficient.</strong></li>\n' +
   '<li><strong>Searching <code class="python hljs"><span class="hljs-string">\'#&lt;title&gt;\'</span></code> will limit the search to the titles.</strong></li>\n' +
   '<li><strong>Click on the title\'s <code class="python hljs"><span class="hljs-string">\'#\'</span></code> to get a link to its section.</strong></li>\n';
@@ -599,56 +598,57 @@ const DIAGRAM_14_A =
   "|              |    'rank'   |   ['rank']  | {'r': 'rank'} |";
 
 const DIAGRAM_15_A =
-  '+------------------------+---------------+------------+------------+--------------------------+';
+  '+-----------------------+---------------+------------+------------+---------------------------+';
 
 const DIAGRAM_15_B =
-  "┏━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
-  "┃                        │    'outer'    │   'inner'  │   'left'   │       Description        ┃\n" +
-  "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
-  "┃ l.merge(r, on='y',     │    x   y   z  │ x   y   z  │ x   y   z  │ Merges on column if 'on' ┃\n" +
-  "┃            how=…)      │ 0  1   2   .  │ 3   4   5  │ 1   2   .  │ or 'left/right_on' are   ┃\n" +
-  "┃                        │ 1  3   4   5  │            │ 3   4   5  │ set, else on shared cols.┃\n" +
-  "┃                        │ 2  .   6   7  │            │            │ Uses 'inner' by default. ┃\n" +
-  "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
-  "┃ l.join(r, lsuffix='l', │    x yl yr  z │            │ x yl yr  z │ Merges on row keys.      ┃\n" +
-  "┃           rsuffix='r', │ a  1  2  .  . │ x yl yr  z │ 1  2  .  . │ Uses 'left' by default.  ┃\n" +
-  "┃           how=…)       │ b  3  4  4  5 │ 3  4  4  5 │ 3  4  4  5 │ If r is a Series, it is  ┃\n" +
-  "┃                        │ c  .  .  6  7 │            │            │ treated as a column.     ┃\n" +
-  "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
-  "┃ pd.concat([l, r],      │    x   y   z  │     y      │            │ Adds rows at the bottom. ┃\n" +
-  "┃           axis=0,      │ a  1   2   .  │     2      │            │ Uses 'outer' by default. ┃\n" +
-  "┃           join=…)      │ b  3   4   .  │     4      │            │ A Series is treated as a ┃\n" +
-  "┃                        │ b  .   4   5  │     4      │            │ column. To add a row use ┃\n" +
-  "┃                        │ c  .   6   7  │     6      │            │ pd.concat([l, DF([s])]). ┃\n" +
-  "┠────────────────────────┼───────────────┼────────────┼────────────┼──────────────────────────┨\n" +
-  "┃ pd.concat([l, r],      │    x  y  y  z │            │            │ Adds columns at the      ┃\n" +
-  "┃           axis=1,      │ a  1  2  .  . │ x  y  y  z │            │ right end. Uses 'outer'  ┃\n" +
-  "┃           join=…)      │ b  3  4  4  5 │ 3  4  4  5 │            │ by default. A Series is  ┃\n" +
-  "┃                        │ c  .  .  6  7 │            │            │ treated as a column.     ┃\n" +
-  "┗━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
+  "┏━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
+  "┃                       │    'outer'    │   'inner'  │   'left'   │       Description         ┃\n" +
+  "┠───────────────────────┼───────────────┼────────────┼────────────┼───────────────────────────┨\n" +
+  "┃ df.merge(df_2,        │    x   y   z  │ x   y   z  │ x   y   z  │ Merges on column if 'on'  ┃\n" +
+  "┃          on='y',      │ 0  1   2   .  │ 3   4   5  │ 1   2   .  │ or 'left_on/right_on' are ┃\n" +
+  "┃          how=…)       │ 1  3   4   5  │            │ 3   4   5  │ set, else on shared cols. ┃\n" +
+  "┃                       │ 2  .   6   7  │            │            │ Uses 'inner' by default.  ┃\n" +
+  "┠───────────────────────┼───────────────┼────────────┼────────────┼───────────────────────────┨\n" +
+  "┃ df.join(df_2,         │    x yl yr  z │            │ x yl yr  z │ Merges on row keys.       ┃\n" +
+  "┃         lsuffix='l',  │ a  1  2  .  . │ x yl yr  z │ 1  2  .  . │ Uses 'left' by default.   ┃\n" +
+  "┃         rsuffix='r',  │ b  3  4  4  5 │ 3  4  4  5 │ 3  4  4  5 │ If Series is passed, it   ┃\n" +
+  "┃         how=…)        │ c  .  .  6  7 │            │            │ is treated as a column.   ┃\n" +
+  "┠───────────────────────┼───────────────┼────────────┼────────────┼───────────────────────────┨\n" +
+  "┃ pd.concat([df, df_2], │    x   y   z  │     y      │            │ Adds rows at the bottom.  ┃\n" +
+  "┃           axis=0,     │ a  1   2   .  │     2      │            │ Uses 'outer' by default.  ┃\n" +
+  "┃           join=…)     │ b  3   4   .  │     4      │            │ A Series is treated as a  ┃\n" +
+  "┃                       │ b  .   4   5  │     4      │            │ column. To add a row use  ┃\n" +
+  "┃                       │ c  .   6   7  │     6      │            │ pd.concat([df, DF([s])]). ┃\n" +
+  "┠───────────────────────┼───────────────┼────────────┼────────────┼───────────────────────────┨\n" +
+  "┃ pd.concat([df, df_2], │    x  y  y  z │            │            │ Adds columns at the       ┃\n" +
+  "┃           axis=1,     │ a  1  2  .  . │ x  y  y  z │            │ right end. Uses 'outer'   ┃\n" +
+  "┃           join=…)     │ b  3  4  4  5 │ 3  4  4  5 │            │ by default. A Series is   ┃\n" +
+  "┃                       │ c  .  .  6  7 │            │            │ treated as a column.      ┃\n" +
+  "┗━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
+
 
 const DIAGRAM_16_A =
-  '| l.apply(…)     |      x  4     |        x  y   |     x  4      |';
+  '| df.apply(…)     |      x  4     |        x  y   |     x  4      |';
 
 const DIAGRAM_16_B =
-  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
-  "┃                │     'sum'     │    ['sum']    │ {'x': 'sum'}  ┃\n" +
-  "┠────────────────┼───────────────┼───────────────┼───────────────┨\n" +
-  "┃ l.apply(…)     │      x  4     │        x  y   │     x  4      ┃\n" +
-  "┃ l.agg(…)       │      y  6     │   sum  4  6   │               ┃\n" +
-  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
+  "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃                 │     'sum'     │    ['sum']    │ {'x': 'sum'}  ┃\n" +
+  "┠─────────────────┼───────────────┼───────────────┼───────────────┨\n" +
+  "┃ df.apply(…)     │      x  4     │        x  y   │     x  4      ┃\n" +
+  "┃ df.agg(…)       │      y  6     │   sum  4  6   │               ┃\n" +
+  "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
   "\n" +
-  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
-  "┃                │     'rank'    │    ['rank']   │ {'x': 'rank'} ┃\n" +
-  "┠────────────────┼───────────────┼───────────────┼───────────────┨\n" +
-  "┃ l.apply(…)     │               │       x    y  │               ┃\n" +
-  "┃ l.agg(…)       │       x    y  │    rank rank  │         x     ┃\n" +
-  "┃ l.transform(…) │  a  1.0  1.0  │  a  1.0  1.0  │    a  1.0     ┃\n" +
-  "┃                │  b  2.0  2.0  │  b  2.0  2.0  │    b  2.0     ┃\n" +
-  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
+  "┏━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃                 │     'rank'    │    ['rank']   │ {'x': 'rank'} ┃\n" +
+  "┠─────────────────┼───────────────┼───────────────┼───────────────┨\n" +
+  "┃ df.apply(…)     │               │       x    y  │               ┃\n" +
+  "┃ df.agg(…)       │       x    y  │    rank rank  │         x     ┃\n" +
+  "┃ df.transform(…) │  a  1.0  1.0  │  a  1.0  1.0  │    a  1.0     ┃\n" +
+  "┃                 │  b  2.0  2.0  │  b  2.0  2.0  │    b  2.0     ┃\n" +
+  "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
 
 const DIAGRAM_17_A =
-  "|                |     'rank'    |    ['rank']   | {'x': 'rank'} |";
+  "|                 |     'rank'    |    ['rank']   | {'x': 'rank'} |";
 
 const DIAGRAM_18_A =
   '| gb.agg(…)       |      x   y  |             |      x    y |               |';
@@ -669,7 +669,7 @@ const DIAGRAM_18_B =
   "┃                 │  c  11  13  │   c  2  2   │             │               ┃\n" +
   "┗━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
 
-const MENU = '<a href="https://raw.githubusercontent.com/gto76/python-cheatsheet/main/README.md">Download text file</a>, <a href="https://transactions.sendowl.com/products/78175486/4422834F/view">Buy PDF</a>, <a href="https://github.com/gto76/python-cheatsheet">Fork me on GitHub</a>, <a href="https://github.com/gto76/python-cheatsheet/wiki/Frequently-Asked-Questions">Check out FAQ</a> or <a href="index.html?theme=dark3">Switch to dark theme</a>.\n';
+const MENU = '<a href="https://raw.githubusercontent.com/gto76/python-cheatsheet/main/README.md">Download text file</a>, <a href="https://github.com/gto76/python-cheatsheet">Fork me on GitHub</a>, <a href="https://github.com/gto76/python-cheatsheet/wiki/Frequently-Asked-Questions">Check out FAQ</a> or <a href="index.html?theme=dark3">Switch to dark theme</a>.\n';
 
 const DARK_THEME_SCRIPT =
   '<script>\n' +
@@ -850,10 +850,10 @@ function fixHighlights() {
   $(`code:contains(samples_f = (sin(i *)`).html(AUDIO_2);
   $(`code:contains(collections, dataclasses, enum, io, itertools)`).html(MARIO);
   $(`code:contains(>>> gb = df.groupby)`).html(GROUPBY);
-  $(`code:contains(cdef <ctype> <var_name> = <obj>)`).html(CYTHON_1);
+  $(`code:contains(cdef <ctype/type> <var_name> [= <obj>])`).html(CYTHON_1);
   $(`code:contains(cdef class <class_name>:)`).html(CYTHON_2);
   $(`code:contains(cdef enum <enum_name>: <member_name>, <member_name>, ...)`).html(CYTHON_3);
-  $(`ul:contains(Only available in)`).html(INDEX);
+  $(`ul:contains(Ctrl+F / ⌘F is usually sufficient.)`).html(INDEX);
 }
 
 function preventPageBreaks() {
@@ -897,7 +897,7 @@ function insertPageBreakBefore(an_id) {
 }
 
 function fixPandasDiagram() {
-  const diagram_15 = '┏━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━┓';
+  const diagram_15 = '┏━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━━━━┓';
   $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(and)").after("and");
   $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(as)").after("as");
   $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(is)").after("is");
@@ -905,6 +905,10 @@ function fixPandasDiagram() {
   $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(or)").after("or");
   $(`code:contains(${diagram_15})`).find(".hljs-keyword:contains(else)").after("else");
   $(`code:contains(${diagram_15})`).find(".hljs-keyword").remove();
+  $(`code:contains(${diagram_15})`).find(".hljs-string:contains(\'left_on/right_on\')").after("\'left_on/right_on\'");
+  $(`code:contains(${diagram_15})`).find(".hljs-string:contains(\'left_on/right_on\')").remove();
+  $(`code:contains(${diagram_15})`).find(".hljs-string:contains('on')").after("'on'");
+  $(`code:contains(${diagram_15})`).find(".hljs-string:contains('on')").remove();
 }
 
 function removePlotImages() {
