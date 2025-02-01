@@ -330,9 +330,6 @@ const CYTHON_2 =
   '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, &lt;ctype/type&gt; &lt;arg_name&gt;)</span>:</span>\n' +
   '        self.&lt;attr_name&gt; = &lt;arg_name&gt;\n';
 
-const CYTHON_3 =
-  '<span class="hljs-keyword">cdef</span> <span class="hljs-keyword">enum</span> &lt;enum_name&gt;: &lt;member_name&gt;, &lt;member_name&gt;, ...\n';
-
 const INDEX =
   '<li><strong>Ctrl+F / ⌘F is usually sufficient.</strong></li>\n' +
   '<li><strong>Searching <code class="python hljs"><span class="hljs-string">\'#&lt;title&gt;\'</span></code> will limit the search to the titles.</strong></li>\n' +
@@ -594,6 +591,72 @@ const DIAGRAM_13_B =
   "┃              │    y  2.0   │   y   2.0   │      y  2.0   ┃\n" +
   "┗━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
 
+const DIAGRAM_13_BB =
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃                │    'mean'   │   ['mean']  │ {'m': 'mean'} ┃\n" +
+  "┠────────────────┼─────────────┼─────────────┼───────────────┨\n" +
+  "┃ s.apply/agg(…) │     1.5     │  mean  1.5  │     m  1.5    ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
+  "\n" +
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃                │    'rank'   │   ['rank']  │ {'r': 'rank'} ┃\n" +
+  "┠────────────────┼─────────────┼─────────────┼───────────────┨\n" +
+  "┃ s.apply/agg(…) │             │      rank   │               ┃\n" +
+  "┃                │    x  1.0   │   x   1.0   │   r  x  1.0   ┃\n" +
+  "┃                │    y  2.0   │   y   2.0   │      y  2.0   ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
+
+const DIAGRAM_13_XXX =
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━┓\n" +
+  "┃                │   'sum'   │ ['sum', 'max'] │   'rank'  │ ['rank', 'diff'] ┃\n" +
+  "┠────────────────┼───────────┼────────────────┼───────────┼──────────────────┨\n" +
+  "┃ s.apply/agg(…) │     3     │    sum    3    │  x  1.0   │     rank  diff   ┃\n" +
+  "┃                │           │    max    2    │  y  2.0   │  x   1.0   NaN   ┃\n" +
+  "┃                │           │    Name: a     │  Name: a  │  y   2.0   1.0   ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━┛\n";
+
+const DIAGRAM_13_XX =
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━━━━━━┓\n" +
+  "┃                │   'sum'   │   'rank'  │ ['sum', 'max'] ┃\n" +
+  "┠────────────────┼───────────┼───────────┼────────────────┨\n" +
+  "┃ s.apply/agg(…) │     3     │  x  1.0   │    sum    3    ┃\n" +
+  "┃                │           │  y  2.0   │    max    2    ┃\n" +
+  "┃                │           │  Name: a  │    Name: a     ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━━━━━━┛\n";
+
+const DIAGRAM_13_X =
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━┓\n" +
+  "┃                │   'sum'   │   'rank'  │ ['sum', 'max'] │ ['rank', 'diff'] ┃\n" +
+  "┠────────────────┼───────────┼───────────┼────────────────┼──────────────────┨\n" +
+  "┃ s.apply/agg(…) │     3     │  x  1.0   │    sum    3    │     rank  diff   ┃\n" +
+  "┃                │           │  y  2.0   │    max    2    │  x   1.0   NaN   ┃\n" +
+  "┃                │           │  Name: a  │    Name: a     │  y   2.0   1.0   ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━┛\n";
+
+const DIAGRAM_13_Y =
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━┯━━━━━━━━━━━┓\n" +
+  "┃                │   'sum'   │   'rank'  │  ['sum']  │ ['rank']  ┃\n" +
+  "┠────────────────┼───────────┼───────────┼───────────┼───────────┨\n" +
+  "┃ s.apply/agg(…) │     3     │  x  1.0   │  sum 3    │     rank  ┃\n" +
+  "┃                │           │  y  2.0   │  Name: a  │  x   1.0  ┃\n" +
+  "┃                │           │  Name: a  │           │  y   2.0  ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━┷━━━━━━━━━━━┛\n";
+
+const DIAGRAM_13_BBB =
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃                │    'sum'    │   ['sum']   │ {'s': 'sum'}  ┃\n" +
+  "┠────────────────┼─────────────┼─────────────┼───────────────┨\n" +
+  "┃ s.apply/agg(…) │      3      │    sum  3   │     s  3      ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n" +
+  "\n" +
+  "┏━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━┓\n" +
+  "┃                │    'rank'   │   ['rank']  │ {'r': 'rank'} ┃\n" +
+  "┠────────────────┼─────────────┼─────────────┼───────────────┨\n" +
+  "┃ s.apply/agg(…) │             │      rank   │               ┃\n" +
+  "┃                │    x  1.0   │   x   1.0   │   r  x  1.0   ┃\n" +
+  "┃                │    y  2.0   │   y   2.0   │      y  2.0   ┃\n" +
+  "┗━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━┛\n";
+
 const DIAGRAM_14_A =
   "|              |    'rank'   |   ['rank']  | {'r': 'rank'} |";
 
@@ -778,7 +841,6 @@ function unindentBanner() {
 function updateDiagrams() {
   $(`code:contains(${DIAGRAM_1_A})`).html(DIAGRAM_1_B);
   $(`code:contains(${DIAGRAM_2_A})`).html(DIAGRAM_2_B);
-  $(`code:contains(${DIAGRAM_3_A})`).html(DIAGRAM_3_B);
   $(`code:contains(${DIAGRAM_4_A})`).html(DIAGRAM_4_B);
   $(`code:contains(${DIAGRAM_5_A})`).parent().remove();
   $(`code:contains(${DIAGRAM_6_A})`).html(DIAGRAM_6_B);
@@ -786,8 +848,6 @@ function updateDiagrams() {
   $(`code:contains(${DIAGRAM_8_A})`).html(DIAGRAM_8_B);
   $(`code:contains(${DIAGRAM_9_A})`).html(DIAGRAM_9_B);
   $(`code:contains(${DIAGRAM_95_A})`).html(DIAGRAM_95_B);
-  $(`code:contains(${DIAGRAM_10_A})`).html(DIAGRAM_10_B);
-  $(`code:contains(${DIAGRAM_11_A})`).html(DIAGRAM_11_B);
   $(`code:contains(${DIAGRAM_115_A})`).html(DIAGRAM_115_B);
   $(`code:contains(${DIAGRAM_12_A})`).html(DIAGRAM_12_B).removeClass("text").removeClass("language-text").addClass("python");
   $(`code:contains(${DIAGRAM_13_A})`).html(DIAGRAM_13_B).removeClass("text").removeClass("language-text").addClass("python");
@@ -795,7 +855,6 @@ function updateDiagrams() {
   $(`code:contains(${DIAGRAM_15_A})`).html(DIAGRAM_15_B).removeClass("text").removeClass("language-text").addClass("python");
   $(`code:contains(${DIAGRAM_16_A})`).html(DIAGRAM_16_B).removeClass("text").removeClass("language-text").addClass("python");
   $(`code:contains(${DIAGRAM_17_A})`).parent().remove();
-  $(`code:contains(${DIAGRAM_18_A})`).html(DIAGRAM_18_B).removeClass("text").removeClass("language-text").addClass("python");
 }
 
 function highlightCode() {
@@ -852,7 +911,6 @@ function fixHighlights() {
   $(`code:contains(>>> gb = df.groupby)`).html(GROUPBY);
   $(`code:contains(cdef <ctype/type> <var_name> [= <obj>])`).html(CYTHON_1);
   $(`code:contains(cdef class <class_name>:)`).html(CYTHON_2);
-  $(`code:contains(cdef enum <enum_name>: <member_name>, <member_name>, ...)`).html(CYTHON_3);
   $(`ul:contains(Ctrl+F / ⌘F is usually sufficient.)`).html(INDEX);
 }
 

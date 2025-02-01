@@ -662,12 +662,12 @@ import zoneinfo, dateutil.tz
 ### Arithmetics
 ```python
 <bool>   = <D/T/DTn> > <D/T/DTn>            # Ignores time jumps (fold attribute). Also ==.
-<bool>   = <DTa>     > <DTa>                # Ignores jumps if they share tz object. Broken ==.
+<bool>   = <DTa>     > <DTa>                # Ignores time jumps if they share tzinfo object.
 <TD>     = <D/DTn>   - <D/DTn>              # Ignores jumps. Convert to UTC for actual delta.
 <TD>     = <DTa>     - <DTa>                # Ignores jumps if they share tzinfo object.
 <D/DT>   = <D/DT>    ± <TD>                 # Returned datetime can fall into missing hour.
-<TD>     = <TD>      * <float>              # Also: <TD> = abs(<TD>) and <TD> = <TD> ±% <TD>.
-<float>  = <TD>      / <TD>                 # E.g. how many hours are in TD. Also //, divmod().
+<TD>     = <TD>      * <float>              # Also `<TD> = abs(<TD>)`, `<TD> = <TD> ± <TD>`.
+<float>  = <TD>      / <TD>                 # Also `<int>, <TD> = divmod(<TD>, <TD>)`.
 ```
 
 
@@ -3176,30 +3176,31 @@ Name: a, dtype: int64
 ```python
 <el> = <S>[key/i]                              # Or: <S>.<key>
 <S>  = <S>[coll_of_keys/coll_of_i]             # Or: <S>[key/i : key/i]
-<S>  = <S>[bools]                              # Or: <S>.loc/iloc[bools]
+<S>  = <S>[<S_of_bools>]                       # Or: <S>.loc/iloc[<S_of_bools>]
 ```
 
 ```python
-<S>  = <S> > <el/S>                            # Returns S of bools. Pairs items by keys.
+<S>  = <S> > <el/S>                            # Returns S of bools. For logic use &, |, ~.
 <S>  = <S> + <el/S>                            # Items with non-matching keys get value NaN.
 ```
 
 ```python
-<S> = pd.concat(<coll_of_S>)                   # Concats multiple series into one long Series.
-<S> = <S>.combine_first(<S>)                   # Adds items that are not yet present.
-<S>.update(<S>)                                # Updates items that are already present.
+<S>  = <S>.head/describe/sort_values()         # Also <S>.unique/value_counts/round/dropna().
+<S>  = <S>.str.strip/lower/contains/replace()  # Also split().str[<int>] and split().explode().
+<S>  = <S>.dt.year/month/day/hour              # Use pd.to_datetime(<S>) to get S of dates.
 ```
 
 ```python
 <S>.plot.line/area/bar/pie/hist()              # Generates a plot. `plt.show()` displays it.
 ```
+* **Also: `'pd.cut(<S>, bins=<int/coll>)'` and `'<S>.quantile(<float/coll>)'`.**
 * **Indexing objects can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`.**
 * **Pandas uses NumPy types like `'np.int64'`. Series is converted to `'float64'` if we assign np.nan to any item. Use `'<S>.astype(<str/type>)'` to get converted Series.**
 * **Series will silently overflow if we run `'pd.Series([100], dtype="int8") + 100'`!**
 
 #### Series — Aggregate, Transform, Map:
 ```python
-<el> = <S>.sum/max/mean/idxmax/all()           # Or: <S>.agg(lambda <S>: <el>)
+<el> = <S>.sum/max/mean/idxmax/all/count()     # Or: <S>.agg(lambda <S>: <el>)
 <S>  = <S>.rank/diff/cumsum/ffill/interpol…()  # Or: <S>.agg/transform(lambda <S>: <S>)
 <S>  = <S>.isna/fillna/isin([<el/coll>])       # Or: <S>.agg/transform/map(lambda <el>: <el>)
 ```
@@ -3222,7 +3223,6 @@ Name: a, dtype: int64
 |              |    y  2.0   |   y   2.0   |      y  2.0   |
 +--------------+-------------+-------------+---------------+
 ```
-* **Methods ffill(), interpolate(), fillna() and dropna() accept `'inplace=True'`.**
 * **Agg() and transform() pass a Series to a function if it raises Type/Val/AttrError on a scalar.**
 * **Last result has a multi-index. Use `'<S>[key_1, key_2]'` to get its values.**
 
@@ -3314,7 +3314,7 @@ c  6  7
 
 #### DataFrame — Aggregate, Transform, Map:
 ```python
-<S>  = <DF>.sum/max/mean/idxmax/all()          # Or: <DF>.apply/agg(lambda <S>: <el>)
+<S>  = <DF>.sum/max/mean/idxmax/all/count()    # Or: <DF>.apply/agg(lambda <S>: <el>)
 <DF> = <DF>.rank/diff/cumsum/ffill/interpo…()  # Or: <DF>.apply/agg/transform(lambda <S>: <S>)
 <DF> = <DF>.isna/fillna/isin([<el/coll>])      # Or: <DF>.applymap(lambda <el>: <el>)
 ```
@@ -3367,7 +3367,6 @@ c  6  7
 * **`'$ pip3 install "pandas[excel]" odfpy lxml pyarrow'` installs dependencies.**
 * **Read\_csv() only parses dates of columns that were specified by 'parse\_dates' argument. It automatically tries to detect the format, but it can be helped with 'date\_format' or 'dayfirst' arguments. Both dates and datetimes get stored as pd.Timestamp objects.**
 * **If there's a single invalid date then it returns the whole column as a series of strings, unlike `'<S> = pd.to_datetime(<S>, errors="coerce")'`, which uses pd.NaT.**
-* **To get specific attributes from a series of Timestamps use `'<S>.dt.year/date/…'`.**
 
 ### GroupBy
 **Object that groups together rows of a dataframe based on the value of the passed column.**
