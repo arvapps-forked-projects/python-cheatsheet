@@ -115,14 +115,14 @@ const MATCH_EXAMPLE =
 const COROUTINES =
   '<span class="hljs-keyword">import</span> asyncio, collections, curses, curses.textpad, enum, random\n' +
   '\n' +
-  'P = collections.namedtuple(<span class="hljs-string">\'P\'</span>, <span class="hljs-string">\'x y\'</span>)    <span class="hljs-comment"># Position</span>\n' +
-  'D = enum.Enum(<span class="hljs-string">\'D\'</span>, <span class="hljs-string">\'n e s w\'</span>)             <span class="hljs-comment"># Direction</span>\n' +
-  'W, H = <span class="hljs-number">15</span>, <span class="hljs-number">7</span>                              <span class="hljs-comment"># Width, Height</span>\n' +
+  'P = collections.namedtuple(<span class="hljs-string">\'P\'</span>, <span class="hljs-string">\'x y\'</span>)     <span class="hljs-comment"># Position</span>\n' +
+  'D = enum.Enum(<span class="hljs-string">\'D\'</span>, <span class="hljs-string">\'n e s w\'</span>)              <span class="hljs-comment"># Direction</span>\n' +
+  'W, H = <span class="hljs-number">15</span>, <span class="hljs-number">7</span>                               <span class="hljs-comment"># Width, Height</span>\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">(screen)</span>:</span>\n' +
-  '    curses.curs_set(<span class="hljs-number">0</span>)                    <span class="hljs-comment"># Makes cursor invisible.</span>\n' +
-  '    screen.nodelay(<span class="hljs-keyword">True</span>)                  <span class="hljs-comment"># Makes getch() non-blocking.</span>\n' +
-  '    asyncio.run(main_coroutine(screen))   <span class="hljs-comment"># Starts running asyncio code.</span>\n' +
+  '    curses.curs_set(<span class="hljs-number">0</span>)                     <span class="hljs-comment"># Makes cursor invisible.</span>\n' +
+  '    screen.nodelay(<span class="hljs-keyword">True</span>)                   <span class="hljs-comment"># Makes getch() non-blocking.</span>\n' +
+  '    asyncio.run(main_coroutine(screen))    <span class="hljs-comment"># Starts running asyncio code.</span>\n' +
   '\n' +
   '<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main_coroutine</span><span class="hljs-params">(screen)</span>:</span>\n' +
   '    moves = asyncio.Queue()\n' +
@@ -168,7 +168,7 @@ const COROUTINES =
 const CURSES =
   '<span class="hljs-comment"># $ pip3 install windows-curses</span>\n' +
   '<span class="hljs-keyword">import</span> curses, os\n' +
-  '<span class="hljs-keyword">from</span> curses <span class="hljs-keyword">import</span> A_REVERSE, KEY_DOWN, KEY_UP, KEY_LEFT, KEY_RIGHT, KEY_ENTER\n' +
+  '<span class="hljs-keyword">from</span> curses <span class="hljs-keyword">import</span> A_REVERSE, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">(screen)</span>:</span>\n' +
   '    ch, first, selected, paths = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, os.listdir()\n' +
@@ -179,9 +179,10 @@ const CURSES =
   '            color = A_REVERSE <span class="hljs-keyword">if</span> filename == paths[selected] <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>\n' +
   '            screen.addnstr(y, <span class="hljs-number">0</span>, filename, width-<span class="hljs-number">1</span>, color)\n' +
   '        ch = screen.getch()\n' +
-  '        selected += (ch == KEY_DOWN) - (ch == KEY_UP)\n' +
-  '        selected = max(<span class="hljs-number">0</span>, min(len(paths)-<span class="hljs-number">1</span>, selected))\n' +
-  '        first += (selected &gt;= first + height) - (selected &lt; first)\n' +
+  '        selected -= (ch == KEY_UP) <span class="hljs-keyword">and</span> (selected &gt; <span class="hljs-number">0</span>)\n' +
+  '        selected += (ch == KEY_DOWN) <span class="hljs-keyword">and</span> (selected &lt; len(paths)-<span class="hljs-number">1</span>)\n' +
+  '        first = min(first, selected)\n' +
+  '        first = max(first, selected - (height-<span class="hljs-number">1</span>))\n' +
   '        <span class="hljs-keyword">if</span> ch <span class="hljs-keyword">in</span> [KEY_LEFT, KEY_RIGHT, KEY_ENTER, ord(<span class="hljs-string">\'\\n\'</span>), ord(<span class="hljs-string">\'\\r\'</span>)]:\n' +
   '            new_dir = <span class="hljs-string">\'..\'</span> <span class="hljs-keyword">if</span> ch == KEY_LEFT <span class="hljs-keyword">else</span> paths[selected]\n' +
   '            <span class="hljs-keyword">if</span> os.path.isdir(new_dir):\n' +
@@ -215,7 +216,7 @@ const AUDIO_1 =
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">write_to_wav_file</span><span class="hljs-params">(filename, samples_f, p=<span class="hljs-keyword">None</span>, nchannels=<span class="hljs-number">1</span>, sampwidth=<span class="hljs-number">2</span>, framerate=<span class="hljs-number">44100</span>)</span>:</span>\n' +
   '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_bytes</span><span class="hljs-params">(a_float)</span>:</span>\n' +
   '        a_float = max(<span class="hljs-number">-1</span>, min(<span class="hljs-number">1</span> - <span class="hljs-number">2e-16</span>, a_float))\n' +
-  '        a_float += p.sampwidth == <span class="hljs-number">1</span>\n' +
+  '        a_float += (p.sampwidth == <span class="hljs-number">1</span>)\n' +
   '        a_float *= pow(<span class="hljs-number">2</span>, (p.sampwidth * <span class="hljs-number">8</span>) - <span class="hljs-number">1</span>)\n' +
   '        <span class="hljs-keyword">return</span> int(a_float).to_bytes(p.sampwidth, <span class="hljs-string">\'little\'</span>, signed=(p.sampwidth != <span class="hljs-number">1</span>))\n' +
   '    <span class="hljs-keyword">if</span> p <span class="hljs-keyword">is</span> <span class="hljs-keyword">None</span>:\n' +
@@ -259,19 +260,19 @@ const MARIO =
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run</span><span class="hljs-params">(screen, images, mario, tiles)</span>:</span>\n' +
   '    clock = pg.time.Clock()\n' +
   '    pressed = set()\n' +
-  '    <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> pg.event.get(pg.QUIT) <span class="hljs-keyword">and</span> clock.tick(<span class="hljs-number">28</span>):\n' +
-  '        keys = {pg.K_UP: D.n, pg.K_RIGHT: D.e, pg.K_DOWN: D.s, pg.K_LEFT: D.w}\n' +
-  '        pressed |= {keys.get(e.key) <span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pg.event.get(pg.KEYDOWN)}\n' +
-  '        pressed -= {keys.get(e.key) <span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pg.event.get(pg.KEYUP)}\n' +
+  '    <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> pg.event.get(pg.QUIT):\n' +
+  '        clock.tick(<span class="hljs-number">28</span>)\n' +
+  '        pressed |= {e.key <span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pg.event.get(pg.KEYDOWN)}\n' +
+  '        pressed -= {e.key <span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> pg.event.get(pg.KEYUP)}\n' +
   '        update_speed(mario, tiles, pressed)\n' +
   '        update_position(mario, tiles)\n' +
   '        draw(screen, images, mario, tiles)\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_speed</span><span class="hljs-params">(mario, tiles, pressed)</span>:</span>\n' +
   '    x, y = mario.spd\n' +
-  '    x += <span class="hljs-number">2</span> * ((D.e <span class="hljs-keyword">in</span> pressed) - (D.w <span class="hljs-keyword">in</span> pressed))\n' +
+  '    x += <span class="hljs-number">2</span> * ((pg.K_RIGHT <span class="hljs-keyword">in</span> pressed) - (pg.K_LEFT <span class="hljs-keyword">in</span> pressed))\n' +
   '    x += (x &lt; <span class="hljs-number">0</span>) - (x &gt; <span class="hljs-number">0</span>)\n' +
-  '    y += <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> D.s <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> get_boundaries(mario.rect, tiles) <span class="hljs-keyword">else</span> (D.n <span class="hljs-keyword">in</span> pressed) * <span class="hljs-number">-10</span>\n' +
+  '    y += <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> D.s <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> get_boundaries(mario.rect, tiles) <span class="hljs-keyword">else</span> (pg.K_UP <span class="hljs-keyword">in</span> pressed) * <span class="hljs-number">-10</span>\n' +
   '    mario.spd = P(x=max(-MAX_S.x, min(MAX_S.x, x)), y=max(-MAX_S.y, min(MAX_S.y, y)))\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update_position</span><span class="hljs-params">(mario, tiles)</span>:</span>\n' +
@@ -736,19 +737,29 @@ const MENU = '<a href="https://raw.githubusercontent.com/gto76/python-cheatsheet
 
 const DARK_THEME_SCRIPT =
   '<script>\n' +
-  '  // Changes the image and link to theme if URL ends with "index.html?theme=dark". \n' +
-  '  if (window.location.search.search(/[?&]theme=dark/) !== -1) {\n' +
+  '  // Changes the banner image and link-to-theme if "theme=dark" is in query string\n' +
+  '  // or if browser prefers dark mode and theme is not explicitly set.\n' +
   '\n' +
+  'const theme_not_set_in_query = window.location.search.search(/[?&]theme=light/) == -1\n' +
+  'const browser_prefers_dark = window.matchMedia(\'(prefers-color-scheme: dark)\').matches;\n' +
+  '\n' +
+  '  if ((window.location.search.search(/[?&]theme=dark/) !== -1) || \n' +
+  '      (theme_not_set_in_query && browser_prefers_dark)) {\n' +
+  '    activateDarkMode();\n' +
+  '  }\n' +
+  '\n' +
+  '  function activateDarkMode() {\n' +
   '    var link_to_theme = document.createElement("a")\n' +
-  '    link_to_theme.href = "index.html"\n' +
+  '    link_to_theme.href = "index.html?theme=light"\n' +
   '    link_to_theme.text = "Switch to light theme"\n' +
-  '    document.getElementsByClassName("banner")[0].firstChild.children[4].replaceWith(link_to_theme)\n' +
+  '    document.getElementsByClassName("banner")[0].firstChild.children[3].replaceWith(link_to_theme)\n' +
   '\n' +
   '    var img_dark = document.createElement("img");\n' +
   '    img_dark.src = "web/image_orig_blue6.png";\n' +
   '    img_dark.alt = "Monthy Python";\n' +
   '    if ((window.location.search.search(/[?&]theme=dark2/) !== -1) ||\n' +
-  '        (window.location.search.search(/[?&]theme=dark3/) !== -1)) {\n' +
+  '        (window.location.search.search(/[?&]theme=dark3/) !== -1) ||\n' +
+  '        (theme_not_set_in_query && browser_prefers_dark)) {\n' +
   '      img_dark.style = "width: 910px;";\n' +
   '    } else {\n' +
   '      img_dark.style = "width: 960px;";\n' +

@@ -667,7 +667,7 @@ import zoneinfo, dateutil.tz
 <TD>     = <DTa>     - <DTa>                # Ignores jumps if they share tzinfo object.
 <D/DT>   = <D/DT>    ± <TD>                 # Returned datetime can fall into missing hour.
 <TD>     = <TD>      * <float>              # Also `<TD> = abs(<TD>)`, `<TD> = <TD> ± <TD>`.
-<float>  = <TD>      / <TD>                 # Also `<int>, <TD> = divmod(<TD>, <TD>)`.
+<float>  = <TD>      / <TD>                 # Also `(<int>, <TD>) = divmod(<TD>, <TD>)`.
 ```
 
 
@@ -932,7 +932,7 @@ from functools import cache
 def fib(n):
     return n if n < 2 else fib(n-2) + fib(n-1)
 ```
-* **Potential problem with cache is that it can grow indefinitely. To clear stored values run `'fib.cache_clear()'`, or use `'@lru_cache(maxsize=<int>)'` decorator instead.**
+* **Potential problem with cache is that it can grow indefinitely. To clear stored values run `'<func>.cache_clear()'`, or use `'@lru_cache(maxsize=<int>)'` decorator instead.**
 * **CPython interpreter limits recursion depth to 3000 by default. To increase it run `'sys.setrecursionlimit(<int>)'`.**
 
 ### Parametrized Decorator
@@ -1104,7 +1104,7 @@ Duck Types
 
 ### Comparable
 * **If eq() method is not overridden, it returns `'id(self) == id(other)'`, which is the same as `'self is other'`.**
-* **That means all objects compare not equal by default.**
+* **That means all user-defined objects compare not equal by default.**
 * **Only the left side object has eq() method called, unless it returns NotImplemented, in which case the right object is consulted. False is returned if both return NotImplemented.**
 * **Ne() automatically works on any object that has eq() defined.**
 
@@ -1685,15 +1685,15 @@ from pathlib import Path
 <Path> = Path()                     # Returns relative CWD. Also Path('.').
 <Path> = Path.cwd()                 # Returns absolute CWD. Also Path().resolve().
 <Path> = Path.home()                # Returns user's home directory (absolute).
-<Path> = Path(__file__).resolve()   # Returns script's path if CWD wasn't changed.
+<Path> = Path(__file__).resolve()   # Returns module's path if CWD wasn't changed.
 ```
 
 ```python
 <Path> = <Path>.parent              # Returns Path without the final component.
 <str>  = <Path>.name                # Returns final component as a string.
-<str>  = <Path>.stem                # Returns final component without extension.
-<str>  = <Path>.suffix              # Returns final component's extension.
-<tup.> = <Path>.parts               # Returns all components as strings.
+<str>  = <Path>.stem                # Returns final component w/o last extension.
+<str>  = <Path>.suffix              # Returns last extension prepended with a dot.
+<tup.> = <Path>.parts               # Returns all path's components as strings.
 ```
 
 ```python
@@ -1782,9 +1782,9 @@ def read_json_file(filename):
 
 ### Write Collection to JSON File
 ```python
-def write_to_json_file(filename, list_or_dict):
+def write_to_json_file(filename, collection):
     with open(filename, 'w', encoding='utf-8') as file:
-        json.dump(list_or_dict, file, ensure_ascii=False, indent=2)
+        json.dump(collection, file, ensure_ascii=False, indent=2)
 ```
 
 
@@ -1798,14 +1798,14 @@ import pickle
 <object> = pickle.loads(<bytes>)    # Converts bytes object to object.
 ```
 
-### Read Object from File
+### Read Object from Pickle File
 ```python
 def read_pickle_file(filename):
     with open(filename, 'rb') as file:
         return pickle.load(file)
 ```
 
-### Write Object to File
+### Write Object to Pickle File
 ```python
 def write_to_pickle_file(filename, an_object):
     with open(filename, 'wb') as file:
@@ -1844,8 +1844,8 @@ import csv
 ### Parameters
 * **`'dialect'` - Master parameter that sets the default values. String or a 'csv.Dialect' object.**
 * **`'delimiter'` - A one-character string used to separate fields.**
-* **`'lineterminator'` - How writer terminates rows. Reader is hardcoded to '\n', '\r', '\r\n'.**
-* **`'quotechar'` - Character for quoting fields that contain special characters.**
+* **`'lineterminator'` - How writer terminates rows. Reader looks for '\n', '\r' and '\r\n'.**
+* **`'quotechar'` - Character for quoting fields containing delimiters, quotechars, '\n' or '\r'.**
 * **`'escapechar'` - Character for escaping quotechars.**
 * **`'doublequote'` - Whether quotechars inside fields are/get doubled or escaped.**
 * **`'quoting'` - 0: As necessary, 1: All, 2: All but numbers which are read as floats, 3: None.**
@@ -2263,7 +2263,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 ```python
 <Thread> = Thread(target=<function>)           # Use `args=<collection>` to set the arguments.
 <Thread>.start()                               # Starts the thread. Also <Thread>.is_alive().
-<Thread>.join()                                # Waits for the thread to finish.
+<Thread>.join()                                # Waits for the thread to finish executing.
 ```
 * **Use `'kwargs=<dict>'` to pass keyword arguments to the function.**
 * **Use `'daemon=True'`, or the program will not be able to exit while the thread is alive.**
@@ -2327,30 +2327,30 @@ import asyncio as aio
 ```
 
 ```python
-<coro> = <async_function>(<args>)         # Creates a coroutine by calling async def function.
-<obj>  = await <coroutine>                # Starts the coroutine and returns its result.
-<task> = aio.create_task(<coroutine>)     # Schedules the coroutine for execution.
-<obj>  = await <task>                     # Returns coroutine's result. Also <task>.cancel().
+<coro> = <async_function>(<args>)          # Creates a coroutine by calling async def function.
+<obj>  = await <coroutine>                 # Starts the coroutine and returns its result.
+<task> = aio.create_task(<coroutine>)      # Schedules the coroutine for execution.
+<obj>  = await <task>                      # Returns coroutine's result. Also <task>.cancel().
 ```
 
 ```python
-<coro> = aio.gather(<coro/task>, ...)     # Schedules coros. Returns list of results on await.
-<coro> = aio.wait(<tasks>, …)             # `aio.ALL/FIRST_COMPLETED`. Returns (done, pending).
-<iter> = aio.as_completed(<coros/tasks>)  # Iterator of coros. All return next result on await.
+<coro> = aio.gather(<coro/task>, ...)      # Schedules coros. Returns list of results on await.
+<coro> = aio.wait(<tasks>, return_when=…)  # `'ALL/FIRST_COMPLETED'`. Returns (done, pending).
+<iter> = aio.as_completed(<coros/tasks>)   # Iter of coros that return next result on await.
 ```
 
 #### Runs a terminal game where you control an asterisk that must avoid numbers:
 ```python
 import asyncio, collections, curses, curses.textpad, enum, random
 
-P = collections.namedtuple('P', 'x y')    # Position
-D = enum.Enum('D', 'n e s w')             # Direction
-W, H = 15, 7                              # Width, Height
+P = collections.namedtuple('P', 'x y')     # Position
+D = enum.Enum('D', 'n e s w')              # Direction
+W, H = 15, 7                               # Width, Height
 
 def main(screen):
-    curses.curs_set(0)                    # Makes cursor invisible.
-    screen.nodelay(True)                  # Makes getch() non-blocking.
-    asyncio.run(main_coroutine(screen))   # Starts running asyncio code.
+    curses.curs_set(0)                     # Makes cursor invisible.
+    screen.nodelay(True)                   # Makes getch() non-blocking.
+    asyncio.run(main_coroutine(screen))    # Starts running asyncio code.
 
 async def main_coroutine(screen):
     moves = asyncio.Queue()
@@ -2419,8 +2419,7 @@ import matplotlib.pyplot as plt
 plt.plot/bar/scatter(x_data, y_data [, label=<str>])  # Also plt.plot(y_data).
 plt.legend()                                          # Adds a legend.
 plt.title/xlabel/ylabel(<str>)                        # Adds a title or label.
-plt.savefig(<path>)                                   # Saves the plot.
-plt.show()                                            # Displays the plot.
+plt.show()                                            # Also plt.savefig(<path>).
 plt.clf()                                             # Clears the plot.
 ```
 
@@ -2443,7 +2442,7 @@ Console App
 ```python
 # $ pip3 install windows-curses
 import curses, os
-from curses import A_REVERSE, KEY_DOWN, KEY_UP, KEY_LEFT, KEY_RIGHT, KEY_ENTER
+from curses import A_REVERSE, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER
 
 def main(screen):
     ch, first, selected, paths = 0, 0, 0, os.listdir()
@@ -2454,9 +2453,10 @@ def main(screen):
             color = A_REVERSE if filename == paths[selected] else 0
             screen.addnstr(y, 0, filename, width-1, color)
         ch = screen.getch()
-        selected += (ch == KEY_DOWN) - (ch == KEY_UP)
-        selected = max(0, min(len(paths)-1, selected))
-        first += (selected >= first + height) - (selected < first)
+        selected -= (ch == KEY_UP) and (selected > 0)
+        selected += (ch == KEY_DOWN) and (selected < len(paths)-1)
+        first = min(first, selected)
+        first = max(first, selected - (height-1))
         if ch in [KEY_LEFT, KEY_RIGHT, KEY_ENTER, ord('\n'), ord('\r')]:
             new_dir = '..' if ch == KEY_LEFT else paths[selected]
             if os.path.isdir(new_dir):
@@ -2563,7 +2563,7 @@ app.run(host=None, port=None, debug=None)  # Or: $ flask --app FILE run [--ARG[=
 ```python
 @app.route('/img/<path:filename>')
 def serve_file(filename):
-    return fl.send_from_directory('dirname/', filename)
+    return fl.send_from_directory('DIRNAME', filename)
 ```
 
 ### Dynamic Request
@@ -2574,7 +2574,7 @@ def serve_html(sport):
 ```
 * **`'fl.render_template(filename, <kwargs>)'` renders a file located in 'templates' dir.**
 * **`'fl.abort(<int>)'` returns error code and `'return fl.redirect(<url>)'` redirects.**
-* **`'fl.request.args[<str>]'` returns parameter from the query string (URL right of '?').**
+* **`'fl.request.args[<str>]'` returns parameter from query string (URL part right of '?').**
 * **`'fl.session[<str>] = <obj>'` stores session data. It requires secret key to be set at the startup with `'app.secret_key = <str>'`.**
 
 ### REST Request
@@ -2799,7 +2799,7 @@ from PIL import Image
 ### Modes
 * **`'L'` - Lightness (greyscale image). Each pixel is an int between 0 and 255.**
 * **`'RGB'` - Red, green, blue (true color image). Each pixel is a tuple of three ints.**
-* **`'RGBA'` - RGB with alpha. Low alpha (i.e. forth int) makes pixels more transparent.**
+* **`'RGBA'` - RGB with alpha. Low alpha (i.e. forth int) makes pixel more transparent.**
 * **`'HSV'` - Hue, saturation, value. Three ints representing color in HSV color space.**
 
 
@@ -2874,7 +2874,7 @@ import wave
 <int>   = <Wave>.getnchannels()       # Returns number of samples per frame.
 <int>   = <Wave>.getsampwidth()       # Returns number of bytes per sample.
 <tuple> = <Wave>.getparams()          # Returns namedtuple of all parameters.
-<bytes> = <Wave>.readframes(nframes)  # Returns next n frames (-1 returns all).
+<bytes> = <Wave>.readframes(nframes)  # Returns all frames if -1 is passed.
 ```
 
 ```python
@@ -2919,7 +2919,7 @@ def read_wav_file(filename):
 def write_to_wav_file(filename, samples_f, p=None, nchannels=1, sampwidth=2, framerate=44100):
     def get_bytes(a_float):
         a_float = max(-1, min(1 - 2e-16, a_float))
-        a_float += p.sampwidth == 1
+        a_float += (p.sampwidth == 1)
         a_float *= pow(2, (p.sampwidth * 8) - 1)
         return int(a_float).to_bytes(p.sampwidth, 'little', signed=(p.sampwidth != 1))
     if p is None:
@@ -3062,7 +3062,7 @@ rect(<Surf>, color, <Rect>, width=0)            # Also polygon(<Surf>, color, po
 ### Sound
 ```python
 <Sound> = pg.mixer.Sound(<path/file/bytes>)     # WAV file or bytes/array of signed shorts.
-<Sound>.play/stop()                             # Also set_volume(<float>), fadeout(msec).
+<Sound>.play/stop()                             # Also set_volume(<float>) and fadeout(msec).
 ```
 
 ### Basic Mario Brothers Example
@@ -3096,19 +3096,19 @@ def main():
 def run(screen, images, mario, tiles):
     clock = pg.time.Clock()
     pressed = set()
-    while not pg.event.get(pg.QUIT) and clock.tick(28):
-        keys = {pg.K_UP: D.n, pg.K_RIGHT: D.e, pg.K_DOWN: D.s, pg.K_LEFT: D.w}
-        pressed |= {keys.get(e.key) for e in pg.event.get(pg.KEYDOWN)}
-        pressed -= {keys.get(e.key) for e in pg.event.get(pg.KEYUP)}
+    while not pg.event.get(pg.QUIT):
+        clock.tick(28)
+        pressed |= {e.key for e in pg.event.get(pg.KEYDOWN)}
+        pressed -= {e.key for e in pg.event.get(pg.KEYUP)}
         update_speed(mario, tiles, pressed)
         update_position(mario, tiles)
         draw(screen, images, mario, tiles)
 
 def update_speed(mario, tiles, pressed):
     x, y = mario.spd
-    x += 2 * ((D.e in pressed) - (D.w in pressed))
+    x += 2 * ((pg.K_RIGHT in pressed) - (pg.K_LEFT in pressed))
     x += (x < 0) - (x > 0)
-    y += 1 if D.s not in get_boundaries(mario.rect, tiles) else (D.n in pressed) * -10
+    y += 1 if D.s not in get_boundaries(mario.rect, tiles) else (pg.K_UP in pressed) * -10
     mario.spd = P(x=max(-MAX_S.x, min(MAX_S.x, x)), y=max(-MAX_S.y, min(MAX_S.y, y)))
 
 def update_position(mario, tiles):
@@ -3186,14 +3186,15 @@ Name: a, dtype: int64
 
 ```python
 <S>  = <S>.head/describe/sort_values()         # Also <S>.unique/value_counts/round/dropna().
-<S>  = <S>.str.strip/lower/contains/replace()  # Also split().str[<int>] and split().explode().
-<S>  = <S>.dt.year/month/day/hour              # Use pd.to_datetime(<S>) to get S of dates.
+<S>  = <S>.str.strip/lower/contains/replace()  # Also split().str[i] or split(expand=True).
+<S>  = <S>.dt.year/month/day/hour              # Use pd.to_datetime(<S>) to get S of datetimes.
+<S>  = <S>.dt.to_period('y/m/d/h')             # Quantizes datetimes into Period objects.
 ```
 
 ```python
 <S>.plot.line/area/bar/pie/hist()              # Generates a plot. `plt.show()` displays it.
 ```
-* **Also: `'pd.cut(<S>, bins=<int/coll>)'` and `'<S>.quantile(<float/coll>)'`.**
+* **Also `'<S>.quantile(<float/coll>)'` and `'pd.cut(<S>, bins=<int/coll>)'`.**
 * **Indexing objects can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`.**
 * **Pandas uses NumPy types like `'np.int64'`. Series is converted to `'float64'` if we assign np.nan to any item. Use `'<S>.astype(<str/type>)'` to get converted Series.**
 * **Series will silently overflow if we run `'pd.Series([100], dtype="int8") + 100'`!**
@@ -3223,7 +3224,6 @@ Name: a, dtype: int64
 |              |    y  2.0   |   y   2.0   |      y  2.0   |
 +--------------+-------------+-------------+---------------+
 ```
-* **Agg() and transform() pass a Series to a function if it raises Type/Val/AttrError on a scalar.**
 * **Last result has a multi-index. Use `'<S>[key_1, key_2]'` to get its values.**
 
 ### DataFrame
@@ -3255,7 +3255,7 @@ b  3  4
 ```
 
 ```python
-<DF>   = <DF> > <el/S/DF>                      # Returns DF of bools. S is treated as a row.
+<DF>   = <DF> > <el/S/DF>                      # Returns DF of bools. Treats series as a row.
 <DF>   = <DF> + <el/S/DF>                      # Items with non-matching keys get value NaN.
 ```
 
@@ -3273,7 +3273,7 @@ b  3  4
 ```
 
 ```python
-<DF>.plot.line/area/bar/scatter(x=col_key, …)  # `y=col_key/s`. Also hist/box(by=col_key).
+<DF>.plot.line/area/bar/scatter(x=col_key, …)  # `y=col_key/s`. Also hist/box(column/by=col_k).
 plt.show()                                     # Displays the plot. Also plt.savefig(<path>).
 ```
 
@@ -3338,35 +3338,35 @@ c  6  7
 |                 |  b  2.0  2.0  |  b  2.0  2.0  |    b  2.0     |
 +-----------------+---------------+---------------+---------------+
 ```
-* **All methods operate on columns by default. Pass `'axis=1'` to process the rows instead.**
+* **Listed methods process the columns unless they receive `'axis=1'`. Exceptions to this rule are `'<DF>.dropna()'`, `'<DF>.drop(row_key/s)'` and `'<DF>.rename(<dict/func>)'`.**
 * **Fifth result's columns are indexed with a multi-index. This means we need a tuple of column keys to specify a column: `'<DF>.loc[row_key, (col_key_1, col_key_2)]'`.**
 
-#### DataFrame — Multi-Index:
+### Multi-Index
 ```python
-<DF>   = <DF>.xs(key, level=<int>)             # Rows with key on passed level of multi-index.
-<DF>   = <DF>.xs(keys, level=<ints>, axis=1)   # Cols that have first key on first level, etc.
-<DF>   = <DF>.set_index(col_keys)              # Creates index from cols. Also `append=False`.
-<S/DF> = <DF>.stack/unstack(level=-1)          # Combines col keys with row keys or vice versa.
-<DF>   = <DF>.pivot_table(index=col_key/s)     # `columns=key/s, values=key/s, aggfunc='mean'`.
+<DF> = <DF>.loc[row_key_1]                     # Or: <DF>.xs(row_key_1)
+<DF> = <DF>.loc[:, (slice(None), col_key_2)]   # Or: <DF>.xs(col_key_2, axis=1, level=1)
+<DF> = <DF>.set_index(col_keys)                # Creates index from cols. Also `append=False`.
+<DF> = <DF>.pivot_table(index=col_key/s)       # `columns=key/s, values=key/s, aggfunc='mean'`.
+<S>  = <DF>.stack/unstack(level=-1)            # Combines col keys with row keys or vice versa.
 ```
 
 ### File Formats
 ```python
-<S/DF> = pd.read_json/pickle(<path/url/file>)  # Also accepts io.StringIO/BytesIO(<str/bytes>).
+<S/DF> = pd.read_json/pickle(<path/url/file>)  # Also io.StringIO(<str>), io.BytesIO(<bytes>).
 <DF>   = pd.read_csv/excel(<path/url/file>)    # Also `header/index_col/dtype/usecols/…=<obj>`.
 <list> = pd.read_html(<path/url/file>)         # Raises ImportError if webpage has zero tables.
-<S/DF> = pd.read_parquet/feather/hdf(<path…>)  # Read_hdf() accepts `key='<df_name>'` argument.
+<S/DF> = pd.read_parquet/feather/hdf(<path…>)  # Read_hdf() accepts `key=<s/df_name>` argument.
 <DF>   = pd.read_sql('<table/query>', <conn>)  # Pass SQLite3/Alchemy connection (see #SQLite).
 ```
 
 ```python
 <DF>.to_json/csv/html/parquet/latex(<path>)    # Returns a string/bytes if path is omitted.
-<DF>.to_pickle/excel/feather/hdf(<path>)       # To_hdf() requires `key='<df_name>'` argument.
+<DF>.to_pickle/excel/feather/hdf(<path>)       # To_hdf() requires `key=<s/df_name>` argument.
 <DF>.to_sql('<table_name>', <connection>)      # Also `if_exists='fail/replace/append'`.
 ```
 * **`'$ pip3 install "pandas[excel]" odfpy lxml pyarrow'` installs dependencies.**
 * **Read\_csv() only parses dates of columns that were specified by 'parse\_dates' argument. It automatically tries to detect the format, but it can be helped with 'date\_format' or 'dayfirst' arguments. Both dates and datetimes get stored as pd.Timestamp objects.**
-* **If there's a single invalid date then it returns the whole column as a series of strings, unlike `'<S> = pd.to_datetime(<S>, errors="coerce")'`, which uses pd.NaT.**
+* **If 'parse\_dates' and 'index_col' are the same column, we get a DF with DatetimeIndex. Its `'resample("y/m/d/h")'` method returns a Resampler object that is similar to GroupBy.**
 
 ### GroupBy
 **Object that groups together rows of a dataframe based on the value of the passed column.**
@@ -3549,7 +3549,7 @@ cdef class <class_name>:
 
 ```perl
 $ python3 -m venv NAME      # Creates virtual environment in current directory.
-$ source NAME/bin/activate  # Activates env. On Windows run `NAME\Scripts\activate`.
+$ source NAME/bin/activate  # Activates it. On Windows run `NAME\Scripts\activate`.
 $ pip3 install LIBRARY      # Installs the library into active environment.
 $ python3 FILE              # Runs the script in active environment. Also `./FILE`.
 $ deactivate                # Deactivates the active virtual environment.
