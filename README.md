@@ -165,14 +165,11 @@ Tuple
 ```python
 >>> from collections import namedtuple
 >>> Point = namedtuple('Point', 'x y')
->>> p = Point(1, y=2); p
+>>> p = Point(1, y=2)
+>>> print(p)
 Point(x=1, y=2)
->>> p[0]
-1
->>> p.x
-1
->>> getattr(p, 'y')
-2
+>>> p[0], p.x
+(1, 1)
 ```
 
 
@@ -180,9 +177,9 @@ Range
 -----
 **Immutable and hashable sequence of integers.**
 ```python
-<range> = range(stop)                      # range(to_exclusive)
-<range> = range(start, stop)               # range(from_inclusive, to_exclusive)
-<range> = range(start, stop, ±step)        # range(from_inclusive, to_exclusive, ±step_size)
+<range> = range(stop)                      # I.e. range(to_exclusive).
+<range> = range(start, stop)               # I.e. range(from_inclusive, to_exclusive).
+<range> = range(start, stop, ±step)        # I.e. range(from_inclusive, to_exclusive, ±step).
 ```
 
 ```python
@@ -201,6 +198,8 @@ for i, el in enumerate(<coll>, start=0):   # Returns next element and its index 
 
 Iterator
 --------
+**Potentially endless stream of elements.**
+
 ```python
 <iter> = iter(<collection>)                # `iter(<iter>)` returns unmodified iterator.
 <iter> = iter(<function>, to_exclusive)    # A sequence of return values until 'to_exclusive'.
@@ -494,64 +493,69 @@ Format
 Numbers
 -------
 ```python
-<int>      = int(<float/str/bool>)                # Or: math.trunc(<float>)
-<float>    = float(<int/str/bool>)                # Or: <int/float>e±<int>
-<complex>  = complex(real=0, imag=0)              # Or: <int/float> ± <int/float>j
-<Fraction> = fractions.Fraction(0, 1)             # Or: Fraction(numerator=0, denominator=1)
-<Decimal>  = decimal.Decimal(<str/int>)           # Or: Decimal((sign, digits, exponent))
+<int>      = int(<float/str/bool>)           # Or: math.trunc(<float>)
+<float>    = float(<int/str/bool>)           # Or: <int/float>e±<int>
+<complex>  = complex(real=0, imag=0)         # Or: <int/float> ± <int/float>j
+<Fraction> = fractions.Fraction(0, 1)        # Or: Fraction(numerator=0, denominator=1)
+<Decimal>  = decimal.Decimal(<str/int>)      # Or: Decimal((sign, digits, exponent))
 ```
+* **`'int(<str>)'` and `'float(<str>)'` raise ValueError on malformed strings.**
 * **Decimal numbers are stored exactly, unlike most floats where `'1.1 + 2.2 != 3.3'`.**
 * **Floats can be compared with: `'math.isclose(<float>, <float>)'`.**
 * **Precision of decimal operations is set with: `'decimal.getcontext().prec = <int>'`.**
 * **Bools can be used anywhere ints can, because bool is a subclass of int: `'True + 1 == 2'`.**
 
-### Basic Functions
+### Built-in Functions
 ```python
-<num> = pow(<num>, <num>)                         # Or: <number> ** <number>
-<num> = abs(<num>)                                # <float> = abs(<complex>)
-<num> = round(<num> [, ±ndigits])                 # `round(126, -1) == 130`
+<num> = pow(<num>, <num>)                    # Or: <number> ** <number>
+<num> = abs(<num>)                           # <float> = abs(<complex>)
+<num> = round(<num> [, ±ndigits])            # Also math.floor/ceil(<number>).
+<num> = min(<collection>)                    # Also max(<num>, <num> [, ...]).
+<num> = sum(<collection>)                    # Also math.prod(<collection>).
 ```
 
 ### Math
 ```python
-from math import e, pi, inf, nan, isinf, isnan    # `<el> == nan` is always False.
-from math import sin, cos, tan, asin, acos, atan  # Also: degrees, radians.
-from math import log, log10, log2                 # Log can accept base as second arg.
+from math import pi, inf, nan, isnan         # `inf*0` and `nan+1` return nan.
+from math import sqrt, factorial             # `sqrt(-1)` raises ValueError.
+from math import sin, cos, tan               # Also: asin, degrees, radians.
+from math import log, log10, log2            # Log accepts base as second arg.
 ```
 
 ### Statistics
 ```python
-from statistics import mean, median, variance     # Also: stdev, quantiles, groupby.
+from statistics import mean, median, mode    # Mode returns the most common value.
+from statistics import variance, stdev       # Also: pvariance, pstdev, quantiles.
 ```
 
 ### Random
 ```python
-from random import random, randint, uniform       # Also: gauss, choice, shuffle, seed.
+from random import random, randint, uniform  # Also: gauss, choice, shuffle, seed.
 ```
 
 ```python
-<float> = random()                                # Returns a float inside [0, 1).
-<num>   = randint/uniform(a, b)                   # Returns an int/float inside [a, b].
-<float> = gauss(mean, stdev)                      # Also triangular(low, high, mode).
-<el>    = choice(<sequence>)                      # Keeps it intact. Also sample(pop, k).
-shuffle(<list>)                                   # Shuffles the list in place.
+<float> = random()                           # Returns a float inside [0, 1).
+<num>   = randint/uniform(a, b)              # Returns an int/float inside [a, b].
+<float> = gauss(mean, stdev)                 # Also triangular(low, high, mode).
+<el>    = choice(<sequence>)                 # Keeps it intact. Also sample(pop, k).
+shuffle(<list>)                              # Shuffles the list in place.
 ```
 
 ### Hexadecimal Numbers
 ```python
-<int> = ±0x<hex>                                  # Or: ±0b<bin>
-<int> = int('±<hex>', 16)                         # Or: int('±<bin>', 2)
-<int> = int('±0x<hex>', 0)                        # Or: int('±0b<bin>', 0)
-<str> = hex(<int>)                                # Returns '[-]0x<hex>'. Also bin().
+<int> = ±0x<hex>                             # Or: ±0b<bin>
+<int> = int('±<hex>', 16)                    # Or: int('±<bin>', 2)
+<int> = int('±0x<hex>', 0)                   # Or: int('±0b<bin>', 0)
+<str> = hex(<int>)                           # Returns '[-]0x<hex>'. Also bin().
 ```
 
 ### Bitwise Operators
 ```python
-<int> = <int> & <int>                             # And (0b1100 & 0b1010 == 0b1000).
-<int> = <int> | <int>                             # Or  (0b1100 | 0b1010 == 0b1110).
-<int> = <int> ^ <int>                             # Xor (0b1100 ^ 0b1010 == 0b0110).
-<int> = <int> << n_bits                           # Left shift. Use >> for right.
-<int> = ~<int>                                    # Not. Also -<int> - 1.
+<int> = <int> & <int>                        # And (0b1100 & 0b1010 == 0b1000).
+<int> = <int> | <int>                        # Or  (0b1100 | 0b1010 == 0b1110).
+<int> = <int> ^ <int>                        # Xor (0b1100 ^ 0b1010 == 0b0110).
+<int> = <int> << n_bits                      # Left shift. Use >> for right.
+<int> = ~<int>                               # Not. Also -<int> - 1.
 ```
 
 
@@ -562,30 +566,24 @@ import itertools as it
 ```
 
 ```python
->>> list(it.product([0, 1], repeat=3))
-[(0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1),
- (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)]
+>>> list(it.product('abc', repeat=2))        #   a  b  c
+[('a', 'a'), ('a', 'b'), ('a', 'c'),         # a x  x  x
+ ('b', 'a'), ('b', 'b'), ('b', 'c'),         # b x  x  x
+ ('c', 'a'), ('c', 'b'), ('c', 'c')]         # c x  x  x
 ```
 
 ```python
->>> list(it.product('abc', 'abc'))                #   a  b  c
-[('a', 'a'), ('a', 'b'), ('a', 'c'),              # a x  x  x
- ('b', 'a'), ('b', 'b'), ('b', 'c'),              # b x  x  x
- ('c', 'a'), ('c', 'b'), ('c', 'c')]              # c x  x  x
+>>> list(it.permutations('abc', 2))          #   a  b  c
+[('a', 'b'), ('a', 'c'),                     # a .  x  x
+ ('b', 'a'), ('b', 'c'),                     # b x  .  x
+ ('c', 'a'), ('c', 'b')]                     # c x  x  .
 ```
 
 ```python
->>> list(it.permutations('abc', 2))               #   a  b  c
-[('a', 'b'), ('a', 'c'),                          # a .  x  x
- ('b', 'a'), ('b', 'c'),                          # b x  .  x
- ('c', 'a'), ('c', 'b')]                          # c x  x  .
-```
-
-```python
->>> list(it.combinations('abc', 2))               #   a  b  c
-[('a', 'b'), ('a', 'c'),                          # a .  x  x
- ('b', 'c'),                                      # b .  .  x
-]                                                 # c .  .  .
+>>> list(it.combinations('abc', 2))          #   a  b  c
+[('a', 'b'), ('a', 'c'),                     # a .  x  x
+ ('b', 'c')                                  # b .  .  x
+]                                            # c .  .  .
 ```
 
 
@@ -605,7 +603,7 @@ import zoneinfo, dateutil.tz
 <DT> = datetime(year, month, day, hour=0)   # Also: `minute=0, second=0, microsecond=0, …`.
 <TD> = timedelta(weeks=0, days=0, hours=0)  # Also: `minutes=0, seconds=0, microseconds=0`.
 ```
-* **Aware times and datetimes have defined timezone, while naive don't. If object is naive, it is presumed to be in the system's timezone!**
+* **Times and datetimes that have defined timezone are called aware and ones that don't, naive. If object is naive, it is presumed to be in the system's timezone!**
 * **`'fold=1'` means the second pass in case of time jumping back for one hour.**
 * **Timedelta normalizes arguments to ±days, seconds (< 86 400) and microseconds (< 1M). Its str() method returns `'[±D, ]H:MM:SS[.…]'` and total_seconds() a float of all seconds.**
 * **Use `'<D/DT>.weekday()'` to get the day of the week as an int, with Monday being 0.**
@@ -1157,7 +1155,8 @@ class MySortable:
 ### Iterator
 * **Any object that has methods next() and iter() is an iterator.**
 * **Next() should return next item or raise StopIteration exception.**
-* **Iter() should return 'self', i.e. unmodified object on which it was called.**
+* **Iter() should return an iterator of remaining items, i.e. 'self'.**
+* **Any object that has iter() method can be used in a for loop.**
 ```python
 class Counter:
     def __init__(self):
@@ -1183,7 +1182,7 @@ class Counter:
 
 ### Callable
 * **All functions and classes have a call() method, hence are callable.**
-* **Use `'callable(<obj>)'` or `'isinstance(<obj>, collections.abc.Callable)'` to check if object is callable.**
+* **Use `'callable(<obj>)'` or `'isinstance(<obj>, collections.abc.Callable)'` to check if object is callable. Calling an uncallable object raises TypeError.**
 * **When this cheatsheet uses `'<function>'` as an argument, it means `'<callable>'`.**
 ```python
 class Counter:
@@ -1729,8 +1728,8 @@ os.remove(<path>)                   # Deletes the file.
 os.rmdir(<path>)                    # Deletes the empty directory.
 shutil.rmtree(<path>)               # Deletes the directory.
 ```
-* **Paths can be either strings, Paths, or DirEntry objects.**
-* **Functions report OS related errors by raising either OSError or one of its [subclasses](#exceptions-1).**
+* **Paths can be either strings, Path objects, or DirEntry objects.**
+* **Functions report OS related errors by raising OSError or one of its [subclasses](#exceptions-1).**
 
 ### Shell Commands
 ```python
@@ -2259,7 +2258,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 <Thread>.join()                                # Waits for the thread to finish executing.
 ```
 * **Use `'kwargs=<dict>'` to pass keyword arguments to the function.**
-* **Use `'daemon=True'`, or the program will not be able to exit while the thread is alive.**
+* **Use `'daemon=True'`, or program won't be able to exit while the thread is alive.**
 
 ### Lock
 ```python
@@ -2435,7 +2434,7 @@ Console App
 ```python
 # $ pip3 install windows-curses
 import curses, os
-from curses import A_REVERSE, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER
+from curses import A_REVERSE, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 
 def main(screen):
     ch, first, selected, paths = 0, 0, 0, os.listdir()
@@ -2448,9 +2447,9 @@ def main(screen):
         ch = screen.getch()
         selected -= (ch == KEY_UP) and (selected > 0)
         selected += (ch == KEY_DOWN) and (selected < len(paths)-1)
-        first = min(first, selected)
-        first = max(first, selected - (height-1))
-        if ch in [KEY_LEFT, KEY_RIGHT, KEY_ENTER, ord('\n'), ord('\r')]:
+        first -= (first > selected)
+        first += (first < selected-(height-1))
+        if ch in [KEY_LEFT, KEY_RIGHT, ord('\n')]:
             new_dir = '..' if ch == KEY_LEFT else paths[selected]
             if os.path.isdir(new_dir):
                 os.chdir(new_dir)
@@ -2469,9 +2468,9 @@ GUI App
 # $ pip3 install PySimpleGUI
 import PySimpleGUI as sg
 
-text_box = sg.Input(default_text='100', enable_events=True, key='-QUANTITY-')
-dropdown = sg.InputCombo(['g', 'kg', 't'], 'kg', readonly=True, enable_events=True, k='-UNIT-')
-label    = sg.Text('100 kg is 220.462 lbs.', key='-OUTPUT-')
+text_box = sg.Input(default_text='100', enable_events=True, key='QUANTITY')
+dropdown = sg.InputCombo(['g', 'kg', 't'], 'kg', readonly=True, enable_events=True, k='UNIT')
+label    = sg.Text('100 kg is 220.462 lbs.', key='OUTPUT')
 button   = sg.Button('Close')
 window   = sg.Window('Weight Converter', [[text_box, dropdown], [label], [button]])
 
@@ -2480,13 +2479,13 @@ while True:
     if event in [sg.WIN_CLOSED, 'Close']:
         break
     try:
-        quantity = float(values['-QUANTITY-'])
+        quantity = float(values['QUANTITY'])
     except ValueError:
         continue
-    unit = values['-UNIT-']
+    unit = values['UNIT']
     factors = {'g': 0.001, 'kg': 1, 't': 1000}
     lbs = quantity * factors[unit] / 0.45359237
-    window['-OUTPUT-'].update(value=f'{quantity} {unit} is {lbs:g} lbs.')
+    window['OUTPUT'].update(value=f'{quantity} {unit} is {lbs:g} lbs.')
 window.close()
 ```
 
@@ -2552,14 +2551,14 @@ app.run(host=None, port=None, debug=None)  # Or: $ flask --app FILE run [--ARG[=
 * **Install a WSGI server like [Waitress](https://flask.palletsprojects.com/en/latest/deploying/waitress/) and a HTTP server such as [Nginx](https://flask.palletsprojects.com/en/latest/deploying/nginx/) for better security.**
 * **Debug mode restarts the app whenever script changes and displays errors in the browser.**
 
-### Static Request
+### Serving Files
 ```python
 @app.route('/img/<path:filename>')
 def serve_file(filename):
     return fl.send_from_directory('DIRNAME', filename)
 ```
 
-### Dynamic Request
+### Serving HTML
 ```python
 @app.route('/<sport>')
 def serve_html(sport):
@@ -2570,7 +2569,7 @@ def serve_html(sport):
 * **`'fl.request.args[<str>]'` returns parameter from query string (URL part right of '?').**
 * **`'fl.session[<str>] = <obj>'` stores session data. It requires secret key to be set at the startup with `'app.secret_key = <str>'`.**
 
-### REST Request
+### Serving JSON
 ```python
 @app.post('/<sport>/odds')
 def serve_json(sport):
@@ -2703,8 +2702,7 @@ import numpy as np
 <1/2d_arr> = <2d>[<2d/1d_bools>]                        # 1d_bools must have size of a column.
 ```
 * **`':'` returns a slice of all dimension's indices. Omitted dimensions default to `':'`.**
-* **Python converts `'obj[i, j]'` to `'obj[(i, j)]'`. This makes `'<2d>[row_i, col_i]'` and `'<2d>[row_indices]'` indistinguishable to NumPy if tuple of indices is passed!**
-* **Indexing with a slice and 1d object works the same as when using two slices (lines 4, 6, 7).**
+* **Python converts `'obj[i, j]'` to `'obj[(i, j)]'`. This makes `'<2d>[row_i, col_i]'` and `'<2d>[row_indices]'` indistinguishable to NumPy if tuple of two indices is passed!**
 * **`'ix_([1, 2], [3, 4])'` returns `'[[1], [2]]'` and `'[[3, 4]]'`. Due to broadcasting rules, this is the same as using `'[[1, 1], [2, 2]]'` and `'[[3, 4], [3, 4]]'`.**
 * **Any value that is broadcastable to the indexed shape can be assigned to the selection.**
 
@@ -2820,7 +2818,7 @@ img.show()
 ```python
 from PIL import ImageDraw
 <Draw> = ImageDraw.Draw(<Image>)                # Object for adding 2D graphics to the image.
-<Draw>.point((x, y))                            # Draws a point. Truncates floats into ints.
+<Draw>.point((x, y))                            # Draws a point. Also `fill=<int/tuple/str>`.
 <Draw>.line((x1, y1, x2, y2 [, ...]))           # For anti-aliasing use <Image>.resize((w, h)).
 <Draw>.arc((x1, y1, x2, y2), deg1, deg2)        # Draws in clockwise dir. Also pieslice().
 <Draw>.rectangle((x1, y1, x2, y2))              # Also rounded_rectangle(), regular_polygon().
@@ -2831,7 +2829,7 @@ from PIL import ImageDraw
 * **Use `'fill=<color>'` to set the primary color.**
 * **Use `'width=<int>'` to set the width of lines or contours.**
 * **Use `'outline=<color>'` to set the color of the contours.**
-* **Color can be an int, tuple, `'#rrggbb[aa]'` string or a color name.**
+* **Color can be an int, tuple, `'#rrggbb[aa]'` or a color name.**
 
 
 Animation
@@ -2991,10 +2989,10 @@ pg.init()
 screen = pg.display.set_mode((500, 500))
 rect = pg.Rect(240, 240, 20, 20)
 while not pg.event.get(pg.QUIT):
-    deltas = {pg.K_UP: (0, -20), pg.K_RIGHT: (20, 0), pg.K_DOWN: (0, 20), pg.K_LEFT: (-20, 0)}
+    deltas = {pg.K_UP: (0, -1), pg.K_RIGHT: (1, 0), pg.K_DOWN: (0, 1), pg.K_LEFT: (-1, 0)}
     for event in pg.event.get(pg.KEYDOWN):
-        dx, dy = deltas.get(event.key, (0, 0))
-        rect = rect.move((dx, dy))
+        x, y = deltas.get(event.key, (0, 0))
+        rect = rect.move((x*20, y*20))
     screen.fill(pg.Color('black'))
     pg.draw.rect(screen, pg.Color('white'), rect)
     pg.display.flip()
@@ -3005,8 +3003,8 @@ pg.quit()
 **Object for storing rectangular coordinates.**
 ```python
 <Rect> = pg.Rect(x, y, width, height)           # Creates Rect object. Truncates passed floats.
-<int>  = <Rect>.x/y/centerx/centery/…           # Top, right, bottom, left. Allows assignments.
-<tup.> = <Rect>.topleft/center/…                # Topright, bottomright, bottomleft. Same.
+<int>  = <Rect>.x/y/centerx/centery/…           # `top/right/bottom/left`. Allows assignments.
+<tup.> = <Rect>.topleft/center/…                # `topright/bottomright/bottomleft`. Same.
 <Rect> = <Rect>.move((delta_x, delta_y))        # Use move_ip() to move in-place.
 ```
 
@@ -3028,7 +3026,7 @@ pg.quit()
 ```
 
 ```python
-<Surf>.fill(color)                              # Tuple, Color('#rrggbb[aa]') or Color(<name>).
+<Surf>.fill(color)                              # Pass tuple of ints or pg.Color('<name/hex>').
 <Surf>.set_at((x, y), color)                    # Updates pixel. Also <Surf>.get_at((x, y)).
 <Surf>.blit(<Surf>, (x, y))                     # Draws passed surface at specified location.
 ```
@@ -3187,10 +3185,10 @@ Name: a, dtype: int64
 ```python
 <S>.plot.line/area/bar/pie/hist()              # Generates a plot. `plt.show()` displays it.
 ```
-* **Also `'<S>.quantile(<float/coll>)'` and `'pd.cut(<S>, bins=<int/coll>)'`.**
-* **Indexing objects can't be tuples because `'obj[x, y]'` is converted to `'obj[(x, y)]'`.**
+* **Use `'print(<S>.to_string())'` to print a Series that has more than 60 items.**
+* **Use `'<S>.index'` to get collection of keys and `'<S>.index = <coll>'` to update them.**
+* **Only pass a list or Series to loc/iloc because `'obj[x, y]'` is converted to `'obj[(x, y)]'` and `'<S>.loc[key_1, key_2]'` is how you retrieve a value from a multi-indexed Series.**
 * **Pandas uses NumPy types like `'np.int64'`. Series is converted to `'float64'` if we assign np.nan to any item. Use `'<S>.astype(<str/type>)'` to get converted Series.**
-* **Series will silently overflow if we run `'pd.Series([100], dtype="int8") + 100'`!**
 
 #### Series — Aggregate, Transform, Map:
 ```python
@@ -3217,7 +3215,6 @@ Name: a, dtype: int64
 |              |    y  2.0   |   y   2.0   |      y  2.0   |
 +--------------+-------------+-------------+---------------+
 ```
-* **Last result has a multi-index. Use `'<S>[key_1, key_2]'` to get its values.**
 
 ### DataFrame
 **Table with labeled rows and columns.**
