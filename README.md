@@ -29,7 +29,7 @@ if __name__ == '__main__':      # Skips next line if file was imported.
 List
 ----
 ```python
-<list> = [<el_1>, <el_2>, ...]  # Creates new list. Also list(<collection>).
+<list> = [<el_1>, <el_2>, ...]  # Creates a list object. Also list(<collection>).
 ```
 
 ```python
@@ -320,7 +320,7 @@ String
 <list> = <str>.split()                       # Splits on one or more whitespace characters.
 <list> = <str>.split(sep=None, maxsplit=-1)  # Splits on 'sep' str at most 'maxsplit' times.
 <list> = <str>.splitlines(keepends=False)    # On [\n\r\f\v\x1c-\x1e\x85\u2028\u2029] and \r\n.
-<str>  = <str>.join(<coll_of_strings>)       # Joins elements using string as a separator.
+<str>  = <str>.join(<coll_of_strings>)       # Joins elements by using string as a separator.
 ```
 
 ```python
@@ -337,8 +337,8 @@ String
 ```
 
 ```python
-<str>  = chr(<int>)                          # Converts int to Unicode character.
-<int>  = ord(<str>)                          # Converts Unicode character to int.
+<str>  = chr(<int>)                          # Converts passed integer to Unicode character.
+<int>  = ord(<str>)                          # Converts passed Unicode character to integer.
 ```
 * **Use `'unicodedata.normalize("NFC", <str>)'` on strings like `'Motörhead'` before comparing them to other strings, because `'ö'` can be stored as one or two characters.**
 * **`'NFC'` converts such characters to a single character, while `'NFD'` converts them to two.**
@@ -524,8 +524,7 @@ from math import log, log10, log2            # Log accepts base as second arg.
 
 ### Statistics
 ```python
-from statistics import mean, median, mode    # Mode returns the most common value.
-from statistics import variance, stdev       # Also: pvariance, pstdev, quantiles.
+from statistics import mean, median, mode    # Also: variance, stdev, quantiles.
 ```
 
 ### Random
@@ -606,7 +605,7 @@ import zoneinfo, dateutil.tz
 * **Times and datetimes that have defined timezone are called aware and ones that don't, naive. If object is naive, it is presumed to be in the system's timezone!**
 * **`'fold=1'` means the second pass in case of time jumping back for one hour.**
 * **Timedelta normalizes arguments to ±days, seconds (< 86 400) and microseconds (< 1M). Its str() method returns `'[±D, ]H:MM:SS[.…]'` and total_seconds() a float of all seconds.**
-* **Use `'<D/DT>.weekday()'` to get the day of the week as an int, with Monday being 0.**
+* **Use `'<D/DT>.weekday()'` to get the day of the week as an integer, with Monday being 0.**
 
 ### Now
 ```python
@@ -705,23 +704,24 @@ func(1, 2, z=3)
 ### Inside Function Definition
 **Splat combines zero or more positional arguments into a tuple, while splatty-splat combines zero or more keyword arguments into a dictionary.**
 ```python
->>> def add(*a):
-...     return sum(a)
-...
+def add(*a):
+    return sum(a)
+```
+
+```python
 >>> add(1, 2, 3)
 6
 ```
 
-#### Allowed compositions of arguments inside function definition and the ways they can be called:
+#### Allowed compositions of arguments and the ways they can be called:
 ```text
-+--------------------+------------+--------------+----------------+------------------+
-|                    | f(1, 2, 3) | f(1, 2, z=3) | f(1, y=2, z=3) | f(x=1, y=2, z=3) |
-+--------------------+------------+--------------+----------------+------------------+
-| f(x, *args, **kw): |     yes    |      yes     |       yes      |       yes        |
-| f(*args, z, **kw): |            |      yes     |       yes      |       yes        |
-| f(x, **kw):        |            |              |       yes      |       yes        |
-| f(*, x, **kw):     |            |              |                |       yes        |
-+--------------------+------------+--------------+----------------+------------------+
++---------------------------+--------------+--------------+----------------+
+|                           |  func(1, 2)  | func(1, y=2) | func(x=1, y=2) |
++---------------------------+--------------+--------------+----------------+
+| func(x, *args, **kwargs): |     yes      |     yes      |      yes       |
+| func(*args, y, **kwargs): |              |     yes      |      yes       |
+| func(*, x, **kwargs):     |              |              |      yes       |
++---------------------------+--------------+--------------+----------------+
 ```
 
 ### Other Uses
@@ -972,9 +972,9 @@ class MyClass:
 >>> obj.a, str(obj), repr(obj)
 (1, '1', 'MyClass(1)')
 ```
-* **Return value of str() should be readable and of repr() unambiguous.**
-* **If only repr() is defined, it will also be used for str().**
-* **Methods decorated with `'@staticmethod'` do not receive 'self' nor 'cls' as their first argument.**
+* **Methods whose names start and end with two underscores are called special methods. They are executed when object is passed to a built-in function or used as an operand, for example, `'print(a)'` calls `'a.__str__()'` and `'a + b'` calls `'a.__add__(b)'`.**
+* **Methods decorated with `'@staticmethod'` receive neither 'self' nor 'cls' argument.**
+* **Return value of str() special method should be readable and of repr() unambiguous. If only repr() is defined, it will also be used for str().**
 
 #### Expressions that call the str() method:
 ```python
@@ -982,7 +982,6 @@ print(<obj>)
 f'{<obj>}'
 logging.warning(<obj>)
 csv.writer(<file>).writerow([<obj>])
-raise Exception(<obj>)
 ```
 
 #### Expressions that call the repr() method:
@@ -991,32 +990,33 @@ print/str/repr([<obj>])
 print/str/repr({<obj>: <obj>})
 f'{<obj>!r}'
 Z = make_dataclass('Z', ['a']); print/str/repr(Z(<obj>))
->>> <obj>
 ```
 
-### Inheritance
+### Subclass
+* **Inheritance is a mechanism that enables a class to extend some other class (that is, subclass to extend its parent), and by doing so inherit all its methods and attributes.**
+* **Subclass can then add its own methods and attributes or override inherited ones by reusing their names.**
+
 ```python
 class Person:
     def __init__(self, name):
         self.name = name
+    def __repr__(self):
+        return f'Person({self.name!r})'
+    def __lt__(self, other):
+        return self.name < other.name
 
 class Employee(Person):
     def __init__(self, name, staff_num):
         super().__init__(name)
         self.staff_num = staff_num
+    def __repr__(self):
+        return f'Employee({self.name!r}, {self.staff_num})'
 ```
 
-#### Multiple inheritance:
 ```python
-class A: pass
-class B: pass
-class C(A, B): pass
-```
-
-**MRO determines the order in which parent classes are traversed when searching for a method or an attribute:**
-```python
->>> C.mro()
-[<class 'C'>, <class 'A'>, <class 'B'>, <class 'object'>]
+>>> people = {Person('Ann'), Employee('Bob', 0)}
+>>> sorted(people)
+[Person('Ann'), Employee('Bob', 0)]
 ```
 
 ### Type Annotations
@@ -1073,7 +1073,7 @@ class Person:
 ```
 
 ### Slots
-**Mechanism that restricts objects to attributes listed in 'slots', reduces their memory footprint.**
+**Mechanism that restricts objects to attributes listed in 'slots'.**
 
 ```python
 class MyClassWithSlots:
@@ -1094,8 +1094,7 @@ Duck Types
 **A duck type is an implicit type that prescribes a set of special methods. Any object that has those methods defined is considered a member of that duck type.**
 
 ### Comparable
-* **If eq() method is not overridden, it returns `'id(self) == id(other)'`, which is the same as `'self is other'`.**
-* **That means all user-defined objects compare not equal by default.**
+* **If eq() method is not overridden, it returns `'id(self) == id(other)'`, which is the same as `'self is other'`. That means all user-defined objects compare not equal by default, because id() returns object's unique identification number (its memory address).**
 * **Only the left side object has eq() method called, unless it returns NotImplemented, in which case the right object is consulted. False is returned if both return NotImplemented.**
 * **Ne() automatically works on any object that has eq() defined.**
 
@@ -1110,9 +1109,8 @@ class MyComparable:
 ```
 
 ### Hashable
-* **Hashable object needs both hash() and eq() methods and its hash value should never change.**
-* **Hashable objects that compare equal must have the same hash value, meaning default hash() that returns `'id(self)'` will not do.**
-* **That is why Python automatically makes classes unhashable if you only implement eq().**
+* **Hashable object needs both hash() and eq() methods and its hash value must not change.**
+* **Hashable objects that compare equal must have the same hash value, meaning default hash() that returns `'id(self)'` will not do. That is why Python automatically makes classes unhashable if you only implement eq().**
 
 ```python
 class MyHashable:
@@ -1130,7 +1128,7 @@ class MyHashable:
 ```
 
 ### Sortable
-* **With 'total_ordering' decorator, you only need to provide eq() and one of lt(), gt(), le() or ge() special methods and the rest will be automatically generated.**
+* **With 'total_ordering' decorator, you only need to provide eq() and one of lt(), gt(), le() or ge() special methods (used by <, >, <=, >=) and the rest will be automatically generated.**
 * **Functions sorted() and min() only require lt() method, while max() only requires gt(). However, it is best to define them all so that confusion doesn't arise in other contexts.**
 * **When two lists, strings or dataclasses are compared, their values get compared in order until a pair of unequal values is found. The comparison of this two values is then returned. The shorter sequence is considered smaller in case of all values being equal.**
 * **To sort collection of strings in proper alphabetical order pass `'key=locale.strxfrm'` to sorted() after running `'locale.setlocale(locale.LC_COLLATE, "en_US.UTF-8")'`.**
@@ -1202,7 +1200,7 @@ class Counter:
 ### Context Manager
 * **With statements only work on objects that have enter() and exit() special methods.**
 * **Enter() should lock the resources and optionally return an object.**
-* **Exit() should release the resources.**
+* **Exit() should release the resources (for example close a file).**
 * **Any exception that happens inside the with block is passed to the exit() method.**
 * **The exit() method can suppress the exception by returning a true value.**
 ```python
@@ -1460,7 +1458,7 @@ BaseException
       |    +-- ConnectionError    # Errors such as BrokenPipeError/ConnectionAbortedError.
       +-- RuntimeError            # Raised by errors that don't fall into other categories.
       |    +-- NotImplementedEr…  # Can be raised by abstract methods or by unfinished code.
-      |    +-- RecursionError     # Raised when the maximum recursion depth is exceeded.
+      |    +-- RecursionError     # Raised if max recursion depth is exceeded (3k by default).
       +-- StopIteration           # Raised when an empty iterator is passed to next().
       +-- TypeError               # When an argument of the wrong type is passed to function.
       +-- ValueError              # When argument has the right type but inappropriate value.
@@ -1527,7 +1525,7 @@ Input
 ```
 * **Reads a line from the user input or pipe if present (trailing newline gets stripped).**
 * **If argument is passed, it gets printed to the standard output before input is read.**
-* **EOFError is raised if user hits EOF (ctrl-d/ctrl-z⏎) or input stream gets exhausted.**
+* **EOFError is raised if user hits EOF (ctrl-d/ctrl-z⏎) or if stream is already exhausted.**
 
 
 Command Line Arguments
@@ -1663,7 +1661,7 @@ from pathlib import Path
 <iter> = os.scandir(path='.')       # Returns DirEntry objects located at the path.
 <str>  = <DirEntry>.path            # Returns the whole path as a string.
 <str>  = <DirEntry>.name            # Returns final component as a string.
-<file> = open(<DirEntry>)           # Opens the file and returns a file object.
+<file> = open(<DirEntry>)           # Opens the file and returns its file object.
 ```
 
 ### Path Object
@@ -1683,9 +1681,9 @@ from pathlib import Path
 ```python
 <Path> = <Path>.parent              # Returns Path without the final component.
 <str>  = <Path>.name                # Returns final component as a string.
-<str>  = <Path>.stem                # Returns final component w/o last extension.
-<str>  = <Path>.suffix              # Returns last extension prepended with a dot.
-<tup.> = <Path>.parts               # Returns all path's components as strings.
+<str>  = <Path>.suffix              # Returns name's last extension, e.g. '.py'.
+<str>  = <Path>.stem                # Returns name without the last extension.
+<tup.> = <Path>.parts               # Returns all components as strings.
 ```
 
 ```python
@@ -1694,7 +1692,7 @@ from pathlib import Path
 ```
 
 ```python
-<str>  = str(<Path>)                # Returns path as a string.
+<str>  = str(<Path>)                # Returns path as string. Also <Path>.as_uri().
 <file> = open(<Path>)               # Also <Path>.read/write_text/bytes(<args>).
 ```
 
@@ -1706,7 +1704,7 @@ import os, shutil, subprocess
 ```
 
 ```python
-os.chdir(<path>)                    # Changes the current working directory.
+os.chdir(<path>)                    # Changes the current working directory (CWD).
 os.mkdir(<path>, mode=0o777)        # Creates a directory. Permissions are in octal.
 os.makedirs(<path>, mode=0o777)     # Creates all path's dirs. Also `exist_ok=False`.
 ```
@@ -1738,7 +1736,7 @@ shutil.rmtree(<path>)               # Deletes the directory.
 <int>  = <pipe>.close()             # Returns None if last command exited with returncode 0.
 ```
 
-#### Sends '1 + 1' to the basic calculator and captures its output:
+#### Sends "1 + 1" to the basic calculator and captures its output:
 ```python
 >>> subprocess.run('bc', input='1 + 1\n', capture_output=True, text=True)
 CompletedProcess(args='bc', returncode=0, stdout='2\n', stderr='')
@@ -1819,10 +1817,10 @@ import csv
 <list>   = next(<reader>)           # Returns next row as a list of strings.
 <list>   = list(<reader>)           # Returns a list of remaining rows.
 ```
-* **File must be opened with a `'newline=""'` argument, or newlines embedded inside quoted fields will not be interpreted correctly!**
+* **File must be opened with a `'newline=""'` argument, or every '\r\n' sequence that is embedded inside a quoted field will get converted to '\n'!**
 * **To print the spreadsheet to the console use [Tabulate](#table) library.**
 * **For XML and binary Excel files (xlsx, xlsm and xlsb) use [Pandas](#dataframe-plot-encode-decode) library.**
-* **Reader accepts any iterator of strings, not just files.**
+* **Reader accepts any collection of strings, not just files.**
 
 ### Write
 ```python
@@ -1835,10 +1833,10 @@ import csv
 
 ### Parameters
 * **`'dialect'` - Master parameter that sets the default values. String or a 'csv.Dialect' object.**
-* **`'delimiter'` - A one-character string used to separate fields.**
+* **`'delimiter'` - A one-character string that separates fields (comma, tab, semicolon, etc.).**
 * **`'lineterminator'` - How writer terminates rows. Reader looks for '\n', '\r' and '\r\n'.**
 * **`'quotechar'` - Character for quoting fields containing delimiters, quotechars, '\n' or '\r'.**
-* **`'escapechar'` - Character for escaping quotechars.**
+* **`'escapechar'` - Character for escaping quotechars (not needed if doublequote is True).**
 * **`'doublequote'` - Whether quotechars inside fields are/get doubled or escaped.**
 * **`'quoting'` - 0: As necessary, 1: All, 2: All but numbers which are read as floats, 3: None.**
 * **`'skipinitialspace'` - Is space character at the start of the field stripped by the reader.**
@@ -1906,8 +1904,8 @@ with <conn>:                                   # Exits the block with commit() o
 
 ### Placeholders
 ```python
-<conn>.execute('<query>', <list/tuple>)        # Replaces '?'s in query with values.
-<conn>.execute('<query>', <dict/namedtuple>)   # Replaces ':<key>'s with values.
+<conn>.execute('<query>', <list/tuple>)        # Replaces every question mark with an item.
+<conn>.execute('<query>', <dict/namedtuple>)   # Replaces every :<key> with a value.
 <conn>.executemany('<query>', <coll_of_coll>)  # Runs execute() multiple times.
 ```
 * **Passed values can be of type str, int, float, bytes, None, or bool (stored as 1 or 0).**
@@ -1930,7 +1928,7 @@ with <conn>:                                   # Exits the block with commit() o
 from sqlalchemy import create_engine, text
 <engine> = create_engine('<url>')              # Url: 'dialect://user:password@host/dbname'.
 <conn>   = <engine>.connect()                  # Creates a connection. Also <conn>.close().
-<cursor> = <conn>.execute(text('<query>'), …)  # `<dict>`. Replaces ':<key>'s with values.
+<cursor> = <conn>.execute(text('<query>'), …)  # `<dict>`. Replaces every :<key> with value.
 with <conn>.begin(): ...                       # Exits the block with commit or rollback.
 ```
 
@@ -1952,14 +1950,14 @@ Bytes
 
 ```python
 <bytes> = b'<str>'                       # Only accepts ASCII characters and \x00-\xff.
-<int>   = <bytes>[index]                 # Returns an int in range from 0 to 255.
+<int>   = <bytes>[index]                 # Returns an integer in range from 0 to 255.
 <bytes> = <bytes>[<slice>]               # Returns bytes even if it has only one element.
-<bytes> = <bytes>.join(<coll_of_bytes>)  # Joins elements using bytes as a separator.
+<bytes> = <bytes>.join(<coll_of_bytes>)  # Joins elements by using bytes as a separator.
 ```
 
 ### Encode
 ```python
-<bytes> = bytes(<coll_of_ints>)          # Ints must be in range from 0 to 255.
+<bytes> = bytes(<coll_of_ints>)          # Integers must be in range from 0 to 255.
 <bytes> = bytes(<str>, 'utf-8')          # Encodes the string. Also <str>.encode().
 <bytes> = bytes.fromhex('<hex>')         # Hex pairs can be separated by whitespaces.
 <bytes> = <int>.to_bytes(n_bytes, …)     # `byteorder='big/little', signed=False`.
@@ -1967,7 +1965,7 @@ Bytes
 
 ### Decode
 ```python
-<list>  = list(<bytes>)                  # Returns ints in range from 0 to 255.
+<list>  = list(<bytes>)                  # Returns integers in range from 0 to 255.
 <str>   = str(<bytes>, 'utf-8')          # Returns a string. Also <bytes>.decode().
 <str>   = <bytes>.hex()                  # Returns hex pairs. Accepts `sep=<str>`.
 <int>   = int.from_bytes(<bytes>, …)     # `byteorder='big/little', signed=False`.
@@ -1996,7 +1994,7 @@ Struct
 ```python
 from struct import pack, unpack
 
-<bytes> = pack('<format>', <el_1> [, ...])  # Packs objects according to format string.
+<bytes> = pack('<format>', <el_1> [, ...])  # Packs numbers according to format string.
 <tuple> = unpack('<format>', <bytes>)       # Use iter_unpack() to get iterator of tuples.
 ```
 
@@ -2056,7 +2054,7 @@ Memory View
 
 ```python
 <mview> = memoryview(<bytes/bytearray/array>)  # Immutable if bytes is passed, else mutable.
-<obj>   = <mview>[index]                       # Returns int or float. Bytes if format is 'c'.
+<obj>   = <mview>[index]                       # Returns int/float. Bytes if format is 'c'.
 <mview> = <mview>[<slice>]                     # Returns memoryview with rearranged elements.
 <mview> = <mview>.cast('<typecode>')           # Only works between B/b/c and other types.
 <mview>.release()                              # Releases memory buffer of the base object.
@@ -2123,7 +2121,7 @@ first_element    = op.methodcaller('pop', 0)(<list>)
 
 Match Statement
 ---------------
-**Executes the first block with matching pattern. Added in Python 3.10.**
+**Executes the first block with matching pattern.**
 
 ```python
 match <object/expression>:
@@ -2144,7 +2142,7 @@ match <object/expression>:
 <mapping_patt>  = {<value_pattern>: <patt>, ...}   # Matches dictionary with matching items.
 <class_pattern> = <type>(<attr_name>=<patt>, ...)  # Matches object with matching attributes.
 ```
-* **Sequence pattern can also be written as a tuple.**
+* **Sequence pattern can also be written as a tuple, i.e. `'(<patt_1>, [...])'`.**
 * **Use `'*<name>'` and `'**<name>'` in sequence/mapping patterns to bind remaining items.**
 * **Sequence pattern must match all items of the collection, while mapping pattern does not.**
 * **Patterns can be surrounded with brackets to override precedence (`'|'` > `'as'` > `','`).**
@@ -2258,7 +2256,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 <Thread>.join()                                # Waits for the thread to finish executing.
 ```
 * **Use `'kwargs=<dict>'` to pass keyword arguments to the function.**
-* **Use `'daemon=True'`, or program won't be able to exit while the thread is alive.**
+* **Use `'daemon=True'`, or the program won't be able to exit while the thread is alive.**
 
 ### Lock
 ```python
@@ -2294,7 +2292,7 @@ with <lock>:                                   # Enters the block by calling acq
 <Exec> = ThreadPoolExecutor(max_workers=None)  # Or: `with ThreadPoolExecutor() as <name>: ...`
 <iter> = <Exec>.map(<func>, <args_1>, ...)     # Multithreaded and non-lazy map(). Keeps order.
 <Futr> = <Exec>.submit(<func>, <arg_1>, ...)   # Creates a thread and returns its Future obj.
-<Exec>.shutdown()                              # Blocks until all threads finish executing.
+<Exec>.shutdown()                              # Waits for all submitted threads to finish.
 ```
 
 ```python
@@ -2765,7 +2763,7 @@ from PIL import Image
 <Image> = Image.new('<mode>', (width, height))  # Creates new image. Also `color=<int/tuple>`.
 <Image> = Image.open(<path>)                    # Identifies format based on file's contents.
 <Image> = <Image>.convert('<mode>')             # Converts image to the new mode (see Modes).
-<Image>.save(<path>)                            # Selects format based on extension (PNG/JPG…).
+<Image>.save(<path>)                            # Accepts `quality=<int>` if extension is jpg.
 <Image>.show()                                  # Displays image in default preview app.
 ```
 
@@ -2788,8 +2786,8 @@ from PIL import Image
 ```
 
 ### Modes
-* **`'L'` - Lightness (greyscale image). Each pixel is an int between 0 and 255.**
-* **`'RGB'` - Red, green, blue (true color image). Each pixel is a tuple of three ints.**
+* **`'L'` - Lightness (greyscale image). Each pixel is an integer between 0 and 255.**
+* **`'RGB'` - Red, green, blue (true color image). Each pixel is a tuple of three integers.**
 * **`'RGBA'` - RGB with alpha. Low alpha (i.e. forth int) makes pixel more transparent.**
 * **`'HSV'` - Hue, saturation, value. Three ints representing color in HSV color space.**
 
@@ -2989,10 +2987,10 @@ pg.init()
 screen = pg.display.set_mode((500, 500))
 rect = pg.Rect(240, 240, 20, 20)
 while not pg.event.get(pg.QUIT):
-    deltas = {pg.K_UP: (0, -1), pg.K_RIGHT: (1, 0), pg.K_DOWN: (0, 1), pg.K_LEFT: (-1, 0)}
     for event in pg.event.get(pg.KEYDOWN):
-        x, y = deltas.get(event.key, (0, 0))
-        rect = rect.move((x*20, y*20))
+        dx = (event.key == pg.K_RIGHT) - (event.key == pg.K_LEFT)
+        dy = (event.key == pg.K_DOWN) - (event.key == pg.K_UP)
+        rect = rect.move((dx * 20, dy * 20))
     screen.fill(pg.Color('black'))
     pg.draw.rect(screen, pg.Color('white'), rect)
     pg.display.flip()
@@ -3004,13 +3002,13 @@ pg.quit()
 ```python
 <Rect> = pg.Rect(x, y, width, height)           # Creates Rect object. Truncates passed floats.
 <int>  = <Rect>.x/y/centerx/centery/…           # `top/right/bottom/left`. Allows assignments.
-<tup.> = <Rect>.topleft/center/…                # `topright/bottomright/bottomleft`. Same.
-<Rect> = <Rect>.move((delta_x, delta_y))        # Use move_ip() to move in-place.
+<tup.> = <Rect>.topleft/center/…                # `topright/bottomright/bottomleft/size`. Same.
+<Rect> = <Rect>.move((delta_x, delta_y))        # Use move_ip() to move the rectangle in-place.
 ```
 
 ```python
-<bool> = <Rect>.collidepoint((x, y))            # Checks if rectangle contains the point.
-<bool> = <Rect>.colliderect(<Rect>)             # Checks if the two rectangles overlap.
+<bool> = <Rect>.collidepoint((x, y))            # Checks whether rectangle contains the point.
+<bool> = <Rect>.colliderect(<Rect>)             # Checks whether the two rectangles overlap.
 <int>  = <Rect>.collidelist(<list_of_Rect>)     # Returns index of first colliding Rect or -1.
 <list> = <Rect>.collidelistall(<list_of_Rect>)  # Returns indices of all colliding rectangles.
 ```
@@ -3018,7 +3016,7 @@ pg.quit()
 ### Surface
 **Object for representing images.**
 ```python
-<Surf> = pg.display.set_mode((width, height))   # Opens new window and returns its surface.
+<Surf> = pg.display.set_mode((width, height))   # Opens a new window and returns its surface.
 <Surf> = pg.Surface((width, height))            # New RGB surface. RGBA if `flags=pg.SRCALPHA`.
 <Surf> = pg.image.load(<path/file>)             # Loads the image. Format depends on source.
 <Surf> = pg.surfarray.make_surface(<np_array>)  # Also `<np_arr> = surfarray.pixels3d(<Surf>)`.
@@ -3032,22 +3030,22 @@ pg.quit()
 ```
 
 ```python
-from pygame.transform import scale, ...
-<Surf> = scale(<Surf>, (width, height))         # Returns scaled surface.
-<Surf> = rotate(<Surf>, anticlock_degrees)      # Returns rotated and scaled surface.
-<Surf> = flip(<Surf>, x_bool, y_bool)           # Returns flipped surface.
+from pygame.transform import scale, rotate      # Also: flip, smoothscale, scale_by.
+<Surf> = scale(<Surf>, (width, height))         # Scales the surface. `smoothscale()` blurs it.
+<Surf> = rotate(<Surf>, angle)                  # Rotates the surface for counterclock degrees.
+<Surf> = flip(<Surf>, flip_x=False)             # Mirrors the surface. Also `flip_y=False`.
 ```
 
 ```python
-from pygame.draw import line, ...
-line(<Surf>, color, (x1, y1), (x2, y2), width)  # Draws a line to the surface.
+from pygame.draw import line, arc, rect         # Also: ellipse, polygon, circle, aaline.
+line(<Surf>, color, (x1, y1), (x2, y2))         # Draws a line to the surface. Also `width=1`.
 arc(<Surf>, color, <Rect>, from_rad, to_rad)    # Also ellipse(<Surf>, color, <Rect>, width=0).
 rect(<Surf>, color, <Rect>, width=0)            # Also polygon(<Surf>, color, points, width=0).
 ```
 
 ```python
 <Font> = pg.font.Font(<path/file>, size)        # Loads TTF file. Pass None for default font.
-<Surf> = <Font>.render(text, antialias, color)  # Background color can be specified at the end.
+<Surf> = <Font>.render(text, antialias, color)  # Accepts background color as fourth argument.
 ```
 
 ### Sound
@@ -3183,7 +3181,8 @@ Name: a, dtype: int64
 ```
 
 ```python
-<S>.plot.line/area/bar/pie/hist()              # Generates a plot. `plt.show()` displays it.
+<S>.plot.line/area/bar/pie/hist()              # Generates a plot. Accepts `title=<str>`.
+plt.show()                                     # Displays the plot. Also plt.savefig(<path>).
 ```
 * **Use `'print(<S>.to_string())'` to print a Series that has more than 60 items.**
 * **Use `'<S>.index'` to get collection of keys and `'<S>.index = <coll>'` to update them.**
@@ -3350,7 +3349,7 @@ c  6  7
 ```
 
 ```python
-<DF>.to_json/csv/html/parquet/latex(<path>)    # Returns a string/bytes if path is omitted.
+<DF>.to_json/csv/html/latex/parquet(<path>)    # Returns a string/bytes if path is omitted.
 <DF>.to_pickle/excel/feather/hdf(<path>)       # Method to_hdf() requires `key=<s/df_name>`.
 <DF>.to_sql('<table_name>', <connection>)      # Also `if_exists='fail/replace/append'`.
 ```
@@ -3410,16 +3409,16 @@ import plotly.express as px, pandas as pd
 ```
 
 ```python
-<Fig> = px.line(<DF>, x=col_key, y=col_key)           # Or: px.line(x=<list>, y=<list>)
-<Fig>.update_layout(margin=dict(t=0, r=0, b=0, l=0))  # Also `paper_bgcolor='rgb(0, 0, 0)'`.
-<Fig>.write_html/json/image('<path>')                 # <Fig>.show() displays the plot.
+<Fig> = px.line(<DF> [, y=col_key/s [, x=col_key]])   # Also px.line(y=<list> [, x=<list>]).
+<Fig>.update_layout(paper_bgcolor='rgb(0, 0, 0)')     # Also `margin=dict(t=0, r=0, b=0, l=0)`.
+<Fig>.write_html/json/image('<path>')                 # Use <Fig>.show() to display the plot.
 ```
 
 ```python
-<Fig> = px.area/bar/box(<DF>, x=col_key, y=col_key)   # Also `color=col_key`.
-<Fig> = px.scatter(<DF>, x=col_key, y=col_key)        # Also `color/size/symbol=col_key`.
-<Fig> = px.scatter_3d(<DF>, x=col_key, y=col_key, …)  # `z=col_key`. Also color/size/symbol.
-<Fig> = px.histogram(<DF>, x=col_key)                 # Also `nbins=<int>`.
+<Fig> = px.area/bar/box(<DF>, x=col_key, y=col_keys)  # Also `color=col_key`. All are optional.
+<Fig> = px.scatter(<DF>, x=col_key, y=col_keys)       # Also `color/size/symbol=col_key`. Same.
+<Fig> = px.scatter_3d(<DF>, x=col_key, y=col_key, …)  # `z=col_key`. Also color, size, symbol.
+<Fig> = px.histogram(<DF>, x=col_keys, y=col_key)     # Also color, nbins. All are optional.
 ```
 
 #### Displays a line chart of total coronavirus deaths per million grouped by continent:
@@ -3438,7 +3437,7 @@ df = df.groupby(['Continent_Name', 'date']).sum().reset_index()
 df['Total Deaths per Million'] = df.total_deaths * 1e6 / df.population
 df = df[df.date > '2020-03-14']
 df = df.rename({'date': 'Date', 'Continent_Name': 'Continent'}, axis='columns')
-px.line(df, x='Date', y='Total Deaths per Million', color='Continent').show()
+px.line(df, x='Date', y='Total Deaths per Million', color='Continent')
 ```
 
 #### Displays a multi-axis line chart of total coronavirus cases and changes in prices of Bitcoin, Dow Jones and gold:

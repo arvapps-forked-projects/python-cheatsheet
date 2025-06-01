@@ -83,8 +83,7 @@ const REPR_USE_CASES =
   'print/str/repr([&lt;obj&gt;])\n' +
   'print/str/repr({&lt;obj&gt;: &lt;obj&gt;})\n' +
   '<span class="hljs-string">f\'<span class="hljs-subst">{&lt;obj&gt;!r}</span>\'</span>\n' +
-  'Z = make_dataclass(<span class="hljs-string">\'Z\'</span>, [<span class="hljs-string">\'a\'</span>]); print/str/repr(Z(&lt;obj&gt;))\n' +
-  '<span class="hljs-meta">&gt;&gt;&gt; </span>&lt;obj&gt;\n';
+  'Z = make_dataclass(<span class="hljs-string">\'Z\'</span>, [<span class="hljs-string">\'a\'</span>]); print/str/repr(Z(&lt;obj&gt;))\n';
 
 const CONSTRUCTOR_OVERLOADING =
   '<span class="hljs-class"><span class="hljs-keyword">class</span> &lt;<span class="hljs-title">name</span>&gt;:</span>\n' +
@@ -424,17 +423,16 @@ const DIAGRAM_5_A =
   "+--------------+----------------+----------------+----------------+----------------+\n";
 
 const DIAGRAM_55_A =
-  "+--------------------+------------+--------------+----------------+------------------+\n";
+  "+---------------------------+--------------+--------------+----------------+\n";
 
 const DIAGRAM_55_B =
-  '┏━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━┓\n' +
-  '┃                    │ f(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>) │ f(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, z=<span class="hljs-number">3</span>) │ f(<span class="hljs-number">1</span>, y=<span class="hljs-number">2</span>, z=<span class="hljs-number">3</span>) │ f(x=<span class="hljs-number">1</span>, y=<span class="hljs-number">2</span>, z=<span class="hljs-number">3</span>) ┃\n' +
-  '┠────────────────────┼────────────┼──────────────┼────────────────┼──────────────────┨\n' +
-  '┃ <span class="hljs-title">f</span>(x, *args, **kw): │      ✓     │       ✓      │        ✓       │        ✓         ┃\n' +
-  '┃ <span class="hljs-title">f</span>(*args, z, **kw): │            │       ✓      │        ✓       │        ✓         ┃\n' +
-  '┃ <span class="hljs-title">f</span>(x, **kw):        │            │              │        ✓       │        ✓         ┃\n' +
-  '┃ <span class="hljs-title">f</span>(*, x, **kw):     │            │              │                │        ✓         ┃\n' +
-  '┗━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━┛\n';
+  '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━┓\n' +
+  '┃                           │  func(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)  │ func(<span class="hljs-number">1</span>, y=<span class="hljs-number">2</span>) │ func(x=<span class="hljs-number">1</span>, y=<span class="hljs-number">2</span>) ┃\n' +
+  '┠───────────────────────────┼──────────────┼──────────────┼────────────────┨\n' +
+  '┃ <span class="hljs-title">func</span>(x, *args, **kwargs): │      ✓       │      ✓       │       ✓        ┃\n' +
+  '┃ <span class="hljs-title">func</span>(*args, y, **kwargs): │              │      ✓       │       ✓        ┃\n' +
+  '┃ <span class="hljs-title">func</span>(*, x, **kwargs):     │              │              │       ✓        ┃\n' +
+  '┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━┛\n';
 
 const DIAGRAM_6_A =
   '+------------+------------+------------+------------+--------------+\n' +
@@ -477,7 +475,7 @@ const DIAGRAM_7_B =
   "      │    └── ConnectionError    <span class='hljs-comment'># Errors such as BrokenPipeError/ConnectionAbortedError.</span>\n" +
   "      ├── RuntimeError            <span class='hljs-comment'># Raised by errors that don't fall into other categories.</span>\n" +
   "      │    ├── NotImplementedEr…  <span class='hljs-comment'># Can be raised by abstract methods or by unfinished code.</span>\n" +
-  "      │    └── RecursionError     <span class='hljs-comment'># Raised when the maximum recursion depth is exceeded.</span>\n" +
+  "      │    └── RecursionError     <span class='hljs-comment'># Raised if max recursion depth is exceeded (3k by default).</span>\n" +
   "      ├── StopIteration           <span class='hljs-comment'># Raised when an empty iterator is passed to next().</span>\n" +
   "      ├── TypeError               <span class='hljs-comment'># When an argument of the wrong type is passed to function.</span>\n" +
   "      └── ValueError              <span class='hljs-comment'># When argument has the right type but inappropriate value.</span>\n";
