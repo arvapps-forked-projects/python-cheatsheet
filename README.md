@@ -168,8 +168,8 @@ Tuple
 >>> p = Point(1, y=2)
 >>> print(p)
 Point(x=1, y=2)
->>> p[0], p.x
-(1, 1)
+>>> p[0], p.y
+(1, 2)
 ```
 
 
@@ -318,7 +318,7 @@ String
 
 ```python
 <list> = <str>.split()                       # Splits on one or more whitespace characters.
-<list> = <str>.split(sep=None, maxsplit=-1)  # Splits on 'sep' str at most 'maxsplit' times.
+<list> = <str>.split(sep=None, maxsplit=-1)  # Splits on 'sep' string at most 'maxsplit' times.
 <list> = <str>.splitlines(keepends=False)    # On [\n\r\f\v\x1c-\x1e\x85\u2028\u2029] and \r\n.
 <str>  = <str>.join(<coll_of_strings>)       # Joins elements by using string as a separator.
 ```
@@ -327,11 +327,11 @@ String
 <bool> = <sub_str> in <str>                  # Checks if string contains the substring.
 <bool> = <str>.startswith(<sub_str>)         # Pass tuple of strings for multiple options.
 <int>  = <str>.find(<sub_str>)               # Returns start index of the first match or -1.
-<int>  = <str>.index(<sub_str>)              # Same, but raises ValueError if there's no match.
 ```
 
 ```python
-<str>  = <str>.lower()                       # Changes the case. Also upper/capitalize/title().
+<str>  = <str>.lower()                       # Lowers the case. Also upper/capitalize/title().
+<str>  = <str>.casefold()                    # Same, but converts ẞ/ß to ss, Σ/ς to σ, etc.
 <str>  = <str>.replace(old, new [, count])   # Replaces 'old' with 'new' at most 'count' times.
 <str>  = <str>.translate(<table>)            # Use `str.maketrans(<dict>)` to generate table.
 ```
@@ -361,7 +361,7 @@ Regex
 ```python
 import re
 <str>   = re.sub(r'<regex>', new, text, count=0)  # Substitutes all occurrences with 'new'.
-<list>  = re.findall(r'<regex>', text)            # Returns all occurrences as strings.
+<list>  = re.findall(r'<regex>', text)            # Returns all occurrences of the pattern.
 <list>  = re.split(r'<regex>', text, maxsplit=0)  # Add brackets around regex to keep matches.
 <Match> = re.search(r'<regex>', text)             # First occurrence of the pattern or None.
 <Match> = re.match(r'<regex>', text)              # Searches only at the beginning of the text.
@@ -379,7 +379,7 @@ import re
 ```python
 <str>   = <Match>.group()                         # Returns the whole match. Also group(0).
 <str>   = <Match>.group(1)                        # Returns part inside the first brackets.
-<tuple> = <Match>.groups()                        # Returns all bracketed parts.
+<tuple> = <Match>.groups()                        # Returns all bracketed parts as strings.
 <int>   = <Match>.start()                         # Returns start index of the match.
 <int>   = <Match>.end()                           # Returns exclusive end index of the match.
 ```
@@ -398,7 +398,7 @@ Format
 ------
 ```perl
 <str> = f'{<el_1>}, {<el_2>}'            # Curly brackets can also contain expressions.
-<str> = '{}, {}'.format(<el_1>, <el_2>)  # Or: '{0}, {a}'.format(<el_1>, a=<el_2>)
+<str> = '{}, {}'.format(<el_1>, <el_2>)  # Same as '{0}, {a}'.format(<el_1>, a=<el_2>).
 <str> = '%s, %s' % (<el_1>, <el_2>)      # Redundant and inferior C-style formatting.
 ```
 
@@ -493,68 +493,69 @@ Format
 Numbers
 -------
 ```python
-<int>      = int(<float/str/bool>)           # Or: math.trunc(<float>)
-<float>    = float(<int/str/bool>)           # Or: <int/float>e±<int>
-<complex>  = complex(real=0, imag=0)         # Or: <int/float> ± <int/float>j
-<Fraction> = fractions.Fraction(0, 1)        # Or: Fraction(numerator=0, denominator=1)
-<Decimal>  = decimal.Decimal(<str/int>)      # Or: Decimal((sign, digits, exponent))
+<int>      = int(<float/str/bool>)             # Whole number of any size. Truncates floats.
+<float>    = float(<int/str/bool>)             # 64-bit decimal number. Also <float>e±<int>.
+<complex>  = complex(real=0, imag=0)           # Complex number. Also `<float> ± <float>j`.
+<Fraction> = fractions.Fraction(<int>, <int>)  # E.g. `Fraction(1, 2) / 3 == Fraction(1, 6)`.
+<Decimal>  = decimal.Decimal(<str/int/tuple>)  # E.g. `Decimal((1, (2, 3), 4)) == -230_000`.
 ```
 * **`'int(<str>)'` and `'float(<str>)'` raise ValueError on malformed strings.**
-* **Decimal numbers are stored exactly, unlike most floats where `'1.1 + 2.2 != 3.3'`.**
+* **Decimal objects store numbers exactly, unlike most floats where `'1.1 + 2.2 != 3.3'`.**
 * **Floats can be compared with: `'math.isclose(<float>, <float>)'`.**
 * **Precision of decimal operations is set with: `'decimal.getcontext().prec = <int>'`.**
 * **Bools can be used anywhere ints can, because bool is a subclass of int: `'True + 1 == 2'`.**
 
 ### Built-in Functions
 ```python
-<num> = pow(<num>, <num>)                    # Or: <number> ** <number>
-<num> = abs(<num>)                           # <float> = abs(<complex>)
-<num> = round(<num> [, ±ndigits])            # Also math.floor/ceil(<number>).
-<num> = min(<collection>)                    # Also max(<num>, <num> [, ...]).
-<num> = sum(<collection>)                    # Also math.prod(<collection>).
+<num> = pow(<num>, <num>)                      # E.g. `pow(2, 3) == 2 ** 3 == 8`.
+<num> = abs(<num>)                             # E.g. `abs(complex(3, 4)) == 5`.
+<num> = round(<num> [, ±ndigits])              # E.g. `round(123, -1) == 120`.
+<num> = min(<collection>)                      # Also max(<num>, <num> [, ...]).
+<num> = sum(<collection>)                      # Also math.prod(<collection>).
 ```
 
 ### Math
 ```python
-from math import pi, inf, nan, isnan         # `inf*0` and `nan+1` return nan.
-from math import sqrt, factorial             # `sqrt(-1)` raises ValueError.
-from math import sin, cos, tan               # Also: asin, degrees, radians.
-from math import log, log10, log2            # Log accepts base as second arg.
+from math import floor, ceil, trunc            # They convert floats into integers.
+from math import pi, inf, nan, isnan           # `inf * 0` and `nan + 1` return nan.
+from math import sqrt, factorial               # `sqrt(-1)` will raise ValueError.
+from math import sin, cos, tan                 # Also: asin, acos, degrees, radians.
+from math import log, log10, log2              # Log accepts base as second argument.
 ```
 
 ### Statistics
 ```python
-from statistics import mean, median, mode    # Also: variance, stdev, quantiles.
+from statistics import mean, median, mode      # Mode returns the most common item.
+from statistics import variance, stdev         # Also: pvariance, pstdev, quantiles.
 ```
 
 ### Random
 ```python
-from random import random, randint, uniform  # Also: gauss, choice, shuffle, seed.
+from random import random, randint, uniform    # Also: gauss, choice, shuffle, seed.
 ```
 
 ```python
-<float> = random()                           # Returns a float inside [0, 1).
-<num>   = randint/uniform(a, b)              # Returns an int/float inside [a, b].
-<float> = gauss(mean, stdev)                 # Also triangular(low, high, mode).
-<el>    = choice(<sequence>)                 # Keeps it intact. Also sample(pop, k).
-shuffle(<list>)                              # Shuffles the list in place.
+<float> = random()                             # Returns a float inside [0, 1).
+<num>   = randint/uniform(a, b)                # Returns an int/float inside [a, b].
+<float> = gauss(mean, stdev)                   # Also triangular(low, high, mode).
+<el>    = choice(<sequence>)                   # Keeps it intact. Also sample(p, n).
+shuffle(<list>)                                # Works on any mutable sequence.
 ```
 
 ### Hexadecimal Numbers
 ```python
-<int> = ±0x<hex>                             # Or: ±0b<bin>
-<int> = int('±<hex>', 16)                    # Or: int('±<bin>', 2)
-<int> = int('±0x<hex>', 0)                   # Or: int('±0b<bin>', 0)
-<str> = hex(<int>)                           # Returns '[-]0x<hex>'. Also bin().
+<int> = 0x<hex>                                # E.g. `0xFF == 255`. Also 0b<bin>.
+<int> = int('±<hex>', 16)                      # Also int('±0x<hex>/±0b<bin>', 0).
+<str> = hex(<int>)                             # Returns '[-]0x<hex>'. Also bin().
 ```
 
 ### Bitwise Operators
 ```python
-<int> = <int> & <int>                        # And (0b1100 & 0b1010 == 0b1000).
-<int> = <int> | <int>                        # Or  (0b1100 | 0b1010 == 0b1110).
-<int> = <int> ^ <int>                        # Xor (0b1100 ^ 0b1010 == 0b0110).
-<int> = <int> << n_bits                      # Left shift. Use >> for right.
-<int> = ~<int>                               # Not. Also -<int> - 1.
+<int> = <int> & <int>                          # E.g. `0b1100 & 0b1010 == 0b1000`.
+<int> = <int> | <int>                          # E.g. `0b1100 | 0b1010 == 0b1110`.
+<int> = <int> ^ <int>                          # E.g. `0b1100 ^ 0b1010 == 0b0110`.
+<int> = <int> << n_bits                        # Left shift. Use >> for right.
+<int> = ~<int>                                 # Not. Same as `-<int> - 1`.
 ```
 
 
@@ -747,10 +748,10 @@ Inline
 
 ### Comprehensions
 ```python
-<list> = [i+1 for i in range(10)]                   # Or: [1, 2, ..., 10]
-<iter> = (i for i in range(10) if i > 5)            # Or: iter([6, 7, 8, 9])
-<set>  = {i+5 for i in range(10)}                   # Or: {5, 6, ..., 14}
-<dict> = {i: i*2 for i in range(10)}                # Or: {0: 0, 1: 2, ..., 9: 18}
+<list> = [i+1 for i in range(10)]                   # Returns [1, 2, ..., 10].
+<iter> = (i for i in range(10) if i > 5)            # Returns iter([6, 7, 8, 9]).
+<set>  = {i+5 for i in range(10)}                   # Returns {5, 6, ..., 14}.
+<dict> = {i: i*2 for i in range(10)}                # Returns {0: 0, 1: 2, ..., 9: 18}.
 ```
 
 ```python
@@ -764,9 +765,9 @@ from functools import reduce
 ```
 
 ```python
-<iter> = map(lambda x: x + 1, range(10))            # Or: iter([1, 2, ..., 10])
-<iter> = filter(lambda x: x > 5, range(10))         # Or: iter([6, 7, 8, 9])
-<obj>  = reduce(lambda out, x: out + x, range(10))  # Or: 45
+<iter> = map(lambda x: x + 1, range(10))            # Returns iter([1, 2, ..., 10]).
+<iter> = filter(lambda x: x > 5, range(10))         # Returns iter([6, 7, 8, 9]).
+<obj>  = reduce(lambda out, x: out + x, range(10))  # Returns 45.
 ```
 
 ### Any, All
@@ -860,8 +861,7 @@ from functools import partial
 >>> multiply_by_3(10)
 30
 ```
-* **Partial is also useful in cases when a function needs to be passed as an argument because it enables us to set its arguments beforehand.**
-* **A few examples being: `'defaultdict(<func>)'`, `'iter(<func>, to_exc)'` and dataclass's `'field(default_factory=<func>)'`.**
+* **Partial is also useful in cases when a function needs to be passed as an argument because it enables us to set its arguments beforehand (`'collections.defaultdict(<func>)'`, `'iter(<func>, to_exc)'` and `'dataclasses.field(default_factory=<func>)'`).**
 
 ### Non-Local
 **If variable is being assigned to anywhere in the scope, it is regarded as a local variable, unless it is declared as a 'global' or a 'nonlocal'.**
@@ -993,7 +993,7 @@ Z = make_dataclass('Z', ['a']); print/str/repr(Z(<obj>))
 ```
 
 ### Subclass
-* **Inheritance is a mechanism that enables a class to extend some other class (that is, subclass to extend its parent), and by doing so inherit all its methods and attributes.**
+* **Inheritance is a mechanism that enables a class to extend some other class (that is, subclass to extend its parent), and by doing so inherit all of its methods and attributes.**
 * **Subclass can then add its own methods and attributes or override inherited ones by reusing their names.**
 
 ```python
@@ -1027,7 +1027,7 @@ from collections import abc
 
 <name>: <type> [| ...] [= <obj>]
 <name>: list/set/abc.Iterable/abc.Sequence[<type>] [= <obj>]
-<name>: dict/tuple[<type>, ...] [= <obj>]
+<name>: tuple/dict[<type>, ...] [= <obj>]
 ```
 
 ### Dataclass
@@ -1644,13 +1644,13 @@ from pathlib import Path
 ```
 
 ```python
-<bool> = os.path.exists(<path>)     # Or: <Path>.exists()
-<bool> = os.path.isfile(<path>)     # Or: <DirEntry/Path>.is_file()
-<bool> = os.path.isdir(<path>)      # Or: <DirEntry/Path>.is_dir()
+<bool> = os.path.exists(<path>)     # Same as <Path>.exists().
+<bool> = os.path.isfile(<path>)     # Same as <DirEntry/Path>.is_file().
+<bool> = os.path.isdir(<path>)      # Same as <DirEntry/Path>.is_dir().
 ```
 
 ```python
-<stat> = os.stat(<path>)            # Or: <DirEntry/Path>.stat()
+<stat> = os.stat(<path>)            # Same as <DirEntry/Path>.stat().
 <num>  = <stat>.st_mtime/st_size/…  # Modification time, size in bytes, etc.
 ```
 
@@ -1820,7 +1820,7 @@ import csv
 * **File must be opened with a `'newline=""'` argument, or every '\r\n' sequence that is embedded inside a quoted field will get converted to '\n'!**
 * **To print the spreadsheet to the console use [Tabulate](#table) library.**
 * **For XML and binary Excel files (xlsx, xlsm and xlsb) use [Pandas](#dataframe-plot-encode-decode) library.**
-* **Reader accepts any collection of strings, not just files.**
+* **Reader accepts any iterator or collection of strings, not just files.**
 
 ### Write
 ```python
@@ -2289,7 +2289,7 @@ with <lock>:                                   # Enters the block by calling acq
 
 ### Thread Pool Executor
 ```python
-<Exec> = ThreadPoolExecutor(max_workers=None)  # Or: `with ThreadPoolExecutor() as <name>: ...`
+<Exec> = ThreadPoolExecutor(max_workers=None)  # Also `with ThreadPoolExecutor() as <name>: …`.
 <iter> = <Exec>.map(<func>, <args_1>, ...)     # Multithreaded and non-lazy map(). Keeps order.
 <Futr> = <Exec>.submit(<func>, <arg_1>, ...)   # Creates a thread and returns its Future obj.
 <Exec>.shutdown()                              # Waits for all submitted threads to finish.
@@ -2663,7 +2663,7 @@ import numpy as np
 ```python
 <view>  = <array>.reshape(<shape>)                      # Also `<array>.shape = <shape>`.
 <array> = <array>.flatten()                             # Also `<view> = <array>.ravel()`.
-<view>  = <array>.transpose()                           # Or: <array>.T
+<view>  = <array>.transpose()                           # Flips the table over its diagonal.
 ```
 
 ```python
@@ -2788,7 +2788,7 @@ from PIL import Image
 ### Modes
 * **`'L'` - Lightness (greyscale image). Each pixel is an integer between 0 and 255.**
 * **`'RGB'` - Red, green, blue (true color image). Each pixel is a tuple of three integers.**
-* **`'RGBA'` - RGB with alpha. Low alpha (i.e. forth int) makes pixel more transparent.**
+* **`'RGBA'` - RGB with alpha. Low alpha (i.e. fourth int) makes pixel more transparent.**
 * **`'HSV'` - Hue, saturation, value. Three ints representing color in HSV color space.**
 
 
@@ -2827,7 +2827,7 @@ from PIL import ImageDraw
 * **Use `'fill=<color>'` to set the primary color.**
 * **Use `'width=<int>'` to set the width of lines or contours.**
 * **Use `'outline=<color>'` to set the color of the contours.**
-* **Color can be an int, tuple, `'#rrggbb[aa]'` or a color name.**
+* **Color can be an int, tuple, `'#rrggbb[aa]'` string or a color name.**
 
 
 Animation
@@ -3184,10 +3184,10 @@ Name: a, dtype: int64
 <S>.plot.line/area/bar/pie/hist()              # Generates a plot. Accepts `title=<str>`.
 plt.show()                                     # Displays the plot. Also plt.savefig(<path>).
 ```
-* **Use `'print(<S>.to_string())'` to print a Series that has more than 60 items.**
+* **Use `'print(<S>.to_string())'` to print a Series that has more than sixty items.**
 * **Use `'<S>.index'` to get collection of keys and `'<S>.index = <coll>'` to update them.**
 * **Only pass a list or Series to loc/iloc because `'obj[x, y]'` is converted to `'obj[(x, y)]'` and `'<S>.loc[key_1, key_2]'` is how you retrieve a value from a multi-indexed Series.**
-* **Pandas uses NumPy types like `'np.int64'`. Series is converted to `'float64'` if we assign np.nan to any item. Use `'<S>.astype(<str/type>)'` to get converted Series.**
+* **Pandas uses NumPy types like `'np.int64'`. Series is converted to `'float64'` if np.nan is assigned to any item. Use `'<S>.astype(<str/type>)'` to get converted Series.**
 
 #### Series — Aggregate, Transform, Map:
 ```python
@@ -3410,7 +3410,7 @@ import plotly.express as px, pandas as pd
 
 ```python
 <Fig> = px.line(<DF> [, y=col_key/s [, x=col_key]])   # Also px.line(y=<list> [, x=<list>]).
-<Fig>.update_layout(paper_bgcolor='rgb(0, 0, 0)')     # Also `margin=dict(t=0, r=0, b=0, l=0)`.
+<Fig>.update_layout(paper_bgcolor='#rrggbb')          # Also `margin=dict(t=0, r=0, b=0, l=0)`.
 <Fig>.write_html/json/image('<path>')                 # Use <Fig>.show() to display the plot.
 ```
 
@@ -3421,7 +3421,7 @@ import plotly.express as px, pandas as pd
 <Fig> = px.histogram(<DF>, x=col_keys, y=col_key)     # Also color, nbins. All are optional.
 ```
 
-#### Displays a line chart of total coronavirus deaths per million grouped by continent:
+#### Displays a line chart of total COVID-19 deaths per million grouped by continent:
 
 ![Covid Deaths](web/covid_deaths.png)
 <div id="2a950764-39fc-416d-97fe-0a6226a3095f" class="plotly-graph-div" style="height:312px; width:914px;"></div>
@@ -3440,7 +3440,7 @@ df = df.rename({'date': 'Date', 'Continent_Name': 'Continent'}, axis='columns')
 px.line(df, x='Date', y='Total Deaths per Million', color='Continent')
 ```
 
-#### Displays a multi-axis line chart of total coronavirus cases and changes in prices of Bitcoin, Dow Jones and gold:
+#### Displays a multi-axis line chart of total COVID-19 cases and changes in prices of Bitcoin, Dow Jones and gold:
 
 ![Covid Cases](web/covid_cases.png)
 <div id="e23ccacc-a456-478b-b467-7282a2165921" class="plotly-graph-div" style="height:285px; width:935px;"></div>
@@ -3513,26 +3513,27 @@ Appendix
 
 ```python
 # $ pip3 install cython
-import pyximport; pyximport.install()  # Module that runs imported Cython scripts.
-import <cython_script>                 # Script must be saved with '.pyx' extension.
-<cython_script>.main()                 # Main() isn't automatically executed.
+import pyximport; pyximport.install()                # Module that runs Cython scripts.
+import <cython_script>                               # Script must have '.pyx' extension.
 ```
 
-#### Definitions:
-* **All `'cdef'` definitions are optional, but they contribute to the speed-up.**
-* **Also supports C pointers (via `'*'` and `'&'`), structs, unions and enums.**
-
+#### All `'cdef'` definitions are optional, but they contribute to the speed-up:
 ```python
-cdef <ctype/type> <var_name> [= <obj>]
-cdef <ctype>[n_elements] <var_name> [= <coll_of_nums>]
-cdef <ctype/type/void> <func_name>(<ctype/type> <arg_name>): ...
+cdef <type> <var_name> [= <obj/var>]                 # Either Python or C type variable.
+cdef <ctype> *<pointer_name> [= &<var>]              # Use <pointer>[0] to get the value.
+cdef <ctype>[size] <array_name> [= <coll/array>]     # Also `<ctype>[:] <mview> = <array>`.
+cdef <ctype> *<array_name> [= <coll/array/pointer>]  # E.g. `<<ctype> *> malloc(n_bytes)`.
 ```
 
 ```python
-cdef class <class_name>:
-    cdef public <ctype/type> <attr_name>
-    def __init__(self, <ctype/type> <arg_name>):
-        self.<attr_name> = <arg_name>
+cdef <type> <func_name>(<type> [*]<arg_name>): ...   # Omitted types default to `object`.
+```
+
+```python
+cdef class <class_name>:                             # Also `cdef struct <struct_name>:`.
+    cdef public <type> [*]<attr_name>                # Also `... <ctype> [*]<field_name>`.
+    def __init__(self, <type> <arg_name>):           # Also `cdef __dealloc__(self):`.
+        self.<attr_name> = <arg_name>                # Also `... free(<array/pointer>)`.
 ```
 
 ### Virtual Environments

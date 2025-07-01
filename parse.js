@@ -43,10 +43,9 @@ const TOC =
   '</code></pre>\n';
 
 const BIN_HEX =
-  '&lt;int&gt; = ±<span class="hljs-number">0x</span>&lt;hex&gt;                             <span class="hljs-comment"># Or: ±0b&lt;bin&gt;</span>\n' +
-  '&lt;int&gt; = int(<span class="hljs-string">\'±&lt;hex&gt;\'</span>, <span class="hljs-number">16</span>)                    <span class="hljs-comment"># Or: int(\'±&lt;bin&gt;\', 2)</span>\n' +
-  '&lt;int&gt; = int(<span class="hljs-string">\'±0x&lt;hex&gt;\'</span>, <span class="hljs-number">0</span>)                   <span class="hljs-comment"># Or: int(\'±0b&lt;bin&gt;\', 0)</span>\n' +
-  '&lt;str&gt; = hex(&lt;int&gt;)                           <span class="hljs-comment"># Returns \'[-]0x&lt;hex&gt;\'. Also bin().</span>\n';
+  '&lt;int&gt; = <span class="hljs-number">0x</span>&lt;hex&gt;                                <span class="hljs-comment"># E.g. `0xFF == 255`. Also 0b&lt;bin&gt;.</span>\n' +
+  '&lt;int&gt; = int(<span class="hljs-string">\'±&lt;hex&gt;\'</span>, <span class="hljs-number">16</span>)                      <span class="hljs-comment"># Also int(\'±0x&lt;hex&gt;/±0b&lt;bin&gt;\', 0).</span>\n' +
+  '&lt;str&gt; = hex(&lt;int&gt;)                             <span class="hljs-comment"># Returns \'[-]0x&lt;hex&gt;\'. Also bin().</span>\n';
 
 const CACHE =
   '<span class="hljs-keyword">from</span> functools <span class="hljs-keyword">import</span> cache\n' +
@@ -325,17 +324,20 @@ const GROUPBY =
   '<span class="hljs-number">3</span>   <span class="hljs-number">1</span>   <span class="hljs-number">2</span>\n' +
   '<span class="hljs-number">6</span>  <span class="hljs-number">11</span>  <span class="hljs-number">13</span>';
 
-
 const CYTHON_1 =
-  '<span class="hljs-keyword">cdef</span> &lt;ctype/type&gt; &lt;var_name&gt; [= &lt;obj&gt;]\n' +
-  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt;[n_elements] &lt;var_name&gt; [= &lt;coll_of_nums&gt;]\n' +
-  '<span class="hljs-keyword">cdef</span> &lt;ctype/type/void&gt; &lt;func_name&gt;(&lt;ctype/type&gt; &lt;arg_name&gt;): ...\n';
+  '<span class="hljs-keyword">cdef</span> &lt;type&gt; &lt;var_name&gt; [= &lt;obj/var&gt;]                 <span class="hljs-comment"># Either Python or C type variable.</span>\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt; *&lt;pointer_name&gt; [= &amp;&lt;var&gt;]              <span class="hljs-comment"># Use &lt;pointer&gt;[0] to get the value.</span>\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt;[size] &lt;array_name&gt; [= &lt;coll/array&gt;]     <span class="hljs-comment"># Also `&lt;ctype&gt;[:] &lt;mview&gt; = &lt;array&gt;`.</span>\n' +
+  '<span class="hljs-keyword">cdef</span> &lt;ctype&gt; *&lt;array_name&gt; [= &lt;coll/array/pointer&gt;]  <span class="hljs-comment"># E.g. `&lt;&lt;ctype&gt; *&gt; malloc(n_bytes)`.</span>\n';
 
 const CYTHON_2 =
-  '<span class="hljs-keyword">cdef</span> <span class="hljs-class"><span class="hljs-keyword">class</span> &lt;<span class="hljs-title">class_name</span>&gt;:</span>\n' +
-  '    <span class="hljs-keyword">cdef</span> <span class="hljs-keyword">public</span> &lt;ctype/type&gt; &lt;attr_name&gt;\n' +
-  '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, &lt;ctype/type&gt; &lt;arg_name&gt;)</span>:</span>\n' +
-  '        self.&lt;attr_name&gt; = &lt;arg_name&gt;\n';
+  '<span class="hljs-keyword">cdef</span> &lt;type&gt; &lt;func_name&gt;(&lt;type&gt; [*]&lt;arg_name&gt;): ...   <span class="hljs-comment"># Omitted types default to `object`.</span>\n';
+
+const CYTHON_3 =
+  '<span class="hljs-keyword">cdef</span> <span class="hljs-class"><span class="hljs-keyword">class</span> &lt;<span class="hljs-title">class_name</span>&gt;:</span>                             <span class="hljs-comment"># Also `cdef struct &lt;struct_name&gt;:`.</span>\n' +
+  '    <span class="hljs-keyword">cdef</span> <span class="hljs-keyword">public</span> &lt;type&gt; [*]&lt;attr_name&gt;                <span class="hljs-comment"># Also `... &lt;ctype&gt; [*]&lt;field_name&gt;`.</span>\n' +
+  '    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, &lt;type&gt; &lt;arg_name&gt;)</span>:</span>           <span class="hljs-comment"># Also `cdef __dealloc__(self):`.</span>\n' +
+  '        self.&lt;attr_name&gt; = &lt;arg_name&gt;                <span class="hljs-comment"># Also `... free(&lt;array/pointer&gt;)`.</span>\n';
 
 const INDEX =
   '<li><strong>Ctrl+F / ⌘F is usually sufficient.</strong></li>\n' +
@@ -920,7 +922,7 @@ function fixClasses() {
 }
 
 function fixHighlights() {
-  $(`code:contains(<int> = ±0x<hex>)`).html(BIN_HEX);
+  $(`code:contains(<int> = 0x<hex>)`).html(BIN_HEX);
   $(`code:contains( + fib(n)`).html(CACHE);
   $(`code:contains(>>> def add)`).html(SPLAT);
   $(`code:contains(@debug(print_result=True))`).html(PARAMETRIZED_DECORATOR);
@@ -938,8 +940,9 @@ function fixHighlights() {
   $(`code:contains(samples_f = (sin(i *)`).html(AUDIO_2);
   $(`code:contains(collections, dataclasses, enum, io, itertools)`).html(MARIO);
   $(`code:contains(>>> gb = df.groupby)`).html(GROUPBY);
-  $(`code:contains(cdef <ctype/type> <var_name> [= <obj>])`).html(CYTHON_1);
-  $(`code:contains(cdef class <class_name>:)`).html(CYTHON_2);
+  $(`code:contains(cdef <type> <var_name> [= <obj/var>])`).html(CYTHON_1);
+  $(`code:contains(cdef <type> <func_name>(<type> [*]<arg_name>): ...)`).html(CYTHON_2);
+  $(`code:contains(cdef class <class_name>:)`).html(CYTHON_3);
   $(`ul:contains(Ctrl+F / ⌘F is usually sufficient.)`).html(INDEX);
 }
 
