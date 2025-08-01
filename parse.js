@@ -95,7 +95,7 @@ const SHUTIL_COPY =
   'shutil.copytree(from, to)           <span class="hljs-comment"># Copies the directory. \'to\' must not exist.</span>\n';
 
 const OS_RENAME =
-  'os.rename(from, to)                 <span class="hljs-comment"># Renames/moves the file or directory.</span>\n' +
+  'os.rename(from, to)                 <span class="hljs-comment"># Renames or moves the file or directory \'from\'.</span>\n' +
   'os.replace(from, to)                <span class="hljs-comment"># Same, but overwrites file \'to\' even on Windows.</span>\n' +
   'shutil.move(from, to)               <span class="hljs-comment"># Rename() that moves into \'to\' if it\'s a dir.</span>\n';
 
@@ -120,12 +120,12 @@ const MATCH_EXAMPLE =
 const COROUTINES =
   '<span class="hljs-keyword">import</span> asyncio, collections, curses, curses.textpad, enum, random\n' +
   '\n' +
-  'P = collections.namedtuple(<span class="hljs-string">\'P\'</span>, <span class="hljs-string">\'x y\'</span>)     <span class="hljs-comment"># Position</span>\n' +
-  'D = enum.Enum(<span class="hljs-string">\'D\'</span>, <span class="hljs-string">\'n e s w\'</span>)              <span class="hljs-comment"># Direction</span>\n' +
-  'W, H = <span class="hljs-number">15</span>, <span class="hljs-number">7</span>                               <span class="hljs-comment"># Width, Height</span>\n' +
+  'P = collections.namedtuple(<span class="hljs-string">\'P\'</span>, <span class="hljs-string">\'x y\'</span>)     <span class="hljs-comment"># Position (x and y coordinates).</span>\n' +
+  'D = enum.Enum(<span class="hljs-string">\'D\'</span>, <span class="hljs-string">\'n e s w\'</span>)              <span class="hljs-comment"># Direction (north, east, etc.).</span>\n' +
+  'W, H = <span class="hljs-number">15</span>, <span class="hljs-number">7</span>                               <span class="hljs-comment"># Width and height constants.</span>\n' +
   '\n' +
   '<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">(screen)</span>:</span>\n' +
-  '    curses.curs_set(<span class="hljs-number">0</span>)                     <span class="hljs-comment"># Makes cursor invisible.</span>\n' +
+  '    curses.curs_set(<span class="hljs-number">0</span>)                     <span class="hljs-comment"># Makes the cursor invisible.</span>\n' +
   '    screen.nodelay(<span class="hljs-keyword">True</span>)                   <span class="hljs-comment"># Makes getch() non-blocking.</span>\n' +
   '    asyncio.run(main_coroutine(screen))    <span class="hljs-comment"># Starts running asyncio code.</span>\n' +
   '\n' +
@@ -460,25 +460,25 @@ const DIAGRAM_7_A =
 
 const DIAGRAM_7_B =
   "BaseException\n" +
-  " ├── SystemExit                   <span class='hljs-comment'># Raised by the sys.exit() function.</span>\n" +
-  " ├── KeyboardInterrupt            <span class='hljs-comment'># Raised when the user hits the interrupt key (ctrl-c).</span>\n" +
+  " ├── SystemExit                   <span class='hljs-comment'># Raised by the sys.exit() function (see #Exit for details).</span>\n" +
+  " ├── KeyboardInterrupt            <span class='hljs-comment'># Raised when the user hits the interrupt key (control-c).</span>\n" +
   " └── Exception                    <span class='hljs-comment'># User-defined exceptions should be derived from this class.</span>\n" +
   "      ├── ArithmeticError         <span class='hljs-comment'># Base class for arithmetic errors such as ZeroDivisionError.</span>\n" +
   "      ├── AssertionError          <span class='hljs-comment'># Raised by `assert &lt;exp&gt;` if expression returns false value.</span>\n" +
   "      ├── AttributeError          <span class='hljs-comment'># Raised when object doesn't have requested attribute/method.</span>\n" +
   "      ├── EOFError                <span class='hljs-comment'># Raised by input() when it hits an end-of-file condition.</span>\n" +
   "      ├── LookupError             <span class='hljs-comment'># Base class for errors when a collection can't find an item.</span>\n" +
-  "      │    ├── IndexError         <span class='hljs-comment'># Raised when a sequence index is out of range.</span>\n" +
+  "      │    ├── IndexError         <span class='hljs-comment'># Raised when index of a sequence (list/str) is out of range.</span>\n" +
   "      │    └── KeyError           <span class='hljs-comment'># Raised when a dictionary key or set element is missing.</span>\n" +
   "      ├── MemoryError             <span class='hljs-comment'># Out of memory. May be too late to start deleting variables.</span>\n" +
   "      ├── NameError               <span class='hljs-comment'># Raised when nonexistent name (variable/func/class) is used.</span>\n" +
   "      │    └── UnboundLocalError  <span class='hljs-comment'># Raised when local name is used before it's being defined.</span>\n" +
-  "      ├── OSError                 <span class='hljs-comment'># Errors such as FileExistsError/TimeoutError (see #Open).</span>\n" +
-  "      │    └── ConnectionError    <span class='hljs-comment'># Errors such as BrokenPipeError/ConnectionAbortedError.</span>\n" +
+  "      ├── OSError                 <span class='hljs-comment'># Errors such as FileExistsError, TimeoutError (see #Open).</span>\n" +
+  "      │    └── ConnectionError    <span class='hljs-comment'># Errors such as BrokenPipeError and ConnectionAbortedError.</span>\n" +
   "      ├── RuntimeError            <span class='hljs-comment'># Raised by errors that don't fall into other categories.</span>\n" +
   "      │    ├── NotImplementedEr…  <span class='hljs-comment'># Can be raised by abstract methods or by unfinished code.</span>\n" +
   "      │    └── RecursionError     <span class='hljs-comment'># Raised if max recursion depth is exceeded (3k by default).</span>\n" +
-  "      ├── StopIteration           <span class='hljs-comment'># Raised when an empty iterator is passed to next().</span>\n" +
+  "      ├── StopIteration           <span class='hljs-comment'># Raised when exhausted (empty) iterator is passed to next().</span>\n" +
   "      ├── TypeError               <span class='hljs-comment'># When an argument of the wrong type is passed to function.</span>\n" +
   "      └── ValueError              <span class='hljs-comment'># When argument has the right type but inappropriate value.</span>\n";
 
