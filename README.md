@@ -310,6 +310,9 @@ True
 String
 ------
 **Immutable sequence of characters.**
+```python
+<str>  = 'abc'                               # Also "abc". Interprets \n, \t, \x00-\xff, etc.
+```
 
 ```python
 <str>  = <str>.strip()                       # Strips all whitespace characters from both ends.
@@ -317,40 +320,39 @@ String
 ```
 
 ```python
-<list> = <str>.split()                       # Splits on one or more whitespace characters.
+<list> = <str>.split()                       # Splits it on one or more whitespace characters.
 <list> = <str>.split(sep=None, maxsplit=-1)  # Splits on 'sep' string at most 'maxsplit' times.
 <list> = <str>.splitlines(keepends=False)    # On [\n\r\f\v\x1c-\x1e\x85\u2028\u2029] and \r\n.
-<str>  = <str>.join(<coll_of_strings>)       # Joins elements by using string as a separator.
+<str>  = <str>.join(<coll_of_strings>)       # Joins items by using the string as a separator.
 ```
 
 ```python
-<bool> = <sub_str> in <str>                  # Checks if string contains the substring.
-<bool> = <str>.startswith(<sub_str>)         # Pass tuple of strings for multiple options.
+<bool> = <sub_str> in <str>                  # Returns True if string contains the substring.
+<bool> = <str>.startswith(<sub_str>)         # Pass tuple of strings to give multiple options.
 <int>  = <str>.find(<sub_str>)               # Returns start index of the first match or -1.
 ```
 
 ```python
 <str>  = <str>.lower()                       # Lowers the case. Also upper/capitalize/title().
-<str>  = <str>.casefold()                    # Same, but converts ẞ/ß to ss, Σ/ς to σ, etc.
+<str>  = <str>.casefold()                    # Lower() that converts ẞ/ß to ss, Σ/ς to σ, etc.
 <str>  = <str>.replace(old, new [, count])   # Replaces 'old' with 'new' at most 'count' times.
 <str>  = <str>.translate(<table>)            # Use `str.maketrans(<dict>)` to generate table.
 ```
 
 ```python
-<str>  = chr(<int>)                          # Converts passed integer to Unicode character.
-<int>  = ord(<str>)                          # Converts passed Unicode character to integer.
+<str>  = chr(<int>)                          # Converts passed integer into Unicode character.
+<int>  = ord(<str>)                          # Converts passed Unicode character into integer.
 ```
 * **Use `'unicodedata.normalize("NFC", <str>)'` on strings like `'Motörhead'` before comparing them to other strings, because `'ö'` can be stored as one or two characters.**
 * **`'NFC'` converts such characters to a single character, while `'NFD'` converts them to two.**
 
-### Property Methods
 ```python
-<bool> = <str>.isdecimal()                   # Checks for [0-9]. Also [०-९] and [٠-٩].
-<bool> = <str>.isdigit()                     # Checks for [²³¹…] and isdecimal().
-<bool> = <str>.isnumeric()                   # Checks for [¼½¾…], [零〇一…] and isdigit().
-<bool> = <str>.isalnum()                     # Checks for [a-zA-Z…] and isnumeric().
-<bool> = <str>.isprintable()                 # Checks for [ !#$%…] and isalnum().
-<bool> = <str>.isspace()                     # Checks for [ \t\n\r\f\v\x1c-\x1f\x85…].
+<bool> = <str>.isdecimal()                   # Checks all chars for [0-9]. Also [०-९], [٠-٩].
+<bool> = <str>.isdigit()                     # Checks for [²³¹…] and isdecimal(). Also [፩-፱].
+<bool> = <str>.isnumeric()                   # Checks for [¼½¾…] and isdigit(). Also [零〇一…].
+<bool> = <str>.isalnum()                     # Checks for [ABC…] and isnumeric(). Also [ªµº…].
+<bool> = <str>.isprintable()                 # Checks for [ !"#$…] and isalnum(). Also emojis.
+<bool> = <str>.isspace()                     # Checks for [ \t\n\r\f\v\x1c\x1d\x1e\x1f\x85…].
 ```
 
 
@@ -2218,7 +2220,7 @@ Introspection
 -------------
 ```python
 <list> = dir()                      # Local names of variables, functions, classes and modules.
-<dict> = vars()                     # Dict of local names and their objects. Also locals().
+<dict> = vars()                     # Dict of local names and their objects. Same as locals().
 <dict> = globals()                  # Dict of global names and their objects, e.g. __builtin__.
 ```
 
@@ -2258,31 +2260,31 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ### Lock
 ```python
-<lock> = Lock/RLock()                          # RLock can only be released by acquirer.
-<lock>.acquire()                               # Waits for the lock to be available.
-<lock>.release()                               # Makes the lock available again.
+<lock> = Lock/RLock()                          # RLock can only be released by acquirer thread.
+<lock>.acquire()                               # Blocks (waits) until lock becomes available.
+<lock>.release()                               # Releases the lock so it can be acquired again.
 ```
 
 #### Or:
 ```python
-with <lock>:                                   # Enters the block by calling acquire() and
-    ...                                        # exits it with release(), even on error.
+with <lock>:                                   # Enters the block by calling method acquire().
+    ...                                        # Exits it by calling release(), even on error.
 ```
 
 ### Semaphore, Event, Barrier
 ```python
 <Semaphore> = Semaphore(value=1)               # Lock that can be acquired by 'value' threads.
 <Event>     = Event()                          # Method wait() blocks until set() is called.
-<Barrier>   = Barrier(n_times)                 # Wait() blocks until it's called n times.
+<Barrier>   = Barrier(<int>)                   # Wait() blocks until it's called int times.
 ```
 
 ### Queue
 ```python
-<Queue> = queue.Queue(maxsize=0)               # A thread-safe first-in-first-out queue.
-<Queue>.put(<el>)                              # Blocks until queue stops being full.
-<Queue>.put_nowait(<el>)                       # Raises queue.Full exception if full.
-<el> = <Queue>.get()                           # Blocks until queue stops being empty.
-<el> = <Queue>.get_nowait()                    # Raises queue.Empty exception if empty.
+<Queue> = queue.Queue(maxsize=0)               # A first-in-first-out queue. It's thread safe.
+<Queue>.put(<obj>)                             # Call blocks until queue stops being full.
+<Queue>.put_nowait(<obj>)                      # Raises queue.Full exception if queue is full.
+<obj> = <Queue>.get()                          # Call blocks until queue stops being empty.
+<obj> = <Queue>.get_nowait()                   # Raises queue.Empty exception if it's empty.
 ```
 
 ### Thread Pool Executor
@@ -2290,12 +2292,12 @@ with <lock>:                                   # Enters the block by calling acq
 <Exec> = ThreadPoolExecutor(max_workers=None)  # Also `with ThreadPoolExecutor() as <name>: …`.
 <iter> = <Exec>.map(<func>, <args_1>, ...)     # Multithreaded and non-lazy map(). Keeps order.
 <Futr> = <Exec>.submit(<func>, <arg_1>, ...)   # Creates a thread and returns its Future obj.
-<Exec>.shutdown()                              # Waits for all submitted threads to finish.
+<Exec>.shutdown()                              # Waits for all threads to finish executing.
 ```
 
 ```python
 <bool> = <Future>.done()                       # Checks if the thread has finished executing.
-<obj>  = <Future>.result(timeout=None)         # Waits for thread to finish and returns result.
+<obj>  = <Future>.result(timeout=None)         # Raises TimeoutError after 'timeout' seconds.
 <bool> = <Future>.cancel()                     # Cancels or returns False if running/finished.
 <iter> = as_completed(<coll_of_Futures>)       # `next(<iter>)` returns next completed Future.
 ```
@@ -2306,8 +2308,8 @@ with <lock>:                                   # Enters the block by calling acq
 
 Coroutines
 ----------
-* **Coroutines have a lot in common with threads, but unlike threads, they only give up control when they call another coroutine and they don’t use as much memory.**
-* **Coroutine definition starts with `'async'` and its call with `'await'`.**
+* **Coroutines have a lot in common with threads, but unlike threads, they only give up control when they call another coroutine and they don’t consume as much memory.**
+* **Coroutine definition starts with `'async'` keyword and its call with `'await'`.**
 * **Use `'asyncio.run(<coroutine>)'` to start the first/main coroutine.**
 
 ```python
@@ -2316,7 +2318,7 @@ import asyncio as aio
 
 ```python
 <coro> = <async_function>(<args>)          # Creates a coroutine by calling async def function.
-<obj>  = await <coroutine>                 # Starts the coroutine and waits for its result.
+<obj>  = await <coroutine>                 # Starts the coroutine. Returns its result or None.
 <task> = aio.create_task(<coroutine>)      # Schedules it for execution. Always keep the task.
 <obj>  = await <task>                      # Returns coroutine's result. Also <task>.cancel().
 ```
@@ -2333,7 +2335,7 @@ import asyncio, collections, curses, curses.textpad, enum, random
 
 P = collections.namedtuple('P', 'x y')     # Position (x and y coordinates).
 D = enum.Enum('D', 'n e s w')              # Direction (north, east, etc.).
-W, H = 15, 7                               # Width and height constants.
+W, H = 15, 7                               # Width and height of the field.
 
 def main(screen):
     curses.curs_set(0)                     # Makes the cursor invisible.
@@ -2344,7 +2346,7 @@ async def main_coroutine(screen):
     moves = asyncio.Queue()
     state = {'*': P(0, 0)} | {id_: P(W//2, H//2) for id_ in range(10)}
     ai    = [random_controller(id_, moves) for id_ in range(10)]
-    mvc   = [human_controller(screen, moves), model(moves, state), view(state, screen)]
+    mvc   = [controller(screen, moves), model(moves, state), view(state, screen)]
     tasks = [asyncio.create_task(coro) for coro in ai + mvc]
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
@@ -2354,7 +2356,7 @@ async def random_controller(id_, moves):
         moves.put_nowait((id_, d))
         await asyncio.sleep(random.triangular(0.01, 0.65))
 
-async def human_controller(screen, moves):
+async def controller(screen, moves):
     while True:
         key_mappings = {258: D.s, 259: D.n, 260: D.w, 261: D.e}
         if d := key_mappings.get(screen.getch()):
@@ -2405,10 +2407,10 @@ Plot
 import matplotlib.pyplot as plt
 
 plt.plot/bar/scatter(x_data, y_data [, label=<str>])  # Also plt.plot(y_data).
-plt.legend()                                          # Adds a legend.
-plt.title/xlabel/ylabel(<str>)                        # Adds a title or label.
+plt.legend()                                          # Adds a legend of labels.
+plt.title/xlabel/ylabel(<str>)                        # Adds title or axis label.
 plt.show()                                            # Also plt.savefig(<path>).
-plt.clf()                                             # Clears the plot.
+plt.clf()                                             # Clears the plot (figure).
 ```
 
 
@@ -2458,7 +2460,7 @@ if __name__ == '__main__':
 
 GUI App
 -------
-#### A weight converter GUI application:
+#### Runs a desktop app for converting weights from metric units into pounds:
 
 ```python
 # $ pip3 install PySimpleGUI
@@ -2467,8 +2469,7 @@ import PySimpleGUI as sg
 text_box = sg.Input(default_text='100', enable_events=True, key='QUANTITY')
 dropdown = sg.InputCombo(['g', 'kg', 't'], 'kg', readonly=True, enable_events=True, k='UNIT')
 label    = sg.Text('100 kg is 220.462 lbs.', key='OUTPUT')
-button   = sg.Button('Close')
-window   = sg.Window('Weight Converter', [[text_box, dropdown], [label], [button]])
+window   = sg.Window('Weight Converter', [[text_box, dropdown], [label], [sg.Button('Close')]])
 
 while True:
     event, values = window.read()
@@ -2479,8 +2480,7 @@ while True:
     except ValueError:
         continue
     unit = values['UNIT']
-    factors = {'g': 0.001, 'kg': 1, 't': 1000}
-    lbs = quantity * factors[unit] / 0.45359237
+    lbs = quantity * {'g': 0.001, 'kg': 1, 't': 1000}[unit] / 0.45359237
     window['OUTPUT'].update(value=f'{quantity} {unit} is {lbs:g} lbs.')
 window.close()
 ```
@@ -2493,15 +2493,16 @@ Scraping
 # $ pip3 install requests beautifulsoup4
 import requests, bs4, os
 
-response   = requests.get('https://en.wikipedia.org/wiki/Python_(programming_language)')
-document   = bs4.BeautifulSoup(response.text, 'html.parser')
-table      = document.find('table', class_='infobox vevent')
+get = lambda url: requests.get(url, headers={'User-Agent': 'cpc-bot'})
+response = get('https://en.wikipedia.org/wiki/Python_(programming_language)')
+document = bs4.BeautifulSoup(response.text, 'html.parser')
+table = document.find('table', class_='infobox vevent')
 python_url = table.find('th', text='Website').next_sibling.a['href']
-logo_url   = table.find('img')['src']
-filename   = os.path.basename(logo_url)
+logo_url = table.find('img')['src']
+filename = os.path.basename(logo_url)
 with open(filename, 'wb') as file:
-    file.write(requests.get(f'https:{logo_url}').content)
-print(f'{python_url}, file://{os.path.abspath(filename)}')
+    file.write(get(f'https:{logo_url}').content)
+print(f'URL: {python_url}, logo: file://{os.path.abspath(filename)}')
 ```
 
 ### Selenium
@@ -2509,25 +2510,27 @@ print(f'{python_url}, file://{os.path.abspath(filename)}')
 ```python
 # $ pip3 install selenium
 from selenium import webdriver
+```
 
-<WebDrv> = webdriver.Chrome/Firefox/Safari/Edge()     # Opens a browser. Also <WebDrv>.quit().
-<WebDrv>.get('<url>')                                 # Also <WebDrv>.implicitly_wait(seconds).
-<str>  = <WebDrv>.page_source                         # Returns HTML of fully rendered page.
-<El>   = <WebDrv/El>.find_element('css selector', …)  # '<tag>#<id>.<class>[<attr>="<val>"]…'.
-<list> = <WebDrv/El>.find_elements('xpath', …)        # '//<tag>[@<attr>="<val>"]…'. See XPath.
-<str>  = <El>.get_attribute(<str>)                    # Property if exists. Also <El>.text.
-<El>.click/clear()                                    # Also <El>.send_keys(<str>).
+```python
+<Drv> = webdriver.Chrome/Firefox/Safari/Edge()  # Opens the browser. Also <Driver>.quit().
+<Drv>.implicitly_wait(seconds)                  # Sets timeout for find_element/s() methods.
+<Drv>.get('<url>')                              # Blocks until browser fires the load event.
+<str> = <Drv>.page_source                       # Returns HTML of the page's current state.
+<El>  = <Drv/El>.find_element('xpath', <str>)   # Accepts '//<tag>[@<attr_name>="<val>"]…'.
+<str> = <El>.get_attribute('<name>')            # Returns attribute or property if exists.
+<El>.click/clear()                              # Also <El>.text and <El>.send_keys(<str>).
 ```
 
 #### XPath — also available in lxml, Scrapy, and browser's console via `'$x("<xpath>")'`:
 ```python
-<xpath>     = //<element>[/ or // <element>]          # /<child>, //<descendant>, /../<sibling>
-<xpath>     = //<element>/following::<element>        # Next element. Also preceding/parent/…
-<element>   = <tag><conditions><index>                # `<tag> = */a/…`, `<index> = [1/2/…]`.
-<condition> = [<sub_cond> [and/or <sub_cond>]]        # For negation use `not(<sub_cond>)`.
-<sub_cond>  = @<attr>[="<val>"]                       # `text()=`, `.=` match (complete) text.
-<sub_cond>  = contains(@<attr>, "<val>")              # Is <val> a substring of attr's value?
-<sub_cond>  = [//]<element>                           # Has matching child? Descendant if //.
+<xpath>     = //<element>[/ or // <element>]    # E.g. …/child, …//descendant, …/../sibling.
+<xpath>     = //<element>/following::<element>  # Next element. Also preceding::, parent::.
+<element>   = <tag><conditions><index>          # Tag accepts */a/…. Use [1/2/…] for index.
+<condition> = [<sub_cond> [and/or <sub_cond>]]  # Use not(<sub_cond>) to negate condition.
+<sub_cond>  = @<attr>[="<val>"]                 # `text()=` and `.=` match (complete) text.
+<sub_cond>  = contains(@<attr>, "<val>")        # Is <val> a substring of attribute's value?
+<sub_cond>  = [//]<element>                     # Has matching child? Descendant if //<el>.
 ```
 
 
